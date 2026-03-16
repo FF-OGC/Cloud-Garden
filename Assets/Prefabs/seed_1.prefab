@@ -1,0 +1,146 @@
+{
+  "_entityName": "seed_1",
+  "_tag": {
+    "type": "Prefab"
+  },
+  "_entityId": "qTJrLw0X",
+  "children": [
+    {
+      "_entityName": "seed_1",
+      "_tag": {
+        "type": "UGCSceneEntity",
+        "resourceId": ""
+      },
+      "_entityId": "v7s8XUA9",
+      "children": [],
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": null,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 0.2,
+        "y": 0.2,
+        "z": 0.2
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "BTPath": [
+        null
+      ],
+      "visible": true,
+      "VisibilityLayer": 0,
+      "modelOptimization": 0,
+      "streamingLayer": "",
+      "attributes": [
+        2,
+        4
+      ],
+      "isTrigger": false,
+      "collidable": false,
+      "physicalLayer": 0,
+      "physicalMaterial": null,
+      "aoiSetting": 0,
+      "initialTypes": {},
+      "componentList": [
+        "MeshRender",
+        "ColliderShape",
+        "Collider"
+      ],
+      "entityTagData": {
+        "tagPointers": []
+      },
+      "materials": [
+        null
+      ],
+      "colliders": [
+        {
+          "enable": true,
+          "colliderType": "Sphere",
+          "meshUUID": null,
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "radius": 0.5,
+          "height": 1,
+          "isConvexIfMesh": false
+        }
+      ],
+      "IsNPC": false,
+      "isCreateAsEmpty": false,
+      "Rigidbody": {
+        "Type": 1,
+        "Mass": 1,
+        "CenterOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "UseGravity": true,
+        "Drag": 0.05,
+        "AngularDrag": 0.05,
+        "FreezePosX": false,
+        "FreezeRotX": false,
+        "FreezePosY": false,
+        "FreezeRotY": false,
+        "FreezePosZ": false,
+        "FreezeRotZ": false
+      },
+      "ecaScripts": [],
+      "ecaProps": {
+        "CustomLevelObject": {},
+        "LevelObject": {},
+        "Transform": {},
+        "Entity": {},
+        "Visibility": {},
+        "MeshRender": {},
+        "ColliderShape": {},
+        "Collider": {}
+      },
+      "propsData": {},
+      "entityVersion": 3,
+      "mesh": {
+        "fileId": "wehss29x://772ab186-6b5b-4775-b674-92e3e730f58d-Sphere001.~@FFFUB",
+        "filePath": "wehss29x://Meshes/sphere.fbx/Sphere001",
+        "_tag": {
+          "type": "GFileRefer"
+        },
+        "fileType": "mesh"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "prefabVariant": null
+    }
+  ],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "HintCraftlandCombineMesh": false,
+  "discriminator": "ISceneLike"
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

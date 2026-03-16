@@ -3,9 +3,16 @@ import "Map.fcc" as map
 
 graph FloorGridData {
     CellStates Map<string, int> 
-    Visuals Map<string, entity<Entity>>    
+    PotTiers Map<string, int>   
+    
+    // SEPARATED VISUAL STORAGE
+    PotVisuals Map<string, entity<Entity>>    // Stores the Pot entities
+    PlantVisuals Map<string, entity<Entity>>  // Stores the Plant/Seed entities
+
     event OnAwake() {
         CellStates = map.New()
-        Visuals = map.New()
+        PotTiers = map.New()
+        PotVisuals = map.New()
+        PlantVisuals = map.New()
     }
 }

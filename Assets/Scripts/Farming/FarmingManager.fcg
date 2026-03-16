@@ -9,50 +9,46 @@ import "../Core/GameManager.fcg" as gameMgr
 
 static graph FarmingManager {
     
-    // Listens to the local UI event dispatched from the player's HUD
     event gen.OnPlayerHoeAction(player entity<Entity>) {
-        if player == nil { return }
-
-        if player<gen.PlayerFarmingData>.CurrentFloor == nil {
-            if(gameMgr.IsDebug()) { LogError("[FarmingManager] ERROR: Player is not on any floor (CurrentFloor = nil).") }
-            return
-        }
-
-        if player<gen.PlayerFarmingData>.CurrentGridPos == Vector3{0, 0, 0} {
-            if(gameMgr.IsDebug()) { LogWarning("[FarmingManager] WARNING: GridPos is 0,0,0. Might not be initialized yet.") }   
-        }
+        if player == nil || player<gen.PlayerFarmingData>.CurrentFloor == nil { return }
 
         var gridPos = player<gen.PlayerFarmingData>.CurrentGridPos
-        // FIXED KEY GENERATION: Match exactly with GridManager (removed math.Floor)
         var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
-        
         var floorObj = player<gen.PlayerFarmingData>.CurrentFloor as entity<Entity>
         var cellStates = floorObj<floorData>.CellStates
         
-        if (gameMgr.IsDebug()) { 
-            LogInfo("========================================")
-            LogInfo("[FarmingManager] Start hoeing action!")
-            LogInfo("[FarmingManager] Looking for Key: [" + key + "] on floor: " + floorObj<Entity>.Name)
-        }
-
         if map.ContainKey(cellStates, key) {
             var currentState = cellStates[key] as int
-            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Key found! Current cell state: " + currentState + " (Grass is: " + gen.EFarmSlotState.Grass + ")") }
             
+            // STEP 1: GRASS -> EMPTY POT
             if currentState == gen.EFarmSlotState.Grass {
-                // Change State
-                cellStates[key] = gen.EFarmSlotState.Tilled
-                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Successfully changed state to Tilled (" + gen.EFarmSlotState.Tilled + ")") }
-                
-                // Call Visual Manager
-                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
-                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Dispatched Event to FarmVisualManager!") }
-            } else {
-                if(gameMgr.IsDebug()) { LogWarning("[FarmingManager] LOGIC ERROR: This cell is not Grass, cannot hoe! Current state: " + currentState) }
+                cellStates[key] = gen.EFarmSlotState.EmptyPot 
+                floorObj<floorData>.PotTiers[key] = 1 
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.EmptyPot})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Step 1: Placed Empty Pot") }
+
+            // STEP 2: EMPTY POT -> PLANTED (Dry Seed)
+            } else if currentState == gen.EFarmSlotState.EmptyPot {
+                cellStates[key] = gen.EFarmSlotState.NeedWatering
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.NeedWatering})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Step 2: Planted Seed. It needs water!") }
+            // STEP 3: NEED TO WATERING -> GROWING (Watered / Normal Seed)
+            } else if currentState == gen.EFarmSlotState.NeedWatering {
+                cellStates[key] = gen.EFarmSlotState.Growing 
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Growing})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Step 3: Watered. Seed is growing.") }
+
+            // STEP 4: GROWING -> READY TO HARVEST (Manual fast-forward for testing)
+            } else if currentState == gen.EFarmSlotState.Growing {
+                cellStates[key] = gen.EFarmSlotState.ReadyToHarvest 
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.ReadyToHarvest})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Step 4: [TEST] Fast-forwarded to ReadyToHarvest!") }
+            // STEP 5: READY TO HARVEST -> EMPTY POT
+            } else if currentState == gen.EFarmSlotState.ReadyToHarvest { 
+                cellStates[key] = gen.EFarmSlotState.EmptyPot
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.EmptyPot})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Step 5: Harvested! Back to Empty Pot.") }
             }
-        } else {
-            if(gameMgr.IsDebug()) { LogError("[FarmingManager] CRITICAL ERROR: Key [" + key + "] not found in this floor's grid memory!") }     
         }
-        if (gameMgr.IsDebug()) { LogInfo("========================================") }
     }
 }

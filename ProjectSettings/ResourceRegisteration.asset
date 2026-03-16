@@ -86,7 +86,7 @@
             },
             "fileType": "prefab"
           },
-          "scriptName": "tilled_dirt",
+          "scriptName": "empty_pot",
           "children": []
         },
         {
@@ -111,6 +111,42 @@
             "fileType": "prefab"
           },
           "scriptName": "grid_tracker",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "ijtx4xqb7q-mmt1v2np-aeetgw25cc4",
+            "filePath": "Assets\\Prefabs\\seed_1.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_model",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "9pep8hh99oc-mmt1ymtv-kpm3xaryn48",
+            "filePath": "Assets\\Prefabs\\seed_needtowatering.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_needwatering",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "8m3oibzu5t-mmt29m4k-1x0hnig3uec",
+            "filePath": "Assets\\Prefabs\\growed_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_growed",
           "children": []
         }
       ]

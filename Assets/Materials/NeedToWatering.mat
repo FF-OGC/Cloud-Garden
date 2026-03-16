@@ -25,12 +25,12 @@
   },
   "paramValue": {
     "_Color": {
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 230,
+      "g": 73,
+      "b": 203,
       "a": 1
     },
-    "_Brightness": 1,
+    "_Brightness": 3,
     "_MainTex": {
       "Texture": {
         "fileId": "2c952fc36b6aa28b2bef8c6a6c73fec0",

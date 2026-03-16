@@ -1,0 +1,160 @@
+{
+  "_entityName": "growed_seed",
+  "_tag": {
+    "type": "Prefab"
+  },
+  "_entityId": "rHoW10w6",
+  "children": [
+    {
+      "_entityName": "growed_seed",
+      "_tag": {
+        "type": "UGCSceneEntity",
+        "resourceId": ""
+      },
+      "_entityId": "uWmkVczs",
+      "children": [],
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": null,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 0.5,
+        "y": 0.5,
+        "z": 0.5
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "BTPath": [
+        null
+      ],
+      "visible": true,
+      "VisibilityLayer": 0,
+      "modelOptimization": 0,
+      "streamingLayer": "",
+      "attributes": [
+        2,
+        4
+      ],
+      "isTrigger": false,
+      "collidable": false,
+      "physicalLayer": 0,
+      "physicalMaterial": null,
+      "aoiSetting": 0,
+      "initialTypes": {},
+      "componentList": [
+        "MeshRender",
+        "ColliderShape",
+        "Collider"
+      ],
+      "entityTagData": {
+        "tagPointers": []
+      },
+      "materials": [
+        {
+          "fileId": "mabcfd7gpcq-lnu4gy1v-b4hlectmfu",
+          "filePath": "Assets\\Materials\\GrassLand01.mat",
+          "_tag": {
+            "type": "GFileRefer"
+          },
+          "fileType": "material"
+        }
+      ],
+      "colliders": [
+        {
+          "enable": true,
+          "colliderType": "MeshCollider",
+          "meshUUID": {
+            "fileId": "wehss29x://bd350b6d-6306-4bc9-834b-1246ecda5e40-Cylinder001.~@FFFUB",
+            "filePath": "wehss29x://Meshes/cylinder.fbx/Cylinder001",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "radius": 0.5,
+          "height": 1,
+          "isConvexIfMesh": false
+        }
+      ],
+      "IsNPC": false,
+      "isCreateAsEmpty": false,
+      "Rigidbody": {
+        "Type": 1,
+        "Mass": 1,
+        "CenterOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "UseGravity": true,
+        "Drag": 0.05,
+        "AngularDrag": 0.05,
+        "FreezePosX": false,
+        "FreezeRotX": false,
+        "FreezePosY": false,
+        "FreezeRotY": false,
+        "FreezePosZ": false,
+        "FreezeRotZ": false
+      },
+      "ecaScripts": [],
+      "ecaProps": {
+        "CustomLevelObject": {},
+        "LevelObject": {},
+        "Transform": {},
+        "Entity": {},
+        "Visibility": {},
+        "MeshRender": {},
+        "ColliderShape": {},
+        "Collider": {}
+      },
+      "propsData": {},
+      "entityVersion": 3,
+      "mesh": {
+        "fileId": "wehss29x://bd350b6d-6306-4bc9-834b-1246ecda5e40-Cylinder001.~@FFFUB",
+        "filePath": "wehss29x://Meshes/cylinder.fbx/Cylinder001",
+        "_tag": {
+          "type": "GFileRefer"
+        },
+        "fileType": "mesh"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "prefabVariant": null
+    }
+  ],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "HintCraftlandCombineMesh": false,
+  "discriminator": "ISceneLike"
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
