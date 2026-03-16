@@ -1,0 +1,209 @@
+{
+  "_tag": {
+    "type": "ResourceRegisteration"
+  },
+  "_entityId": "1Qaa5pVT",
+  "Resource": {
+    "ui": {
+      "id": "ui",
+      "children": [
+        {
+          "refer": {
+            "fileId": "f7is6q0ew7-mmlrlqu2-b0n5fcsyu1v",
+            "filePath": "Assets\\UI\\HoeBtn.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "hoe_btn",
+          "children": []
+        }
+      ]
+    },
+    "scene": {
+      "id": "scene",
+      "children": [
+        {
+          "refer": {
+            "fileId": "ew30utg8hd7-lw7lj2ed-m7knbltuzlg",
+            "filePath": "Assets\\Scene\\New Scene.scene",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "scene"
+          },
+          "scriptName": "NewScene",
+          "children": []
+        }
+      ]
+    },
+    "prefab": {
+      "id": "prefab",
+      "children": [
+        {
+          "refer": {
+            "fileId": "74d34eis9en-mmkb8zoa-3oj1y4j0bsc",
+            "filePath": "Assets\\Prefabs\\Magic Bean.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "bean",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "9saor6cebip-mmkbcdk1-2yoj5ffl2i1",
+            "filePath": "Assets\\Prefabs\\BeanPath.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "bean_path",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "0wdc2rpzq6x-mmkgl5iq-r77v1u4qqtj",
+            "filePath": "Assets\\Prefabs\\Floor.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "floor",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "fhqgt7bcibj-mmlq4xnw-73m5mcnls9t",
+            "filePath": "Assets\\Prefabs\\Dirt.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "tilled_dirt",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "4trvtvqwn4g-mmlv6pe7-fienmj6q69",
+            "filePath": "Assets\\Prefabs\\farm_slot.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "farm_slot",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "qsy6lq50iwq-mmokdu6h-ovj42t20g1r",
+            "filePath": "Assets\\Prefabs\\Grid Tracker.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "grid_tracker",
+          "children": []
+        }
+      ]
+    },
+    "ugcscript": {
+      "id": "ugcscript",
+      "children": []
+    },
+    "eca": {
+      "id": "eca",
+      "children": []
+    },
+    "texture": {
+      "id": "texture",
+      "children": []
+    },
+    "effecttype": {
+      "id": "effecttype",
+      "children": []
+    },
+    "sound": {
+      "id": "sound",
+      "children": []
+    },
+    "fitem": {
+      "id": "fitem",
+      "children": []
+    },
+    "fScenePrefab": {
+      "id": "fScenePrefab",
+      "children": []
+    },
+    "clothskin": {
+      "id": "clothskin",
+      "children": []
+    },
+    "weaponskin": {
+      "id": "weaponskin",
+      "children": []
+    },
+    "vehicleskin": {
+      "id": "vehicleskin",
+      "children": []
+    },
+    "emoteskin": {
+      "id": "emoteskin",
+      "children": []
+    },
+    "csv": {
+      "id": "csv",
+      "children": []
+    },
+    "internalhudtype": {
+      "id": "internalhudtype",
+      "children": []
+    },
+    "textureResource": {
+      "id": "textureResource",
+      "children": []
+    },
+    "mesh": {
+      "id": "mesh",
+      "children": []
+    },
+    "material": {
+      "id": "material",
+      "children": []
+    },
+    "ac": {
+      "id": "ac",
+      "children": []
+    },
+    "particles": {
+      "id": "particles",
+      "children": []
+    },
+    "playerdata": {
+      "id": "playerdata",
+      "children": []
+    },
+    "xbt": {
+      "id": "xbt",
+      "children": []
+    },
+    "pfm": {
+      "id": "pfm",
+      "children": []
+    },
+    "skilltype": {
+      "id": "skilltype",
+      "children": []
+    }
+  },
+  "children": []
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

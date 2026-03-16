@@ -1,0 +1,42 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Math.fcc" as math
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "./FloorGridData.fcg" as floorData
+import "../Core/GameManager.fcg" as gameMgr
+import "../Config/FarmGridConfig.fcg" as gridCfg
+
+static graph GridManager {
+    
+    // Khởi tạo lưới HÌNH VUÔNG
+    func InitGridsForFloors(floors List<entity<Entity>>) {
+        var tileSize = gridCfg.GetTileSize()
+        var count = list.Length(floors)
+
+        for i = 0, count, 1 {
+            var floor = floors[i]
+            if floor == nil { continue }
+
+            var scale = floor<Transform>.Scale.X 
+
+            if floor<floorData> != nil {
+                //caculate the grid boundaries(example: scale = 10, tileSize = 1, halfGridCount = 4 => grid boundaries = -4 to 4)
+                var halfGridCount = math.Floor((scale / tileSize) / 2.0)
+
+                for x = -halfGridCount, halfGridCount + 1, 1 {
+                    for z = -halfGridCount, halfGridCount + 1, 1 {
+                        var worldX = convert.IntToFloat(x) * tileSize
+                        var worldZ = convert.IntToFloat(z) * tileSize
+
+                        var pos = Vector3{worldX, 0, worldZ}
+                        var key = convert.ToString(pos.X) + "_" + convert.ToString(pos.Z)
+                        floor<floorData>.CellStates[key] = gen.EFarmSlotState.Grass
+                    }
+                }
+            }
+        }
+        if gameMgr.IsDebug() { LogInfo("[GridManager] Mapped Square grids for all floors.") }
+    }
+}

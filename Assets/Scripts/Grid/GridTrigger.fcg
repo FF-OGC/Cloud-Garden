@@ -1,0 +1,45 @@
+import "StdLibrary.fcc" as std
+import "Physics.fcc" as physics
+import "EditorGenLib.fcc" as gen
+import "../Core/GameManager.fcg" as gameMgr
+import "./TrackerPoolManager.fcg" as poolManager
+
+graph GridTrigger {
+    _Floor entity<Entity> = nil
+
+    event OnAwake() { 
+        _Floor = thisEntity<Transform>.Parent
+        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Initialized. Parent floor: " + _Floor<Entity>.Name) }
+    }
+
+    event OnTriggerEnter(target entity<Entity>) {
+        var player = target as entity<Player>
+        
+        if player == nil || _Floor == nil { return }
+        
+        if  player<gen.PlayerFarmingData> == nil { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData."); return }
+
+        player<gen.PlayerFarmingData>.CurrentFloor = _Floor
+        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
+
+        if player<gen.PlayerFarmingData>.ActiveTracker == nil {
+            player<gen.PlayerFarmingData>.ActiveTracker = poolManager.GetTracker(player)
+            if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker assigned from pool.") }
+        }
+    }
+
+    event OnTriggerLeave(target entity<Entity>) {
+        var player = target as entity<Player>
+        if player == nil || _Floor == nil { return }
+        
+        if player<gen.PlayerFarmingData>.CurrentFloor != _Floor { return }
+
+        if player<gen.PlayerFarmingData>.ActiveTracker != nil {
+            poolManager.ReturnTracker(player<gen.PlayerFarmingData>.ActiveTracker)
+            player<gen.PlayerFarmingData>.ActiveTracker = nil
+            if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker returned to pool.") }
+        }
+        player<gen.PlayerFarmingData>.CurrentFloor = nil
+        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player left floor: " + _Floor<Entity>.Name) }
+    }
+}

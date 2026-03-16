@@ -1,0 +1,25 @@
+import "StdLibrary.fcc" as std
+
+static graph MagicBeanConfig {
+    
+    _Radius float = 5.0
+    _HeightPerLoop float = 10.0
+    _StepsPerLoop int = 50
+    _TotalLoops int = 3
+    _BeanScaleMult float = 1.5
+    _PathScaleX float = 3.5
+    _PathScaleY float = 0.2
+    _PathScaleZ float = 4.0
+    _PathPitchAngle float = 12.0
+    _DelayFrames int = 1
+
+    // --- GETTER ---
+    func GetRadius() float { return _Radius }
+    func GetHeightPerLoop() float { return _HeightPerLoop }
+    func GetStepsPerLoop() int { return _StepsPerLoop }
+    func GetTotalLoops() int { return _TotalLoops }
+    func GetBeanScaleMult() float { return _BeanScaleMult }
+    func GetPathScale() Vector3 { return Vector3{_PathScaleX, _PathScaleY, _PathScaleZ} }
+    func GetPathPitchAngle() float { return _PathPitchAngle }
+    func GetDelayFrames() int { return _DelayFrames }
+}

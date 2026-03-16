@@ -1,0 +1,58 @@
+{
+  "_tag": {
+    "type": "ecaEventDesc"
+  },
+  "_entityId": "YNTKwtqc",
+  "customEventDefines": {
+    "signal_60093422": {
+      "name": "OnFarmCellStateChanged",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100002,
+      "props": [
+        {
+          "name": "floor",
+          "value": "Entity",
+          "key": 1
+        },
+        {
+          "name": "gridPos",
+          "value": "Vector3",
+          "key": 2
+        },
+        {
+          "name": "newState",
+          "value": "Int",
+          "key": 3
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_60093422"
+    },
+    "signal_86389280": {
+      "name": "OnPlayerHoeAction",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100003,
+      "props": [
+        {
+          "name": "player",
+          "value": "Entity",
+          "key": 1
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_86389280"
+    }
+  },
+  "customName": {
+    "OnFarmCellStateChanged": "signal_60093422",
+    "OnPlayerHoeAction": "signal_86389280"
+  },
+  "children": []
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

@@ -1,0 +1,40 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Player.fcc" as Player
+
+
+import "../Magic Bean/MagicBeanManager.fcg" as beanManager
+import "../Floors/FloorManager.fcg" as floorManager
+import "../Grid/TrackerPoolManager.fcg" as trackerPool
+import "../Grid/GridManager.fcg" as gridManager
+
+static graph GameManager {
+    
+    _IsDebug bool = true
+
+    func IsDebug() bool { return _IsDebug }
+
+    event OnAwake() {
+        
+    }
+
+    event OnPlayerJoin(player entity<Player>) {
+        AddComponent(player, typeof(gen.PlayerFarmingData), out var isSuccess)
+        if _IsDebug && isSuccess { LogInfo("[GameManager] Player joined.") }
+        if _IsDebug { LogInfo("[GameManager] === INIT WORLD START ===") }
+
+        // 1. Initialize the Object Pool for Grid Trackers
+        trackerPool.InitPool()
+
+        // 2. Plant the Magic Bean and its vine path
+        start beanManager.BuildMagicBean()
+        
+        // 3. Build the floors and get the list
+        var floors = floorManager.BuildFloors()
+
+        // 4. Initialize the grid for the floors
+        gridManager.InitGridsForFloors(floors)
+
+        if _IsDebug { LogInfo("[GameManager] === INIT WORLD DONE ===") }
+    }
+}

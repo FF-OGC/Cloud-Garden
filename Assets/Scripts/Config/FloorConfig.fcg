@@ -1,0 +1,30 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+
+static graph FloorConfig {
+    
+    _Heights List<float> = nil
+    _Offsets List<float> = nil
+    _Scale Vector3 = Vector3{18.0, 18.0, 18.0}
+
+    event OnAwake() {
+        // Cấu hình 5 Tầng
+        _Heights = list.New(0, 5)
+        list.Append(_Heights, 8.0)
+        list.Append(_Heights, 18.0)
+        list.Append(_Heights, 28.0)
+        list.Append(_Heights, 38.0) // Tầng 4
+        list.Append(_Heights, 48.0) // Tầng 5
+
+        _Offsets = list.New(0, 5)
+        list.Append(_Offsets, 2.0)
+        list.Append(_Offsets, 2.0)
+        list.Append(_Offsets, 2.0)
+        list.Append(_Offsets, 2.0)
+        list.Append(_Offsets, 2.0)
+    }
+
+    func GetHeights() List<float> { return _Heights }
+    func GetOffsets() List<float> { return _Offsets }
+    func GetScale() Vector3 { return _Scale }
+}

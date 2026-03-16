@@ -1,0 +1,70 @@
+{
+  "_entityName": "",
+  "_tag": {
+    "type": "Material"
+  },
+  "_entityId": "RhMwH31T",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "shader": {
+    "fileId": "s-b8f1e2c4-0d57-46da-87b5-6ab77e42a814",
+    "filePath": "lib://ffshaders/BRMobile/UGC/Tree",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "shader"
+  },
+  "paramValue": {
+    "_AlphaCutOff": 1,
+    "_LeafColor": {
+      "r": 47,
+      "g": 34,
+      "b": 23,
+      "a": 1
+    },
+    "_LeafBright": 1,
+    "_TrunkColor": {
+      "r": 47,
+      "g": 34,
+      "b": 23,
+      "a": 1
+    },
+    "_TrunkBright": 1,
+    "_MainTex": {
+      "Texture": null,
+      "Tiling": {
+        "x": 1,
+        "y": 1
+      },
+      "Offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "_RampColorTex": {
+      "Texture": null,
+      "Tiling": {
+        "x": 1,
+        "y": 1
+      },
+      "Offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "_AmbientIntensity": 0.16,
+    "_AOIntensity": 1,
+    "_Rim": 1,
+    "_RimColor": {
+      "r": 47,
+      "g": 34,
+      "b": 23,
+      "a": 1
+    }
+  }
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

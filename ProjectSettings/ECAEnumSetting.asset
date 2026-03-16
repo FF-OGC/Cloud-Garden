@@ -1,0 +1,47 @@
+{
+  "_tag": {
+    "type": "ECAEnumSetting"
+  },
+  "_entityId": "OumMNmpQ",
+  "enumCount": 0,
+  "enumDefines": {
+    "CustomEnum78582107": {
+      "label": "EFarmSlotState",
+      "key": "CustomEnum78582107",
+      "type": "Int",
+      "info": [
+        {
+          "label": "Grass",
+          "key": "E95213703",
+          "type": "Int",
+          "value": 0
+        },
+        {
+          "label": "Tilled",
+          "key": "E11837716",
+          "type": "Int",
+          "value": 1
+        },
+        {
+          "label": "Watered",
+          "key": "E84554472",
+          "type": "Int",
+          "value": 2
+        },
+        {
+          "label": "Planted",
+          "key": "E17579952",
+          "value": 3,
+          "type": "Int"
+        }
+      ],
+      "isCustom": true,
+      "isDirty": false
+    }
+  },
+  "enumNameMap": {
+    "EFarmSlotState": "CustomEnum78582107"
+  },
+  "children": []
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

@@ -1,0 +1,52 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+import "../Core/GameManager.fcg" as gameMgr
+import "./GridTileTracker.fcg" as gridTracker
+
+static graph TrackerPoolManager {
+    
+    _Pool List<entity<Entity>>
+
+    func InitPool() {
+        _Pool = list.New(0, 10)
+        for i = 0, 10, 1 {
+            CreateFromPrefab(out var trackerObj, gen.EResPrefab.grid_tracker)
+            if trackerObj != nil {
+                trackerObj<Transform>.Position = Vector3{0, -9999, 0}
+                list.Append(_Pool, trackerObj as entity<Entity>)    
+            }
+        }
+        if gameMgr.IsDebug() { LogInfo("[TrackerPool] Initialized 10 Trackers.") }
+    }
+
+    func GetTracker(player entity<Player>) entity<Entity> {
+        var count = list.Length(_Pool)
+        if count > 0 {
+            var tracker = _Pool[count - 1]
+            list.RemoveAt(_Pool, count - 1) 
+            
+            tracker<gridTracker>._Owner = player
+            tracker<Transform>.Position = player<Player>.Position
+            if gameMgr.IsDebug() { LogInfo("[TrackerPool] Get Tracker from pool. Tracker position: " + tracker<Transform>.Position.X + ", " + tracker<Transform>.Position.Z) }
+            return tracker
+        }
+        
+        CreateFromPrefab(out var newTracker, gen.EResPrefab.grid_tracker)
+        
+        if newTracker != nil {
+            newTracker<gridTracker>._Owner = player
+            newTracker<Transform>.Position = player<Transform>.Position
+            return newTracker
+        }
+        return nil
+    }
+
+    func ReturnTracker(tracker entity<Entity>) {
+        if tracker == nil { return }
+        
+        tracker<gridTracker>._Owner = nil
+        tracker<Transform>.Position = Vector3{0, -9999, 0}
+        list.Append(_Pool, tracker)
+    }
+}

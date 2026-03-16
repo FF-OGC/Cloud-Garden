@@ -1,0 +1,88 @@
+{
+  "_tag": {
+    "type": "ecaDesc",
+    "resourceId": ""
+  },
+  "_entityId": "8BFVTJE4",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "TypeDefines": {
+    "CustomComponent23083796": {
+      "label": "PlayerFarmingData",
+      "name": "CustomComponent23083796",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100023,
+      "PropDefines": [
+        {
+          "propID": 100024,
+          "name": "PROP_84958406",
+          "label": "CurrentFloor",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "type": "SceneEditEntity",
+            "disabled": true
+          }
+        },
+        {
+          "propID": 100025,
+          "name": "PROP_72225872",
+          "label": "CurrentGridPos",
+          "type": "Vector3",
+          "value": {
+            "type": "Vector3",
+            "value": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "min": -16777216,
+            "max": 16777216
+          }
+        },
+        {
+          "propID": 100028,
+          "name": "PROP_32891572",
+          "label": "ActiveTracker",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "type": "SceneEditEntity",
+            "disabled": true
+          }
+        }
+      ]
+    },
+    "Component": {
+      "label": "Component",
+      "name": "Component",
+      "bases": [],
+      "ecaScripts": [],
+      "typeID": 164,
+      "PropDefines": [],
+      "IsPartial": true
+    }
+  }
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

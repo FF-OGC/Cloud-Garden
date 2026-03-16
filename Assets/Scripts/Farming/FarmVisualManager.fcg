@@ -1,0 +1,50 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Core/GameManager.fcg" as gameMgr
+
+static graph FarmVisualManager {
+    
+    func GetVisualPrefab(state int, out var prefabId gen.EResPrefab) bool { 
+        if (state == gen.EFarmSlotState.Tilled) { 
+            prefabId = gen.EResPrefab.tilled_dirt
+            return true
+        }
+        return false
+    }
+
+    event gen.OnFarmCellStateChanged(floor entity<Entity>, gridPos Vector3, newState int) {
+        
+        var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
+
+        if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] Received visual update command | Key: " + key + " | New State: " + newState) }
+
+        // Clean up old visual if exists
+        if map.ContainKey(floor<floorData>.Visuals, key) {
+            var oldObj = floor<floorData>.Visuals[key] as entity
+            if oldObj != nil { Destroy(oldObj) }
+            map.Remove(floor<floorData>.Visuals, key)
+            if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] -> Removed old dirt visual.") }
+        }
+
+        if newState == gen.EFarmSlotState.Grass { return }
+
+        if(GetVisualPrefab(newState, out var prefabId)) {
+            CreateFromPrefab(out var visualObj, prefabId)
+            if visualObj != nil {
+                var floorPos = floor<Transform>.Position
+                visualObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y, floorPos.Z + gridPos.Z}
+                
+                floor<floorData>.Visuals[key] = visualObj
+                if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] => DRAW COMPLETE! Spawned dirt at Pos X: " + visualObj<Transform>.Position.X + " | Z: " + visualObj<Transform>.Position.Z) }
+            } else {
+                LogError("[FarmVisualManager] CRITICAL ERROR: Spawn failed! Check if gen.EResPrefab.tilled_dirt exists in Resources.")
+            }
+        } else {
+            if(gameMgr.IsDebug()) { LogError("[FarmVisualManager] ERROR: Prefab not found for State: " + newState) }
+        }
+    }
+}

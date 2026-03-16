@@ -1,0 +1,11 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+
+graph FloorGridData {
+    CellStates Map<string, int> 
+    Visuals Map<string, entity<Entity>>    
+    event OnAwake() {
+        CellStates = map.New()
+        Visuals = map.New()
+    }
+}

@@ -1,0 +1,58 @@
+import "StdLibrary.fcc" as std
+import "Math.fcc" as math
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "../Core/GameManager.fcg" as gameMgr
+import "../Config/MagicBeanConfig.fcg" as beanCfg
+
+static graph MagicBeanManager {
+    
+    async func BuildMagicBean() {
+        if gameMgr.IsDebug() { LogInfo("[MagicBeanManager] Planting Old Magic Bean...") }
+        var startPos = Vector3{0, 0, 0}
+        
+        var radius = beanCfg.GetRadius()
+        var hPerLoop = beanCfg.GetHeightPerLoop()
+        var stepsPerLoop = beanCfg.GetStepsPerLoop()
+        var totalLoops = beanCfg.GetTotalLoops()
+        var beanScale = beanCfg.GetBeanScaleMult()
+        var pathScale = beanCfg.GetPathScale()
+        var pitchAngle = beanCfg.GetPathPitchAngle()
+        
+        var totalSteps = stepsPerLoop * totalLoops
+        var angleStep = 360.0 / convert.IntToFloat(stepsPerLoop)
+        var heightStep = hPerLoop / convert.IntToFloat(stepsPerLoop)
+        var totalHeight = hPerLoop * convert.IntToFloat(totalLoops)
+
+        // 1. GENERATE MAIN STALK
+        CreateFromPrefab(out var mainStalk, gen.EResPrefab.bean)
+        if mainStalk != nil {
+            mainStalk<Transform>.Position = Vector3{startPos.X, startPos.Y + (totalHeight / 2.0), startPos.Z}
+            mainStalk<Transform>.Scale = Vector3{radius * beanScale, totalHeight, radius * beanScale}
+        }
+
+        // 2. GENERATE VINE PATH
+        for i = 0, totalSteps + 1, 1 {
+            var currentAngle = convert.IntToFloat(i) * angleStep
+            var currentY = startPos.Y + (convert.IntToFloat(i) * heightStep)
+
+            var xOffset = math.Cos(currentAngle) * radius
+            var zOffset = math.Sin(currentAngle) * radius
+
+            var pathPos = Vector3{startPos.X + xOffset, currentY, startPos.Z + zOffset}
+
+            CreateFromPrefab(out var pathPiece, gen.EResPrefab.bean_path)
+            if pathPiece != nil {
+                pathPiece<Transform>.Position = pathPos
+                pathPiece<Transform>.Scale = pathScale
+                
+             
+                pathPiece<Transform>.Rotation = Vector3{pitchAngle, -(currentAngle + 90.0), 0.0}
+            }
+
+            if (i % beanCfg.GetDelayFrames() == 0) {
+                WaitForNextFrame()
+            }
+        }
+    }
+}

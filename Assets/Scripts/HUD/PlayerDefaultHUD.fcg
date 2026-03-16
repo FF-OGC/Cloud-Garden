@@ -1,0 +1,56 @@
+import "StdLibrary.fcc" as StdLib
+import "EditorGenLib.fcc" as EditorLib
+import "Player.fcc" as Player
+import "Hud.fcc" as Hud 
+graph PlayerDefaultHUD {
+    
+    event OnAwake() {
+        TurnOffDefaultPlayerHUD();
+        ShowFarmingUI();
+    }
+
+    func TurnOffDefaultPlayerHUD() {
+        // Turn off all HUD Default UI, Just remain Joystick and Jump
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Sprint, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Attack, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.KillingTips, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.WeaponSlot, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.MiniMap, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Bag, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.MedicalProps, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Crouch, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Prone, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.TeammatesInfo, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.AttackGrenade, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.DefenceGrenade, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Emote, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.QuickChat, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Pickups, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.QuickChatShow, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.HP, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.EP, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Armor, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Reload, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.SweapWeaponQuick, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Speaker, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.MicroPhone, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Mark, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Signal, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.ActiveSkill, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Crosshairs, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.PassiveSkill, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.FPPInspectionHUD, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.RequestHelp, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.HelpUpOthers, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.Attack2HUD, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.CombineWeaponHUD, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.SwimmingSurfHUD, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.ActionHud, CommonUISwitchValue.Close);
+        SetDefaultUIStatus(thisEntity<Player>, PlayerUISwitchType.TakePhotoHud, CommonUISwitchValue.Close);
+    }
+
+    func ShowFarmingUI() {
+        Hud.CreateCustomUI(out var farmingUI, thisEntity<Player>, EResUI.hoe_btn);    
+    }
+
+}

@@ -1,0 +1,9 @@
+import "StdLibrary.fcc" as std
+
+static graph FarmGridConfig {
+    
+    _TileSize float = 1.0 
+
+    // --- GETTER ---
+    func GetTileSize() float { return _TileSize }
+}

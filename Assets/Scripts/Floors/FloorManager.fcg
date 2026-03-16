@@ -1,0 +1,63 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Math.fcc" as math
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameMgr
+import "../Config/FloorConfig.fcg" as floorCfg
+import "../Config/MagicBeanConfig.fcg" as beanCfg
+
+static graph FloorManager {
+    
+    func BuildFloors() List<entity<Entity>> {
+        var generatedFloors = list.New(0, 5) as List<entity<Entity>>    
+        
+        var heights = floorCfg.GetHeights()
+        var offsets = floorCfg.GetOffsets()
+        var floorScale = floorCfg.GetScale()
+        
+        if heights != nil && offsets != nil { 
+            var startPos = Vector3{0, 0, 0}
+            var floorCount = list.Length(heights)
+
+            // Lấy thông số từ Bean Config để tính góc xoắn cho Map
+            var hPerLoop = beanCfg.GetHeightPerLoop()
+            var radius = beanCfg.GetRadius()
+            var pathScaleX = beanCfg.GetPathScale().X
+            var totalHeight = hPerLoop * convert.IntToFloat(beanCfg.GetTotalLoops())
+
+            for i = 0, floorCount, 1 {
+                var floorY = heights[i]
+                var customOffset = offsets[i]
+
+                if (floorY <= totalHeight) {
+                    var loopRatio = floorY / hPerLoop
+                    var floorAngle = loopRatio * 360.0
+                    
+                    // DYNAMIC CALCULATION
+                    var dynamicSafeDistance = (pathScaleX / 2.0) + (floorScale.X / 2.0)
+                    var actualRadius = radius + dynamicSafeDistance + customOffset
+                    
+                    var fX = math.Cos(floorAngle) * actualRadius
+                    var fZ = math.Sin(floorAngle) * actualRadius
+
+                    CreateFromPrefab(out var floorObj, gen.EResPrefab.floor)
+                    if floorObj != nil {
+                        floorObj<Transform>.Position = Vector3{startPos.X + fX, startPos.Y + floorY, startPos.Z + fZ}
+                        floorObj<Transform>.Scale = floorScale
+                        
+                        // FIXED: Ép Vector3 sang Quaternion
+                        var rotationVector = Vector3{0.0, -(floorAngle + 90.0), 0.0}
+                        floorObj<Transform>.Rotation = rotationVector
+                        
+                        list.Append(generatedFloors, floorObj as entity<Entity>)
+                    }
+                }
+            }
+        }
+        
+        if gameMgr.IsDebug() { LogInfo("[FloorManager] Built floors using dynamic positions.") }
+        return generatedFloors
+    }
+}

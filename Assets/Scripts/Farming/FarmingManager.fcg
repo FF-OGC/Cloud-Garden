@@ -1,0 +1,58 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "Math.fcc" as math
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Core/GameManager.fcg" as gameMgr
+
+static graph FarmingManager {
+    
+    // Listens to the local UI event dispatched from the player's HUD
+    event gen.OnPlayerHoeAction(player entity<Entity>) {
+        if player == nil { return }
+
+        if player<gen.PlayerFarmingData>.CurrentFloor == nil {
+            if(gameMgr.IsDebug()) { LogError("[FarmingManager] ERROR: Player is not on any floor (CurrentFloor = nil).") }
+            return
+        }
+
+        if player<gen.PlayerFarmingData>.CurrentGridPos == Vector3{0, 0, 0} {
+            if(gameMgr.IsDebug()) { LogWarning("[FarmingManager] WARNING: GridPos is 0,0,0. Might not be initialized yet.") }   
+        }
+
+        var gridPos = player<gen.PlayerFarmingData>.CurrentGridPos
+        // FIXED KEY GENERATION: Match exactly with GridManager (removed math.Floor)
+        var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
+        
+        var floorObj = player<gen.PlayerFarmingData>.CurrentFloor as entity<Entity>
+        var cellStates = floorObj<floorData>.CellStates
+        
+        if (gameMgr.IsDebug()) { 
+            LogInfo("========================================")
+            LogInfo("[FarmingManager] Start hoeing action!")
+            LogInfo("[FarmingManager] Looking for Key: [" + key + "] on floor: " + floorObj<Entity>.Name)
+        }
+
+        if map.ContainKey(cellStates, key) {
+            var currentState = cellStates[key] as int
+            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Key found! Current cell state: " + currentState + " (Grass is: " + gen.EFarmSlotState.Grass + ")") }
+            
+            if currentState == gen.EFarmSlotState.Grass {
+                // Change State
+                cellStates[key] = gen.EFarmSlotState.Tilled
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Successfully changed state to Tilled (" + gen.EFarmSlotState.Tilled + ")") }
+                
+                // Call Visual Manager
+                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
+                if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] -> Dispatched Event to FarmVisualManager!") }
+            } else {
+                if(gameMgr.IsDebug()) { LogWarning("[FarmingManager] LOGIC ERROR: This cell is not Grass, cannot hoe! Current state: " + currentState) }
+            }
+        } else {
+            if(gameMgr.IsDebug()) { LogError("[FarmingManager] CRITICAL ERROR: Key [" + key + "] not found in this floor's grid memory!") }     
+        }
+        if (gameMgr.IsDebug()) { LogInfo("========================================") }
+    }
+}

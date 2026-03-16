@@ -1,0 +1,12 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as Hud
+
+
+graph BtnFarmAction {
+    
+    event OnTapped(player entity<Player>) {
+        // Broadcast user input event to the logic controllers
+        DispatchEvent(gen.OnPlayerHoeAction, globalEntity, List<object>{player as entity<Entity>})
+    }
+}
