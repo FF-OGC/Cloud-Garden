@@ -7,15 +7,24 @@ import "../Magic Bean/MagicBeanManager.fcg" as beanManager
 import "../Floors/FloorManager.fcg" as floorManager
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Grid/GridManager.fcg" as gridManager
-
+import "../Farming/CropGrowthManager.fcg" as cropManager
 static graph GameManager {
     
     _IsDebug bool = true
-
+    _GameTime float = 0.0
     func IsDebug() bool { return _IsDebug }
-
+    func GetGameTime() float { return _GameTime }
     event OnAwake() {
-        
+        _GameTime = 0.0
+        start StartGlobalClock()
+    }
+    
+    // Background loop: Adds 1.0 to GameTime every 1 real-world second
+    async func StartGlobalClock() {
+        while true {
+            WaitForMillisecond(1000) // 1 second
+            _GameTime = _GameTime + 1.0
+        }
     }
 
     event OnPlayerJoin(player entity<Player>) {
@@ -34,7 +43,7 @@ static graph GameManager {
 
         // 4. Initialize the grid for the floors
         gridManager.InitGridsForFloors(floors)
-
+        start cropManager.StartBackgroundTick(floors)
         if _IsDebug { LogInfo("[GameManager] === INIT WORLD DONE ===") }
     }
 }

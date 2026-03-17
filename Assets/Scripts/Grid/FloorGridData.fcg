@@ -2,17 +2,27 @@ import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 
 graph FloorGridData {
-    CellStates Map<string, int> 
-    PotTiers Map<string, int>   
+    // --- OWNERSHIP DATA ---
+    Owner entity<Entity> // Store the player entity who owns this floor
     
-    // SEPARATED VISUAL STORAGE
-    PotVisuals Map<string, entity<Entity>>    // Stores the Pot entities
-    PlantVisuals Map<string, entity<Entity>>  // Stores the Plant/Seed entities
+    CellStates Map<string, int> 
+    SoilTiers Map<string, int>   
+    
+    HarvestTimes Map<string, float>   
+    CropPositions Map<string, Vector3> 
+
+    SoilVisuals Map<string, entity<Entity>>  
+    PlantVisuals Map<string, entity<Entity>>  
 
     event OnAwake() {
+        Owner = nil // Default: No owner
+        
         CellStates = map.New()
-        PotTiers = map.New()
-        PotVisuals = map.New()
+        SoilTiers = map.New()
+        HarvestTimes = map.New()
+        CropPositions = map.New()
+        
+        SoilVisuals = map.New()
         PlantVisuals = map.New()
     }
 }

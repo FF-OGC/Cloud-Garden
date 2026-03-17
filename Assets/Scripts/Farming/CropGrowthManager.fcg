@@ -1,0 +1,64 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameMgr
+import "../Grid/FloorGridData.fcg" as floorData
+
+static graph CropGrowthManager {
+    
+    // Background async loop to check harvest timestamps
+    async func StartBackgroundTick(floors List<entity<Entity>>) {
+        if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Background Tick Started...") }
+        
+        while true {
+            WaitForMillisecond(3000) // Tick rate: 3 seconds to optimize performance
+            var currentTime = gameMgr.GetGameTime()
+
+            var floorCount = list.Length(floors)
+            for i = 0, floorCount, 1 {
+                var floor = floors[i]
+                if floor == nil || floor<floorData> == nil { continue }
+                
+                var cellStates = floor<floorData>.CellStates
+                var harvestTimes = floor<floorData>.HarvestTimes
+                var cropPositions = floor<floorData>.CropPositions
+                
+                var keys = map.GetAllKeys(harvestTimes)
+                var keyCount = list.Length(keys)
+                
+                for k = 0, keyCount, 1 {
+                    var key = keys[k] as string
+                    
+                    if map.ContainKey(cellStates, key) {
+                        var state = cellStates[key] as int
+                        
+                        if state == gen.EFarmSlotState.NeedWatering || state == gen.EFarmSlotState.Growing {
+                            var targetTime = harvestTimes[key] as float
+                            
+                            // TIMESTAMP CHECK
+                            if currentTime >= targetTime {
+                                cellStates[key] = gen.EFarmSlotState.ReadyToHarvest
+                                
+                                // Retrieve GridPos safely from Data layer (CropPositions)
+                                if map.ContainKey(cropPositions, key) {
+                                    var gridPos = cropPositions[key] as Vector3
+                                    
+                                    // Broadcast visual update
+                                    DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
+                                }
+                                
+                                // Clear data to skip checking in future ticks
+                                map.Remove(harvestTimes, key)
+                                map.Remove(cropPositions, key)
+                                
+                                if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at grid key: " + key) }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

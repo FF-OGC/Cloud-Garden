@@ -8,10 +8,10 @@ import "../Core/GameManager.fcg" as gameMgr
 
 static graph FarmVisualManager {
     
-    // 1. Prefab IDs for Plants
+    // Determine the correct prefab ID based on plant state
     func GetPlantPrefab(state int, out var prefabId gen.EResPrefab) bool { 
         if (state == gen.EFarmSlotState.NeedWatering) {
-            prefabId = gen.EResPrefab.seed_needwatering
+            prefabId = gen.EResPrefab.seed_needwatering 
             return true
         } else if (state == gen.EFarmSlotState.Growing) {
             prefabId = gen.EResPrefab.seed_model
@@ -27,47 +27,43 @@ static graph FarmVisualManager {
         var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
         var floorPos = floor<Transform>.Position
         
-        // --- CASE 1: PLACING AN EMPTY POT ---
-        if (newState == gen.EFarmSlotState.EmptyPot) {
-            // Destroy existing plant if harvesting
+        // --- CASE 1: TILLED DIRT (Grass -> Tilled OR Harvest -> Tilled) ---
+        if (newState == gen.EFarmSlotState.Tilled) {
+            // Destroy existing plant visual if we are harvesting
             if map.ContainKey(floor<floorData>.PlantVisuals, key) {
                 var oldPlant = floor<floorData>.PlantVisuals[key] as entity
                 if oldPlant != nil { Destroy(oldPlant) }
                 map.Remove(floor<floorData>.PlantVisuals, key)
-                if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] Harvested! Plant removed.") }
             }
 
-            // Spawn Pot ONLY if it doesn't exist yet
-            if !map.ContainKey(floor<floorData>.PotVisuals, key) {
-                CreateFromPrefab(out var potObj, gen.EResPrefab.empty_pot)
-                if potObj != nil {
-                    potObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y, floorPos.Z + gridPos.Z}
-                    floor<floorData>.PotVisuals[key] = potObj
-                    if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] Spawned an Empty Pot.") }
+            // Spawn Tilled Soil Visual ONLY if it doesn't exist yet
+            if !map.ContainKey(floor<floorData>.SoilVisuals, key) {
+                CreateFromPrefab(out var soilObj, gen.EResPrefab.dirt_tilled)
+                if soilObj != nil {
+                    soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y, floorPos.Z + gridPos.Z}
+                    floor<floorData>.SoilVisuals[key] = soilObj
                 }
             }
             return
         }
 
-        // --- CASE 2: PLANTING, WATERING, GROWING (Handling the Plant) ---
+        // --- CASE 2: PLANTING, WATERING, GROWING ---
         
-        // Remove old plant state (e.g., remove seed to spawn watered seed)
+        // Remove old plant state visual
         if map.ContainKey(floor<floorData>.PlantVisuals, key) {
             var oldPlant = floor<floorData>.PlantVisuals[key] as entity
             if oldPlant != nil { Destroy(oldPlant) }
             map.Remove(floor<floorData>.PlantVisuals, key)
         }
 
-        // Spawn new plant state
+        // Spawn new plant state visual
         if(GetPlantPrefab(newState, out var prefabId)) {
             CreateFromPrefab(out var plantObj, prefabId)
             if plantObj != nil {
-                // OFFSET Y: Elevate the plant so it sits INSIDE the pot's dirt
-                var potHeightOffset = 0.5 
-                plantObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y + potHeightOffset, floorPos.Z + gridPos.Z}
+                var soilHeightOffset = 0.1 // Adjust if your dirt model has thickness
+                plantObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y + soilHeightOffset, floorPos.Z + gridPos.Z}
                 
                 floor<floorData>.PlantVisuals[key] = plantObj
-                if(gameMgr.IsDebug()) { LogInfo("[FarmVisualManager] Updated Plant Visual for state: " + newState) }
             }
         }
     }

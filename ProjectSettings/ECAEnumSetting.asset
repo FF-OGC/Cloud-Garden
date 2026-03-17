@@ -13,11 +13,11 @@
         {
           "label": "Grass",
           "key": "E95213703",
-          "value": 0,
-          "type": "Int"
+          "type": "Int",
+          "value": 0
         },
         {
-          "label": "EmptyPot",
+          "label": "Tilled",
           "key": "E11837716",
           "value": 1,
           "type": "Int"
@@ -25,26 +25,26 @@
         {
           "label": "Planted",
           "key": "E17579952",
-          "value": 2,
-          "type": "Int"
+          "type": "Int",
+          "value": 2
         },
         {
           "label": "NeedWatering",
           "key": "E84554472",
-          "value": 3,
-          "type": "Int"
+          "type": "Int",
+          "value": 3
         },
         {
           "label": "Growing",
           "key": "E88344843",
-          "value": 5,
-          "type": "Int"
+          "type": "Int",
+          "value": 5
         },
         {
           "label": "ReadyToHarvest",
           "key": "E62037973",
-          "value": 6,
-          "type": "Int"
+          "type": "Int",
+          "value": 6
         }
       ],
       "isCustom": true,
