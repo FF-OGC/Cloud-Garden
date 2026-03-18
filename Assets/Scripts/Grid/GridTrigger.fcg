@@ -1,8 +1,12 @@
 import "StdLibrary.fcc" as std
 import "Physics.fcc" as physics
 import "EditorGenLib.fcc" as gen
+
+
 import "../Core/GameManager.fcg" as gameMgr
 import "./TrackerPoolManager.fcg" as poolManager
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
+
 
 graph GridTrigger {
     _Floor entity<Entity> = nil
@@ -17,13 +21,13 @@ graph GridTrigger {
         
         if player == nil || _Floor == nil { return }
         
-        if  player<gen.PlayerFarmingData> == nil { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData."); return }
+        if  player<playerFarmingData> == nil { LogInfo("[GridTrigger] Player  is not have component PlayerFarmingData."); return }
 
-        player<gen.PlayerFarmingData>.CurrentFloor = _Floor
+        player<playerFarmingData>.CurrentFloor = _Floor
         if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
 
-        if player<gen.PlayerFarmingData>.ActiveTracker == nil {
-            player<gen.PlayerFarmingData>.ActiveTracker = poolManager.GetTracker(player)
+        if player<playerFarmingData>.ActiveTracker == nil {
+            player<playerFarmingData>.ActiveTracker = poolManager.GetTracker(player)
             if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker assigned from pool.") }
         }
     }
@@ -32,14 +36,14 @@ graph GridTrigger {
         var player = target as entity<Player>
         if player == nil || _Floor == nil { return }
         
-        if player<gen.PlayerFarmingData>.CurrentFloor != _Floor { return }
+        if player<playerFarmingData>.CurrentFloor != _Floor { return }
 
-        if player<gen.PlayerFarmingData>.ActiveTracker != nil {
-            poolManager.ReturnTracker(player<gen.PlayerFarmingData>.ActiveTracker)
-            player<gen.PlayerFarmingData>.ActiveTracker = nil
+        if player<playerFarmingData>.ActiveTracker != nil {
+            poolManager.ReturnTracker(player<playerFarmingData>.ActiveTracker)
+            player<playerFarmingData>.ActiveTracker = nil
             if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker returned to pool.") }
         }
-        player<gen.PlayerFarmingData>.CurrentFloor = nil
+        player<playerFarmingData>.CurrentFloor = nil
         if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player left floor: " + _Floor<Entity>.Name) }
     }
 }

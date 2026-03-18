@@ -1,49 +1,112 @@
 import "StdLibrary.fcc" as std
-import "EditorGenLib.fcc" as gen
 import "Player.fcc" as Player
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
 
-
-import "../Magic Bean/MagicBeanManager.fcg" as beanManager
-import "../Floors/FloorManager.fcg" as floorManager
+import "../Farming/FarmZoneManager.fcg" as zoneManager
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
-import "../Grid/GridManager.fcg" as gridManager
 import "../Farming/CropGrowthManager.fcg" as cropManager
+
 static graph GameManager {
     
     _IsDebug bool = true
     _GameTime float = 0.0
+    _IsTickStarted bool = false
+    
+    // Dynamically populated at runtime by FarmZoneRegister. No Editor setup needed!
+    _FarmZones List<entity<Entity>> = nil
+    _AllFloorsInWorld List<entity<Entity>> = nil
+
     func IsDebug() bool { return _IsDebug }
     func GetGameTime() float { return _GameTime }
+
     event OnAwake() {
         _GameTime = 0.0
+        
+        // Initialize empty lists to receive data dynamically
+        _FarmZones = list.New(0, 10) as List<entity<Entity>>
+        _AllFloorsInWorld = list.New(0, 10) as List<entity<Entity>>
+        
+        trackerPool.InitPool()
         start StartGlobalClock()
     }
     
-    // Background loop: Adds 1.0 to GameTime every 1 real-world second
     async func StartGlobalClock() {
         while true {
-            WaitForMillisecond(1000) // 1 second
+            WaitForMillisecond(1000) 
             _GameTime = _GameTime + 1.0
         }
     }
 
-    event OnPlayerJoin(player entity<Player>) {
-        AddComponent(player, typeof(gen.PlayerFarmingData), out var isSuccess)
-        if _IsDebug && isSuccess { LogInfo("[GameManager] Player joined.") }
-        if _IsDebug { LogInfo("[GameManager] === INIT WORLD START ===") }
-
-        // 1. Initialize the Object Pool for Grid Trackers
-        trackerPool.InitPool()
-
-        // 2. Plant the Magic Bean and its vine path
-        start beanManager.BuildMagicBean()
+    func RegisterZone(zoneObj entity<Entity>) {
         
-        // 3. Build the floors and get the list
-        var floors = floorManager.BuildFloors()
+        if zoneObj == nil { return }
+        
+        list.Append(_FarmZones, zoneObj)
+        zoneManager.InitializeZone(zoneObj)
+        
+        // Collect floors
+        if zoneObj<FarmZoneData> != nil {
+            if zoneObj<FarmZoneData>.Floors != nil {
+                var fCount = list.Length(zoneObj<FarmZoneData>.Floors)
+                for j = 0, fCount, 1 { list.Append(_AllFloorsInWorld, zoneObj<FarmZoneData>.Floors[j]) }
+            }
+        }
+        
+        // Start the background growth tick only once when the first zone registers
+        if !_IsTickStarted {
+            start cropManager.StartBackgroundTick(_AllFloorsInWorld)
+            _IsTickStarted = true
+        }
+        
+        if _IsDebug { LogInfo("[GameManager] Successfully registered new Farm Zone dynamically.") }
+    }
 
-        // 4. Initialize the grid for the floors
-        gridManager.InitGridsForFloors(floors)
-        start cropManager.StartBackgroundTick(floors)
-        if _IsDebug { LogInfo("[GameManager] === INIT WORLD DONE ===") }
+    event OnPlayerJoin(player entity<Player>) {
+        LogInfo("[Game Manager] FarmZones: " + list.Length(_FarmZones) + " AllFloorsInWorld: " + list.Length(_AllFloorsInWorld))
+        AddScript(player, playerFarmingData)
+        
+        var zCount = list.Length(_FarmZones)
+        var assignedZone entity<Entity> = nil
+        
+        // 1. Check session ownership
+        for i = 0, zCount, 1 {
+            var zone = _FarmZones[i]
+            if zone != nil && zone<gen.FarmZoneData> != nil && zone<gen.FarmZoneData>.Owner == player {
+                assignedZone = zone
+                break
+            }
+        }
+        
+        // 2. Assign unclaimed land
+        if assignedZone == nil {
+            for i = 0, zCount, 1 {
+                var zone = _FarmZones[i]
+                if zone != nil && zone<gen.FarmZoneData> != nil && zone<gen.FarmZoneData>.Owner == nil {
+                    
+                    zone<gen.FarmZoneData>.Owner = player
+                    var floors = zone<FarmZoneData>.Floors
+                    
+                    if floors != nil {
+                        var fCount = list.Length(floors)
+                        for j = 0, fCount, 1 { 
+                            if floors[j]<floorData> != nil { floors[j]<floorData>.Owner = player }
+                        }
+                    }
+                    assignedZone = zone
+                    if _IsDebug { LogInfo("[GameManager] Assigned new Farm Zone to player.") }
+                    break
+                }
+            }
+        }
+        
+        // 3. Teleport
+        if assignedZone != nil {
+            var spawnPos = assignedZone<Transform>.Position
+            Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
+            if _IsDebug { LogInfo("[GameManager] Teleported player to new Farm Zone.") }
+        }
     }
 }

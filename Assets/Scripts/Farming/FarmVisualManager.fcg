@@ -40,7 +40,7 @@ static graph FarmVisualManager {
             if !map.ContainKey(floor<floorData>.SoilVisuals, key) {
                 CreateFromPrefab(out var soilObj, gen.EResPrefab.dirt_tilled)
                 if soilObj != nil {
-                    soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y, floorPos.Z + gridPos.Z}
+                    soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y + 0.01, floorPos.Z + gridPos.Z}
                     floor<floorData>.SoilVisuals[key] = soilObj
                 }
             }

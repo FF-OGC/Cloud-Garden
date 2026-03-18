@@ -5,27 +5,42 @@ import "EditorGenLib.fcc" as gen
 
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 
 static graph FarmingManager {
     
-    event gen.OnPlayerHoeAction(player entity<Entity>) {
-        if player == nil || player<gen.PlayerFarmingData>.CurrentFloor == nil { return }
+    event OnPlayerHoeAction(player entity<Entity>) {
+        LogInfo("[FarmingManager] Player is in a farm zone.")
 
-        var gridPos = player<gen.PlayerFarmingData>.CurrentGridPos
+        if player == nil || player<playerFarmingData>.CurrentFloor == nil { 
+            
+            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Player is not in a farm zone.") }
+            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Current floor: ") }
+            return 
+        }
+
+        var gridPos = player<playerFarmingData>.CurrentGridPos
         var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
-        var floorObj = player<gen.PlayerFarmingData>.CurrentFloor as entity<Entity>
+        var floorObj = player<playerFarmingData>.CurrentFloor
+        LogInfo("[FarmingManager] Current floor: " + floorObj)
         var cellStates = floorObj<floorData>.CellStates
-        
+        LogInfo("[FarmingManager] Cell states: " + cellStates)
+        LogInfo("[FarmingManager] Key: " + key)
+
         var baseGrowthTime = 60.0 // Base time: 60 seconds
         
+        if(floorObj<floorData>.Owner != nil && floorObj<floorData>.Owner != player) {
+            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Player is not the owner of the floor." + player<Player>.NickName) }
+            return
+        }
+
         if map.ContainKey(cellStates, key) {
             var currentState = cellStates[key] as int
-            
             // STEP 1: GRASS -> TILLED DIRT
             if currentState == gen.EFarmSlotState.Grass {
                 cellStates[key] = gen.EFarmSlotState.Tilled 
                 floorObj<floorData>.SoilTiers[key] = 1 
-                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
+                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
                 if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Tilled the dirt.") }
             // STEP 2: TILLED DIRT -> NEED WATERING (Dry Seed)
             } else if currentState == gen.EFarmSlotState.Tilled {
@@ -35,7 +50,7 @@ static graph FarmingManager {
                 floorObj<floorData>.HarvestTimes[key] = gameMgr.GetGameTime() + baseGrowthTime
                 floorObj<floorData>.CropPositions[key] = gridPos 
                 
-                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.NeedWatering})
+                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floorObj, gridPos, gen.EFarmSlotState.NeedWatering})
                 if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Planted Seed. Target time: " + floorObj<floorData>.HarvestTimes[key]) }
             // STEP 3: NEED WATERING -> GROWING (Wet Seed)
             } else if currentState == gen.EFarmSlotState.NeedWatering {
@@ -54,14 +69,14 @@ static graph FarmingManager {
                     }
                 }
                 
-                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Growing})
+                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floorObj, gridPos, gen.EFarmSlotState.Growing})
             // STEP 4: GROWING -> IDLE
             } else if currentState == gen.EFarmSlotState.Growing {
                 if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Action Denied. Plant is still growing.") }
             // STEP 4: GROWING -> IDLE
             } else if currentState == gen.EFarmSlotState.ReadyToHarvest { 
                 cellStates[key] = gen.EFarmSlotState.Tilled
-                DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
+                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floorObj, gridPos, gen.EFarmSlotState.Tilled})
                 
                 // Clear memory
                 if map.ContainKey(floorObj<floorData>.HarvestTimes, key) { map.Remove(floorObj<floorData>.HarvestTimes, key) }
@@ -69,6 +84,8 @@ static graph FarmingManager {
                 
                 if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Harvested! Dirt is ready for next seed.") }
             }
+        } else {
+            if (gameMgr.IsDebug()) { LogInfo("[FarmingManager] Cell state not found.") }
         }
     }
 }

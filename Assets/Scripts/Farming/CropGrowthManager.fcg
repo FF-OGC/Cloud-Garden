@@ -46,7 +46,7 @@ static graph CropGrowthManager {
                                     var gridPos = cropPositions[key] as Vector3
                                     
                                     // Broadcast visual update
-                                    DispatchEvent(gen.OnFarmCellStateChanged, globalEntity, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
+                                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
                                 }
                                 
                                 // Clear data to skip checking in future ticks

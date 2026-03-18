@@ -2,11 +2,12 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as Hud
 
-
+[platform_client]
 graph BtnFarmAction {
     
     event OnTapped(player entity<Player>) {
         // Broadcast user input event to the logic controllers
-        DispatchEvent(gen.OnPlayerHoeAction, globalEntity, List<object>{player as entity<Entity>})
+        DispatchEventToEntity(OnPlayerHoeAction, globalEntity, PlatformType.Server,List<object>{player as entity<Entity>})
+        LogInfo("[BtnFarmAction] Player hoe action.")
     }
 }

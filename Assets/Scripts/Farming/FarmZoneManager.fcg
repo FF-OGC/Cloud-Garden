@@ -1,0 +1,35 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameMgr
+import "../Floors/FloorManager.fcg" as floorManager
+import "../Magic Bean/MagicBeanManager.fcg" as beanManager
+import "../Grid/GridManager.fcg" as gridManager
+
+static graph FarmZoneManager {
+    
+    func InitializeZone(zoneObj entity<Entity>) {
+        // Fetch from the Custom Component created in Editor
+        if zoneObj == nil || zoneObj<FarmZoneData> == nil { return }
+
+        var beanstalk = zoneObj<FarmZoneData>.Beanstalk
+        var floors = zoneObj<FarmZoneData>.Floors
+
+        // 1. MAGIC BEAN (Snap & Build Path)
+        if beanstalk != nil { beanManager.SnapBeanstalkToConfig(beanstalk) }
+        start beanManager.BuildVinePath(zoneObj)
+
+        // 2. FLOORS (Snap to positions)
+        if floors != nil && list.Length(floors) > 0 {
+            floorManager.SnapFloorsToConfig(zoneObj, floors)
+        }
+
+        // 3. GRIDS (Initialize logical cells)
+        if floors != nil && list.Length(floors) > 0 {
+            gridManager.InitGridsForFloors(floors)
+        }
+
+        if gameMgr.IsDebug() { LogInfo("[FarmZoneManager] Zone initialized using Visual Custom Component.") }
+    }
+}

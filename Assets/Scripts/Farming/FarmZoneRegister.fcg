@@ -1,0 +1,10 @@
+import "StdLibrary.fcc" as std
+import "../Core/GameManager.fcg" as gameMgr
+
+graph FarmZoneRegister {
+    
+    event OnAwake() {
+        // Automatically report to the GameManager that this zone exists in the world
+        gameMgr.RegisterZone(thisEntity as entity<Entity>)
+    }
+}

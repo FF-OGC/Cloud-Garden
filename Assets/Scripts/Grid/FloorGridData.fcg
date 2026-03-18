@@ -14,7 +14,7 @@ graph FloorGridData {
     SoilVisuals Map<string, entity<Entity>>  
     PlantVisuals Map<string, entity<Entity>>  
 
-    event OnAwake() {
+    func InitMaps() {
         Owner = nil // Default: No owner
         
         CellStates = map.New()

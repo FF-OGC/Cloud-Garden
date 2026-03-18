@@ -5,6 +5,7 @@ import "EditorGenLib.fcc" as gen
 
 import "../Config/FarmGridConfig.fcg" as gridCfg
 import "../Core/GameManager.fcg" as gameMgr
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 
 graph GridTileTracker {
     _Owner entity<Player> = nil
@@ -13,9 +14,9 @@ graph GridTileTracker {
         var player = target as entity<Player>
         if player == nil || player != _Owner { return }
 
-        if player<gen.PlayerFarmingData> == nil || player<gen.PlayerFarmingData>.CurrentFloor == nil { return }
+        if player<playerFarmingData> == nil || player<playerFarmingData>.CurrentFloor == nil { return }
 
-        var floor = player<gen.PlayerFarmingData>.CurrentFloor as entity
+        var floor = player<playerFarmingData>.CurrentFloor as entity
         var tileSize = gridCfg.GetTileSize() 
 
         var floorPos = floor<Transform>.Position
@@ -28,7 +29,7 @@ graph GridTileTracker {
         var gridZ = math.Round(localZ / tileSize) * tileSize
         var newGridPos = Vector3{gridX, 0, gridZ}
 
-        player<gen.PlayerFarmingData>.CurrentGridPos = newGridPos
+        player<playerFarmingData>.CurrentGridPos = newGridPos
         thisEntity<Transform>.Position = Vector3{floorPos.X + gridX, playerPos.Y, floorPos.Z + gridZ}
         if(gameMgr.IsDebug()) { LogInfo("[GridTileTracker] Player left grid tile. New grid position: " + newGridPos.X + ", " + newGridPos.Z) }
     }

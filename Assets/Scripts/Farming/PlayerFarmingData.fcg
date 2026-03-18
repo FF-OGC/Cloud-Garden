@@ -1,0 +1,14 @@
+import "StdLibrary.fcc" as std
+
+graph PlayerFarmingData {
+    // --- RUNTIME PLAYER STATES ---
+    CurrentFloor entity<Entity>
+    CurrentGridPos Vector3
+    ActiveTracker entity<Entity>
+
+    event OnAwake() {
+        CurrentFloor = nil
+        CurrentGridPos = Vector3{0.0, 0.0, 0.0}
+        ActiveTracker = nil
+    }
+}

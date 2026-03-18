@@ -17,63 +17,6 @@
   "editorLockValue": false,
   "editorVisibleValue": true,
   "TypeDefines": {
-    "CustomComponent23083796": {
-      "label": "PlayerFarmingData",
-      "name": "CustomComponent23083796",
-      "bases": [
-        "Component"
-      ],
-      "ecaScripts": [],
-      "typeID": 100023,
-      "PropDefines": [
-        {
-          "propID": 100024,
-          "name": "PROP_84958406",
-          "label": "CurrentFloor",
-          "type": "Entity",
-          "value": null,
-          "observable": false,
-          "disabledType": true,
-          "param": {
-            "type": "SceneEditEntity",
-            "disabled": true
-          }
-        },
-        {
-          "propID": 100025,
-          "name": "PROP_72225872",
-          "label": "CurrentGridPos",
-          "type": "Vector3",
-          "value": {
-            "type": "Vector3",
-            "value": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          "observable": false,
-          "disabledType": true,
-          "param": {
-            "min": -16777216,
-            "max": 16777216
-          }
-        },
-        {
-          "propID": 100028,
-          "name": "PROP_32891572",
-          "label": "ActiveTracker",
-          "type": "Entity",
-          "value": null,
-          "observable": false,
-          "disabledType": true,
-          "param": {
-            "type": "SceneEditEntity",
-            "disabled": true
-          }
-        }
-      ]
-    },
     "Component": {
       "label": "Component",
       "name": "Component",
@@ -82,6 +25,56 @@
       "typeID": 164,
       "PropDefines": [],
       "IsPartial": true
+    },
+    "CustomComponent79586719": {
+      "label": "FarmZoneData",
+      "name": "CustomComponent79586719",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100003,
+      "PropDefines": [
+        {
+          "propID": 100004,
+          "name": "PROP_94855808",
+          "label": "Owner",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "type": "SceneEditEntity",
+            "disabled": true
+          }
+        },
+        {
+          "propID": 100005,
+          "name": "PROP_16404591",
+          "label": "Beanstalk",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "type": "SceneEditEntity",
+            "disabled": true
+          }
+        },
+        {
+          "propID": 100006,
+          "name": "PROP_71663763",
+          "label": "Floors",
+          "type": "ListT_Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "compType": "InputEditor",
+            "disabled": true
+          }
+        }
+      ]
     }
   }
 }

@@ -24,7 +24,7 @@ static graph GridManager {
             if floor<floorData> != nil {
                 //caculate the grid boundaries(example: scale = 10, tileSize = 1, halfGridCount = 4 => grid boundaries = -4 to 4)
                 var halfGridCount = math.Floor((scale / tileSize) / 2.0)
-
+                floor<floorData>.InitMaps()
                 for x = -halfGridCount, halfGridCount + 1, 1 {
                     for z = -halfGridCount, halfGridCount + 1, 1 {
                         var worldX = convert.IntToFloat(x) * tileSize
@@ -33,7 +33,12 @@ static graph GridManager {
                         var pos = Vector3{worldX, 0, worldZ}
                         var key = convert.ToString(pos.X) + "_" + convert.ToString(pos.Z)
                         floor<floorData>.CellStates[key] = gen.EFarmSlotState.Grass
+                        LogInfo("[GridManager] Grid state: " + floor<floorData>.CellStates[key])
+                        // LogInfo("[GridManager] Grid position: " + pos.X + ", " + pos.Z)
+                        // LogInfo("[GridManager] Grid key: " + key)
+                        // LogInfo("[GridManager] Grid state: " + floor<floorData>.CellStates[key])
                     }
+                    
                 }
             }
         }
