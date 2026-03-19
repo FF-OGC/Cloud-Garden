@@ -7,9 +7,11 @@ graph FloorGridData {
     
     CellStates Map<string, int> 
     SoilTiers Map<string, int>   
-    
+    PlantedSeeds Map<string, string>
+
     HarvestTimes Map<string, float>   
     CropPositions Map<string, Vector3> 
+
 
     SoilVisuals Map<string, entity<Entity>>  
     PlantVisuals Map<string, entity<Entity>>  
@@ -19,6 +21,8 @@ graph FloorGridData {
         
         CellStates = map.New()
         SoilTiers = map.New()
+        PlantedSeeds = map.New()
+
         HarvestTimes = map.New()
         CropPositions = map.New()
         

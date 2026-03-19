@@ -13,8 +13,14 @@
       "_entityId": "Tvv20RGM",
       "children": [],
       "prefabVariant": null,
-      "activeValue": null,
-      "unlockedValue": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "gameDuration": 5,
@@ -32,74 +38,47 @@
       "_entityId": "8iZoRGiE",
       "children": [],
       "prefabVariant": null,
-      "activeValue": null,
-      "unlockedValue": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "gameDuration": 5,
       "ecaScripts": [],
-      "ecaProps": {},
+      "ecaProps": {
+        "Phase": {},
+        "Entity": {}
+      },
       "modId": 18,
       "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_PREPARE",
       "phaseIndex": 2209
     },
     {
+      "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_PHASE",
       "_tag": {
-        "type": "ff.RoundEntity1",
-        "resourceId": "Round"
+        "type": "ff.PhaseEntity1",
+        "resourceId": "Phase"
       },
-      "_entityId": "tMIDzTdc",
-      "children": [
-        {
-          "_tag": {
-            "type": "ff.PhaseEntity1",
-            "resourceId": "RoundPrepare"
-          },
-          "_entityId": "qnDpk4s3",
-          "children": [],
-          "prefabVariant": null,
-          "activeValue": null,
-          "unlockedValue": null,
-          "editorLockValue": false,
-          "editorVisibleValue": true,
-          "gameDuration": 5,
-          "ecaScripts": [],
-          "ecaProps": {},
-          "modId": 18,
-          "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_PHASE",
-          "phaseIndex": 5888
-        },
-        {
-          "_tag": {
-            "type": "ff.PhaseEntity1",
-            "resourceId": "Phase"
-          },
-          "_entityId": "NhW7CdoT",
-          "children": [],
-          "prefabVariant": null,
-          "activeValue": null,
-          "unlockedValue": null,
-          "editorLockValue": false,
-          "editorVisibleValue": true,
-          "gameDuration": 180,
-          "ecaScripts": [],
-          "ecaProps": {},
-          "modId": 18,
-          "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_PHASE",
-          "phaseIndex": 7522
-        }
-      ],
+      "_entityId": "SoRiI6df",
+      "children": [],
       "prefabVariant": null,
       "activeValue": null,
       "unlockedValue": null,
       "editorLockValue": false,
       "editorVisibleValue": true,
-      "roundCount": 3,
-      "modId": 18,
+      "gameDuration": 3000,
       "ecaScripts": [],
-      "ecaProps": {},
-      "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_ROUND",
-      "phaseIndex": 4213
+      "ecaProps": {
+        "Phase": {},
+        "Entity": {}
+      },
+      "modId": 18,
+      "phaseIndex": 1732
     },
     {
       "_tag": {
@@ -109,30 +88,67 @@
       "_entityId": "Al4GjFt6",
       "children": [],
       "prefabVariant": null,
-      "activeValue": null,
-      "unlockedValue": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "gameDuration": 5,
       "ecaScripts": [],
-      "ecaProps": {},
+      "ecaProps": {
+        "Phase": {},
+        "Entity": {}
+      },
       "modId": 18,
       "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_END",
       "phaseIndex": 9417
     }
   ],
   "prefabVariant": null,
-  "activeValue": null,
-  "unlockedValue": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "EnableHackCheck": false,
   "EnableInventoryDrop": false,
   "modId": 18,
   "modOpen": true,
-  "curActiveEntity": null,
+  "curActiveEntity": {
+    "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_PHASE",
+    "_tag": {
+      "type": "ff.PhaseEntity1",
+      "resourceId": "Phase"
+    },
+    "_entityId": "SoRiI6df",
+    "children": [],
+    "prefabVariant": null,
+    "activeValue": null,
+    "unlockedValue": null,
+    "editorLockValue": false,
+    "editorVisibleValue": true,
+    "gameDuration": 3000,
+    "ecaScripts": [],
+    "ecaProps": {
+      "Phase": {},
+      "Entity": {}
+    },
+    "modId": 18,
+    "phaseIndex": 1732
+  },
   "roundCount": 4,
   "discriminator": "ISceneLike",
-  "_entityName": "FE_0_HW_GAME_EDITOR_FLOWSETTING"
+  "_entityName": "T_43_YU_WS_MODULE_WORKFLOW",
+  "showSwitch": false
 }
-//"{FE:{"v":"0.1.2974255","c":{"FF":4404},"s":100}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

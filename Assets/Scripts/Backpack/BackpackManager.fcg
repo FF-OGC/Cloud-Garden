@@ -1,0 +1,90 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "../Config/ItemConfig.fcg" as itemCfg
+import "./PlayerBackpackData.fcg" as backpackData
+import "../Core/GameManager.fcg" as gameMgr
+
+static graph BackpackManager {
+
+    // Attempts to add items to the backpack. Returns false if the backpack is full.
+    func AddHarvestedItem(player entity<Player>, itemId string, amount int) bool {
+        if player == nil || amount <= 0 { return false }
+        
+        if player<backpackData> == nil { return false }
+
+        var ids = player<backpackData>._SlotItemIDs
+        var amounts = player<backpackData>._SlotAmounts
+        var maxCapacity = 20 
+        var maxStack = itemCfg.GetMaxStack(itemId) 
+        var remainingAmount = amount
+
+        // LOOP 1: Greedy Merge - Try to find existing slots of the same item
+        for i = 0, maxCapacity, 1 {
+            if remainingAmount <= 0 { break }
+            if map.ContainKey(ids, i) && map.ContainKey(amounts, i) {
+                var currentId = ids[i] as string
+                var currentAmt = amounts[i] as int
+
+                if currentId == itemId && currentAmt < maxStack {
+                    var spaceLeft = maxStack - currentAmt
+                    if remainingAmount <= spaceLeft {
+                        amounts[i] = currentAmt + remainingAmount
+                        remainingAmount = 0
+                    } else {
+                        amounts[i] = maxStack
+                        remainingAmount = remainingAmount - spaceLeft
+                    }
+                    // TODO: Dispatch UI Update Event for Slot 'i' here
+                }
+            }
+        }
+
+        // LOOP 2: Fill Empty - Find empty slots for the remaining amount
+        if remainingAmount > 0 {
+            for i = 0, maxCapacity, 1 {
+                if remainingAmount <= 0 { break }
+                if !map.ContainKey(ids, i) {
+                    ids[i] = itemId
+                    if remainingAmount <= maxStack {
+                        amounts[i] = remainingAmount
+                        remainingAmount = 0
+                    } else {
+                        amounts[i] = maxStack
+                        remainingAmount = remainingAmount - maxStack
+                    }
+                    // TODO: Dispatch UI Update Event for Slot 'i' here
+                }
+            }
+        }
+
+        // If there are still items left after both loops, the backpack is full
+        if remainingAmount > 0 { return false } 
+        return true 
+    }
+
+    // Attempts to consume an item from a specific slot. Returns false if not enough amount.
+    func RemoveItem(player entity<Player>, slotIndex int, amount int) bool {
+        if player == nil || amount <= 0 { return false }
+        
+        if player<backpackData> == nil { return false }
+
+        var ids = player<backpackData>._SlotItemIDs
+        var amounts = player<backpackData>._SlotAmounts
+
+        if map.ContainKey(ids, slotIndex) && map.ContainKey(amounts, slotIndex) {
+            var currentAmt = amounts[slotIndex] as int
+            if currentAmt >= amount {
+                amounts[slotIndex] = currentAmt - amount
+                
+                // Clear the slot completely if amount reaches 0
+                if amounts[slotIndex] as int <= 0 {
+                    map.Remove(ids, slotIndex)
+                    map.Remove(amounts, slotIndex)
+                }
+                // TODO: Dispatch UI Update Event for Slot 'slotIndex' here
+                return true
+            }
+        }
+        return false
+    }
+}
