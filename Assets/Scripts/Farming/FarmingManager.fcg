@@ -5,13 +5,19 @@ import "Math.fcc" as math
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 
+//Graphs
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
-
-import "../Backpack/PlayerBackpackData.fcg" as backpackData
+import "../Backpack/BackpackData.fcg" as backpackData
 import "../Backpack/BackpackManager.fcg" as backpackMgr
+
+//Configs
 import "../Config/ItemConfig.fcg" as itemCfg
+
+//Services
+import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "../Services/BackpackService.fcg" as backpackService
 
 static graph FarmingManager {
     
@@ -25,7 +31,7 @@ static graph FarmingManager {
         }
 
         var gridPos = player<playerFarmingData>.CurrentGridPos
-        var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
+        var key = gridUtil.GetKeyFromPos(gridPos)
        
         var floorObj = player<playerFarmingData>.CurrentFloor
         var cellStates = floorObj<floorData>.CellStates
@@ -49,7 +55,7 @@ static graph FarmingManager {
             // Filter valid cells based on the Anchor intent state
             for i = 0, list.Length(targetPositions), 1 {
                 var pos = targetPositions[i]
-                var k = convert.ToString(math.Round(pos.X)) + "_" + convert.ToString(math.Round(pos.Z))
+                var k = gridUtil.GetKeyFromPos(pos)
                 
                 if map.ContainKey(cellStates, k) {
                     var state = cellStates[k] as int
@@ -100,7 +106,7 @@ static graph FarmingManager {
                 if availableAmt < validCount { amountToPlant = availableAmt }
 
                 // Try to consume the seed in ONE transaction
-                var isRemoved = backpackMgr.RemoveItem(player as entity<Player>, activeSlot, amountToPlant)
+                var isRemoved = backpackService.ConsumeActiveItem(player as entity<Player>, amountToPlant)
                 
                 if isRemoved {
                     for i = 0, amountToPlant, 1 {

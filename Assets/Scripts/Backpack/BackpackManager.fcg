@@ -1,7 +1,7 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 import "../Config/ItemConfig.fcg" as itemCfg
-import "./PlayerBackpackData.fcg" as backpackData
+import "./BackpackData.fcg" as backpackData
 import "../Core/GameManager.fcg" as gameMgr
 
 static graph BackpackManager {

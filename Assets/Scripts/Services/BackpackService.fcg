@@ -1,0 +1,57 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "EditorGenLib.fcc" as gen
+import "Convert.fcc" as convert
+import "../Backpack/BackpackData.fcg" as backpackData
+import "../Config/ItemConfig.fcg" as itemCfg
+
+static graph BackpackService {
+
+    // Check if backpack has enough space
+    func CanAddItem(owner entity<Entity>, itemId string, amount int) bool {
+        if owner == nil || amount <= 0 { return false }
+        if owner<backpackData> == nil { return false }
+
+        var maxStack = itemCfg.GetMaxStack(itemId)
+        var remaining = amount
+
+        for i = 0, owner<backpackData>._MaxCapacity, 1 {
+            if remaining <= 0 { break }
+            if map.ContainKey(owner<backpackData>._SlotItemIDs, i) {
+                if owner<backpackData>._SlotItemIDs[i] as string == itemId {
+                    var curAmt = owner<backpackData>._SlotAmounts[i] as int
+                    if curAmt < maxStack { remaining = remaining - (maxStack - curAmt) }
+                }
+            } else {
+                remaining = remaining - maxStack
+            }
+        }
+        return remaining <= 0 
+    }
+
+    // Consume active handheld item
+    func ConsumeActiveItem(owner entity<Entity>, amountToConsume int) bool {
+        if owner == nil || amountToConsume <= 0 { return false }
+        if owner<backpackData> == nil { return false }
+
+        var activeSlot = owner<backpackData>._ActiveQuickbarSlot
+
+        if map.ContainKey(owner<backpackData>._SlotItemIDs, activeSlot) && map.ContainKey(owner<backpackData>._SlotAmounts, activeSlot) {
+            var currentAmt = owner<backpackData>._SlotAmounts[activeSlot]
+            
+            if currentAmt >= amountToConsume {
+                owner<backpackData>._SlotAmounts[activeSlot] = currentAmt - amountToConsume
+                
+                if owner<backpackData>._SlotAmounts[activeSlot] <= 0 {
+                    map.Remove(owner<backpackData>._SlotItemIDs, activeSlot)
+                    map.Remove(owner<backpackData>._SlotAmounts, activeSlot)
+                }
+                
+                // Broadcast event to force UI update
+                DispatchEvent(OnBackpackDataChanged, globalEntity, List<object>{owner})
+                return true
+            }
+        }
+        return false
+    }
+}

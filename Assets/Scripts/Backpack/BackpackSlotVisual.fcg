@@ -1,0 +1,32 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+import "Hud.fcc" as hud
+
+import "../Services/Utils/UIUtil.fcg" as uiUtil
+import "../Config/ItemConfig.fcg" as itemCfg
+graph BackpackSlotVisual {
+    
+    SlotIndex int = -1
+
+    func SetData(itemId string, amount int) {
+        var iconObj = uiUtil.GetChildSafe(thisEntity<Transform>, 0)
+        if iconObj != nil {
+        iconObj<UIWidgetImage>.Alpha = 1.0
+        // iconObj<UIWidgetImage>.SpriteName = itemCfg.GetSprite(itemId)
+        }
+    
+        var textObj = uiUtil.GetChildSafe(thisEntity<Transform>, 1)     
+        if textObj != nil {
+            textObj<UIWidgetLabel>.Alpha = 1.0
+            textObj<UIWidgetLabel>.Content = convert.ToString(amount)
+        }
+    }
+
+    func SetEmpty() {
+        var iconObj = uiUtil.GetChildSafe(thisEntity<Transform>, 0)
+        if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
+
+        var textObj = uiUtil.GetChildSafe(thisEntity<Transform>, 1)
+        if textObj != nil { textObj<UIWidgetLabel>.Alpha = 0.0 }
+    }
+}

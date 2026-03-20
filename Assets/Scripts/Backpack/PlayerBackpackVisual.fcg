@@ -1,0 +1,123 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "List.fcc" as list
+import "Map.fcc" as map
+import "Hud.fcc" as hud
+import "Convert.fcc" as convert
+
+import "../Core/GameManager.fcg" as gameMgr
+import "./BackpackData.fcg" as backpackData
+import "./BackpackSlotVisual.fcg" as slotVisual
+
+graph PlayerBackpackVisual {
+    
+    _BackpackUI entity<CustomUI>
+    _MainPanel entity<UIWidget>
+    _SlotContainer entity<UIWidget> 
+
+    _IsOpen bool = false
+
+    event OnAwake() {
+        InitializeSlots()
+    }
+
+    func InitializeSlots() {
+        if _SlotContainer == nil { return }
+        var slots = GetChildren(_SlotContainer)
+        var totalSlots = list.Length(slots)
+
+        for i = 0, totalSlots, 1 {
+            var slotObj = slots[i]
+            if slotObj != nil && HasComponent(slotObj, typeof(slotVisual)) {
+                slotObj<slotVisual>.SlotIndex = i
+            }
+        }
+    }
+
+
+
+    func ToggleBackpack() {
+        if _MainPanel == nil { return }
+        _IsOpen = !_IsOpen
+        _MainPanel<UIWidget>.IsVisible = _IsOpen
+        if _IsOpen { RefreshVisuals() }
+    }
+
+    func RefreshVisuals() {
+        if thisEntity<backpackData> == nil || _SlotContainer == nil { return }
+        
+        var slots = GetChildren(_SlotContainer)
+        var totalSlots = list.Length(slots)
+
+        for i = 0, totalSlots, 1 {
+            var slotObj = slots[i]
+            if slotObj != nil && HasComponent(slotObj, typeof(slotVisual)) {
+                if map.ContainKey(thisEntity<backpackData>._SlotItemIDs, i) && map.ContainKey(thisEntity<backpackData>._SlotAmounts, i) {
+                    var itemId = thisEntity<backpackData>._SlotItemIDs[i] as string
+                    var amount = thisEntity<backpackData>._SlotAmounts[i] as int
+                    slotObj<slotVisual>.SetData(itemId, amount)
+                } else {
+                    slotObj<slotVisual>.SetEmpty()
+                }
+            }
+        }
+    }
+
+    // Add this function to the end of PlayerBackpackVisual.fcg
+    func HandleSlotPressed(clickedIndex int) {
+        if thisEntity<backpackData> == nil { return }
+
+        // Logic when backpack is closed (Only use the first 5 slots)
+        if !_IsOpen {
+            if clickedIndex >= 0 && clickedIndex <= 4 {
+                thisEntity<backpackData>._ActiveQuickbarSlot = clickedIndex
+                if gameMgr.IsDebug() { LogInfo("[BackpackVisual] Equipped item in slot: " + convert.ToString(clickedIndex)) }
+                
+                // TODO: Call the function to draw the highlight border here
+            }
+            return
+        }
+        
+        // Logic when backpack is open (Click to move items, sort...)
+        if _IsOpen {
+            if gameMgr.IsDebug() { LogInfo("[BackpackVisual] Selecting slot: " + convert.ToString(clickedIndex)) }
+            // TODO: Smart transfer logic here
+        }
+    }
+
+    // Listen to global event bus: Refresh visuals when data changes.
+    event OnBackpackDataChanged(player entity<Player>) {
+        if player == nil || player != thisEntity<Player> { return }
+        if _IsOpen {
+            RefreshVisuals()
+        }
+    }
+
+    // Listen to the global tap event from ButtonClient
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || player != thisEntity<Player> || button == nil { return }
+
+        // Check if the clicked button has our Backpack slot visual component
+        if HasComponent(button, typeof(slotVisual)) {
+            var clickedIndex = button<slotVisual>.SlotIndex
+            if player<backpackData> == nil { return }
+
+            // Logic when backpack is closed (Equipping quickbar)
+            if !_IsOpen {
+                if clickedIndex >= 0 && clickedIndex <= 4 {
+                    player<backpackData>._ActiveQuickbarSlot = clickedIndex
+                    
+                    // TODO: Highlight the equipped slot UI here
+                }
+                return
+            }
+            
+            // Logic when backpack is open (Moving items around)
+            if _IsOpen {
+                // TODO: Smart transfer or item swapping logic
+            }
+        }
+    }
+
+    
+}

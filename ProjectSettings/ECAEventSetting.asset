@@ -47,11 +47,80 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_86389280"
+    },
+    "signal_20131491": {
+      "name": "OnPlayerTapButton",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100004,
+      "props": [
+        {
+          "name": "button",
+          "value": "HudButtonWidget",
+          "key": 1
+        },
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_20131491"
+    },
+    "signal_22656937": {
+      "name": "OnRequestAddItem",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100000,
+      "props": [
+        {
+          "name": "owner",
+          "value": "Entity",
+          "key": 1
+        },
+        {
+          "name": "itemId",
+          "value": "String",
+          "key": 2
+        },
+        {
+          "name": "amount",
+          "value": "Int",
+          "key": 3
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_22656937"
+    },
+    "signal_76789303": {
+      "name": "OnBackpackDataChanged",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100001,
+      "props": [
+        {
+          "name": "owner",
+          "value": "Entity",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_76789303"
     }
   },
   "customName": {
     "OnFarmCellStateChanged": "signal_60093422",
-    "OnPlayerHoeAction": "signal_86389280"
+    "OnPlayerHoeAction": "signal_86389280",
+    "OnPlayerTapButton": "signal_20131491",
+    "OnRequestAddItem": "signal_22656937",
+    "OnBackpackDataChanged": "signal_76789303"
   },
   "children": []
 }

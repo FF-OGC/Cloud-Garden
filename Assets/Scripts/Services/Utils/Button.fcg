@@ -1,0 +1,19 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+
+graph Button {
+    
+    event OnTapped(player entity<Player>) {
+        if player == nil { return }
+
+        var parentUI = thisEntity<UIWidget>.ParentUI
+        if parentUI == nil { return }
+
+        DispatchEventToEntity(
+            OnPlayerTapButton, 
+            parentUI as entity<Entity>, 
+            PlatformType.Server, 
+            List<object>{thisEntity, player})
+    }
+}

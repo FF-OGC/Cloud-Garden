@@ -1,0 +1,28 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+
+import "./PlayerBackpackVisual.fcg" as playerVisual
+import "./BackpackSlotVisual.fcg" as slotVisual
+
+graph HUDBackpack {
+    
+    // Handle event OnPlayerTapButton from ButtonClient
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
+
+        // Call VisualManager on the Player entity
+        if player<playerVisual> == nil { return }
+
+        // Check if the clicked button is a Backpack slot
+        if HasComponent(button, typeof(slotVisual)) {
+            var clickedIndex = button<slotVisual>.SlotIndex as int
+            
+            // Command VisualManager to handle the slot press
+            player<playerVisual>.HandleSlotPressed(clickedIndex)
+        }
+
+        // Future: If we have a Close button, check here:
+        // else if button == visualManager.GetWidget(EResKey.CloseButton) { ... }
+    }
+}

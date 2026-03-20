@@ -1,0 +1,25 @@
+import "StdLibrary.fcc" as std
+import "Hud.fcc" as hud
+
+static graph UIUtil {
+    
+    // Safely toggles visibility of any UI Widget. Returns the new state.
+    func ToggleVisibility(widget entity<UIWidget>) bool {
+        if widget == nil { return false }
+        var newState = !widget<UIWidget>.IsVisible
+        widget<UIWidget>.IsVisible = newState
+        return newState
+    }
+
+    // Safely force visibility of a UI Widget
+    func SetVisibility(widget entity<UIWidget>, isVisible bool) {
+        if widget == nil { return }
+        widget<UIWidget>.IsVisible = isVisible
+    }
+
+    // Safely get a child transform by index to prevent null crashes
+    func GetChildSafe(parent entity<Transform>, index int) entity<Entity> {
+        if parent == nil || index < 0 { return nil }
+        return GetChildByIndex(parent, index)
+    }
+}

@@ -1,0 +1,24 @@
+import "StdLibrary.fcc" as std
+import "Math.fcc" as math
+import "Convert.fcc" as convert
+
+static graph GridUtil {
+    
+    // Generates a string key from a Vector3 position (e.g. "10_5")
+    func GetKeyFromPos(pos Vector3) string {
+        var roundedX = math.Round(pos.X)
+        var roundedZ = math.Round(pos.Z)
+        return convert.ToString(roundedX) + "_" + convert.ToString(roundedZ)
+    }
+
+    // Snaps any world position to the nearest grid center based on tileSize
+    func SnapToGrid(targetPos Vector3, originPos Vector3, tileSize float) Vector3 {
+        var localX = targetPos.X - originPos.X
+        var localZ = targetPos.Z - originPos.Z
+
+        var gridX = math.Round(localX / tileSize) * tileSize
+        var gridZ = math.Round(localZ / tileSize) * tileSize
+        
+        return Vector3{originPos.X + gridX, targetPos.Y, originPos.Z + gridZ}
+    }
+}
