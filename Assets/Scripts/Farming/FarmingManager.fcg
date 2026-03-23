@@ -176,7 +176,7 @@ static graph FarmingManager {
                 if harvestCount == 0 { return }
 
                 // ONE transaction for harvesting
-                var isAdded = backpackMgr.AddHarvestedItem(player as entity<Player>, targetCropId, harvestCount)
+                var isAdded = backpackMgr.AddHarvestedItem(player, targetCropId, harvestCount)
 
                 if isAdded {
                     for i = 0, harvestCount, 1 {

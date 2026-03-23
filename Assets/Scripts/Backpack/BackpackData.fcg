@@ -3,7 +3,7 @@ import "Map.fcc" as map
 import "EditorGenLib.fcc" as gen
 import "../Config/ItemConfig.fcg" as itemCfg 
 
-graph PlayerBackpackData {
+graph BackpackData {
     
     _SlotItemIDs Map<int, string> 
     _SlotAmounts Map<int, int>    

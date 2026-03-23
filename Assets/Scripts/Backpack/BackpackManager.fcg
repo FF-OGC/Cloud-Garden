@@ -7,13 +7,13 @@ import "../Core/GameManager.fcg" as gameMgr
 static graph BackpackManager {
 
     // Attempts to add items to the backpack. Returns false if the backpack is full.
-    func AddHarvestedItem(player entity<Player>, itemId string, amount int) bool {
-        if player == nil || amount <= 0 { return false }
+    func AddHarvestedItem(owner entity<Entity>, itemId string, amount int) bool {
+        if owner == nil || amount <= 0 { return false }
         
-        if player<backpackData> == nil { return false }
+        if owner<backpackData> == nil { return false }
 
-        var ids = player<backpackData>._SlotItemIDs
-        var amounts = player<backpackData>._SlotAmounts
+        var ids = owner<backpackData>._SlotItemIDs
+        var amounts = owner<backpackData>._SlotAmounts
         var maxCapacity = 20 
         var maxStack = itemCfg.GetMaxStack(itemId) 
         var remainingAmount = amount
@@ -63,13 +63,13 @@ static graph BackpackManager {
     }
 
     // Attempts to consume an item from a specific slot. Returns false if not enough amount.
-    func RemoveItem(player entity<Player>, slotIndex int, amount int) bool {
-        if player == nil || amount <= 0 { return false }
+    func RemoveItem(owner entity<Entity>, slotIndex int, amount int) bool {
+        if owner == nil || amount <= 0 { return false }
         
-        if player<backpackData> == nil { return false }
+        if owner<backpackData> == nil { return false }
 
-        var ids = player<backpackData>._SlotItemIDs
-        var amounts = player<backpackData>._SlotAmounts
+        var ids = owner<backpackData>._SlotItemIDs
+        var amounts = owner<backpackData>._SlotAmounts
 
         if map.ContainKey(ids, slotIndex) && map.ContainKey(amounts, slotIndex) {
             var currentAmt = amounts[slotIndex] as int

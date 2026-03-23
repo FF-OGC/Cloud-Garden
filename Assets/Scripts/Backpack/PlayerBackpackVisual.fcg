@@ -86,8 +86,8 @@ graph PlayerBackpackVisual {
     }
 
     // Listen to global event bus: Refresh visuals when data changes.
-    event OnBackpackDataChanged(player entity<Player>) {
-        if player == nil || player != thisEntity<Player> { return }
+    event OnBackpackDataChanged(owner entity<Entity>) {
+        if owner == nil || owner != thisEntity<Entity> { return }
         if _IsOpen {
             RefreshVisuals()
         }
@@ -95,7 +95,7 @@ graph PlayerBackpackVisual {
 
     // Listen to the global tap event from ButtonClient
     event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
-        if player == nil || player != thisEntity<Player> || button == nil { return }
+        if player == nil || player != thisEntity<Entity> || button == nil { return }
 
         // Check if the clicked button has our Backpack slot visual component
         if HasComponent(button, typeof(slotVisual)) {
