@@ -1,28 +1,35 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
+import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 
-// [platform_client]
 [platform_server]
 graph BackpackData {
     
-    _SlotItemIDs Map<int, string> 
-    _SlotAmounts Map<int, int>    
+    // 1. ORIGINAL DATA (SINGLE SOURCE OF TRUTH)
+    _NextHandle int = 0 // Unique ID for each item instance
+    _ItemIDs Map<int, string> // Key: Handle -> Value: Item ID (e.g., "seed_pumpkin")
+    _ItemAmounts Map<int, int> // Key: Handle -> Value: Amount
+
+    // 2. REFERENCES (FOR UI SLOTS)
+    _BackpackRefs List<int> // Array storing Handles for backpack slots
+    _QuickSlotRefs List<int> // Array storing Handles for quick slots
     
     _ActiveQuickbarSlot int = 0 
-    _MaxCapacity int = 20
+    _MaxCapacity int = 40 // Total visual slots in the backpack UI
 
     event OnAwake() {
-        // Fixed: Correct Map initialization syntax
-        _SlotItemIDs = map.New() as Map<int, string>
-        _SlotAmounts = map.New() as Map<int, int>
+        _ItemIDs = map.New() as Map<int, string>
+        _ItemAmounts = map.New() as Map<int, int>
+        _BackpackRefs = List<int>{}
+        _QuickSlotRefs = List<int>{}
         _ActiveQuickbarSlot = 0
-        
-        // Debug initial item
-        _SlotItemIDs[0] = "seed_pumpkin"
-        _SlotAmounts[0] = 5
+
+        // Initialize all slots as empty (-1)
+        for i = 0, _MaxCapacity, 1 { list.Append(_BackpackRefs, -1) }
+        for i = 0, 5, 1 { list.Append(_QuickSlotRefs, -1) }
+
+        // Notify UI to render after data is fully initialized
+        DispatchEventToEntity(OnBackpackDataChanged, thisEntity<Entity>, PlatformType.Server, List<object>{thisEntity<Entity>})
     }
-
-    
-
 }

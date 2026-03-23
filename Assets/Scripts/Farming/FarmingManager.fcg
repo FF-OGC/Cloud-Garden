@@ -67,7 +67,6 @@ static graph FarmingManager {
                     
                     cellStates[k] = gen.EFarmSlotState.Tilled 
                     floorObj<floorData>.SoilTiers[k] = 1 
-                    // Fixed: Added gen. prefix
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                 }
             
@@ -77,16 +76,19 @@ static graph FarmingManager {
             } else if intentState == gen.EFarmSlotState.Tilled {
                 
                 if player<backpackData> == nil { return }
+                
                 var activeSlot = player<backpackData>._ActiveQuickbarSlot
-                var ids = player<backpackData>._SlotItemIDs
-                var amounts = player<backpackData>._SlotAmounts
+                var handle = player<backpackData>._QuickSlotRefs[activeSlot] // Get Handle from QuickSlot
 
-                if !map.ContainKey(ids, activeSlot) { return }
-                var holdItemId = ids[activeSlot] as string
+                // Check if the slot is empty or data is invalid
+                if handle == -1 { return } 
+                if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return }
+
+                var holdItemId = player<backpackData>._ItemIDs[handle] as string
 
                 if itemCfg.GetType(holdItemId) != 1 { return } // Must be Seed
 
-                var availableAmt = amounts[activeSlot] as int
+                var availableAmt = player<backpackData>._ItemAmounts[handle] as int
                 var amountToPlant = validCount
                 if availableAmt < validCount { amountToPlant = availableAmt }
 

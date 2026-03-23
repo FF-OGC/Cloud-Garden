@@ -9,27 +9,21 @@ graph HUDBackpack {
     
     event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
         if player == nil || button == nil { return }
-
         if player<playerBackpackVisual> == nil { return }
 
-        // --- THE DATA-DRIVEN ROUTER ---
         if HasComponent(button, typeof(MyButton)) {
             var btnType = button<MyButton>.Type
-            
-            // Route: Any slot clicked (quick_slot or backpack_slot)
-            // BackpackSlotVisual may be on the button itself (quick slot)
-            // or on the parent slot entity (bag slot uses a child btn button)
+            var slotIndex = button<MyButton>.Arg0 // Index pre-assigned during OnAwake
+
             if btnType == "backpack_slot" || btnType == "quick_slot" {
-                var clickedIndex = player<playerBackpackVisual>.GetSlotIndex(button as entity<Entity>)
-                if clickedIndex < 0 { return }
-                player<playerBackpackVisual>.HandleSlotPressed(clickedIndex)
+                player<playerBackpackVisual>.HandleSlotPressed(btnType, slotIndex)
             } else if btnType == "toggle_bag" {
                 player<playerBackpackVisual>.ToggleBackpack()
             } else if btnType == "close_bag" {
-                if player<playerBackpackVisual>._IsOpen { player<playerBackpackVisual>.ToggleBackpack() }
+                if player<playerBackpackVisual>._IsOpen { 
+                    player<playerBackpackVisual>.ToggleBackpack() 
+                }
             }
-            
-            return
         }
     }
 }

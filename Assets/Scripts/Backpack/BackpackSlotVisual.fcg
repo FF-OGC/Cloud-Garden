@@ -5,6 +5,8 @@ import "Hud.fcc" as hud
 import "../Services/Utils/UIUtil.fcg" as uiUtil
 import "../Config/ItemConfig.fcg" as itemCfg
 
+
+//deprecated
 [platform_server]
 graph BackpackSlotVisual {
     

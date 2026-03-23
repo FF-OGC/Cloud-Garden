@@ -67,8 +67,8 @@
   "ecaScript": null,
   "ecaScripts": [
     {
-      "fileId": "kx0g4i60m9c-mmk2sqca-0z8k2roygcvi",
-      "filePath": "Assets\\Scripts\\HUD\\PlayerDefaultHUD.fcg",
+      "fileId": "8yb3woegsye-mmyqw2j8-7972yfngcu2",
+      "filePath": "Assets\\Scripts\\Backpack\\BackpackData.fcg",
       "_tag": {
         "type": "GFileRefer"
       },
@@ -91,8 +91,24 @@
       "fileType": "ugcscript"
     },
     {
-      "fileId": "8yb3woegsye-mmyqw2j8-7972yfngcu2",
-      "filePath": "Assets\\Scripts\\Backpack\\BackpackData.fcg",
+      "fileId": "kx0g4i60m9c-mmk2sqca-0z8k2roygcvi",
+      "filePath": "Assets\\Scripts\\HUD\\PlayerDefaultHUD.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "mugr26d2lsk-mmytmjtp-n1qd8hwdqdq",
+      "filePath": "Assets\\Scripts\\Backpack\\HUDBackpack.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "dsab088m7bn-mn32j7lu-kn5kd65za5p",
+      "filePath": "Assets\\Scripts\\HUD\\HUDFarmAction.fcg",
       "_tag": {
         "type": "GFileRefer"
       },

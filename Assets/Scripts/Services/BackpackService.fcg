@@ -1,110 +1,187 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
+import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 import "Convert.fcc" as convert
+
+
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Config/ItemConfig.fcg" as itemCfg
-
+import "../Core/GameManager.fcg" as gameManager
 [platform_server]
 static graph BackpackService {
 
-    // --- CHECK SPACE ---
+    // --- CHECK SPACE LOGIC ---
     func CanAddItem(owner entity<Entity>, itemId string, amount int) bool {
-        if owner == nil || amount <= 0 { return false }
-        if owner<backpackData> == nil { return false }
+        if owner<backpackData> == nil || amount <= 0 { return false }
 
         var maxStack = itemCfg.GetMaxStack(itemId)
         var remaining = amount
 
         for i = 0, owner<backpackData>._MaxCapacity, 1 {
             if remaining <= 0 { break }
-            if map.ContainKey(owner<backpackData>._SlotItemIDs, i) {
-                if owner<backpackData>._SlotItemIDs[i] as string == itemId {
-                    var curAmt = owner<backpackData>._SlotAmounts[i] as int
-                    if curAmt < maxStack { remaining = remaining - (maxStack - curAmt) }
+            
+            var handle = owner<backpackData>._BackpackRefs[i]
+            if handle != -1 {
+                if owner<backpackData>._ItemIDs[handle] as string == itemId {
+                    var curAmt = owner<backpackData>._ItemAmounts[handle] as int
+                    if curAmt < maxStack { 
+                        remaining = remaining - (maxStack - curAmt) 
+                    }
                 }
             } else {
                 remaining = remaining - maxStack
             }
         }
-        return remaining <= 0 
+        var canAdd = remaining <= 0
+        if gameManager.IsDebug() { LogInfo("[BackpackService] CanAddItem | itemId=" + itemId + " amount=" + convert.ToString(amount) + " canAdd=" + convert.ToString(canAdd)) }
+        return canAdd
     }
 
     // --- ADD ITEM LOGIC ---
     func AddItem(owner entity<Entity>, itemId string, amount int) bool {
-        if owner == nil || amount <= 0 { return false }
-        if owner<backpackData> == nil { return false }
+        if owner<backpackData> == nil || amount <= 0 { return false }
 
         var maxStack = itemCfg.GetMaxStack(itemId)
         var remaining = amount
 
-        // Pass 1: Try to stack with existing items
+        // Pass 1: Try to stack with existing items that are not full
         for i = 0, owner<backpackData>._MaxCapacity, 1 {
-            if remaining <= 0 { break }
-            if map.ContainKey(owner<backpackData>._SlotItemIDs, i) && map.ContainKey(owner<backpackData>._SlotAmounts, i) {
-                var currentId = owner<backpackData>._SlotItemIDs[i] as string
-                var currentAmt = owner<backpackData>._SlotAmounts[i] as int
-
-                if currentId == itemId && currentAmt < maxStack {
-                    var spaceLeft = maxStack - currentAmt
-                    if remaining <= spaceLeft {
-                        owner<backpackData>._SlotAmounts[i] = currentAmt + remaining
-                        remaining = 0
-                    } else {
-                        owner<backpackData>._SlotAmounts[i] = maxStack
-                        remaining = remaining - spaceLeft
+            var handle = owner<backpackData>._BackpackRefs[i]
+            if handle != -1 {
+                if owner<backpackData>._ItemIDs[handle] as string == itemId {
+                    var curAmt = owner<backpackData>._ItemAmounts[handle] as int
+                    if curAmt < maxStack {
+                        var spaceLeft = maxStack - curAmt
+                        if remaining <= spaceLeft {
+                            owner<backpackData>._ItemAmounts[handle] = curAmt + remaining
+                            remaining = 0
+                            break
+                        } else {
+                            owner<backpackData>._ItemAmounts[handle] = maxStack
+                            remaining = remaining - spaceLeft
+                        }
                     }
                 }
             }
         }
 
-        // Pass 2: Find empty slots for remaining items
+        // Pass 2: Find empty slots for remaining items, generate new Handle
         if remaining > 0 {
             for i = 0, owner<backpackData>._MaxCapacity, 1 {
-                if remaining <= 0 { break }
-                if !map.ContainKey(owner<backpackData>._SlotItemIDs, i) {
-                    owner<backpackData>._SlotItemIDs[i] = itemId
+                if owner<backpackData>._BackpackRefs[i] == -1 { // Empty slot found
+                    var newHandle = owner<backpackData>._NextHandle
+                    owner<backpackData>._NextHandle = owner<backpackData>._NextHandle + 1 // Increment ID for next use
+
+                    owner<backpackData>._ItemIDs[newHandle] = itemId
                     if remaining <= maxStack {
-                        owner<backpackData>._SlotAmounts[i] = remaining
+                        owner<backpackData>._ItemAmounts[newHandle] = remaining
+                        owner<backpackData>._BackpackRefs[i] = newHandle // Assign reference to slot
                         remaining = 0
+                        break
                     } else {
-                        owner<backpackData>._SlotAmounts[i] = maxStack
+                        owner<backpackData>._ItemAmounts[newHandle] = maxStack
+                        owner<backpackData>._BackpackRefs[i] = newHandle // Assign reference to slot
                         remaining = remaining - maxStack
                     }
                 }
             }
         }
 
-        if remaining < amount {
-            DispatchEventToEntity(OnBackpackDataChanged, globalEntity, PlatformType.Server, List<object>{owner})
+        if remaining < amount { // Added at least some items
+            if gameManager.IsDebug() { LogInfo("[BackpackService] AddItem | itemId=" + itemId + " requested=" + convert.ToString(amount) + " added=" + convert.ToString(amount - remaining) + " nextHandle=" + convert.ToString(owner<backpackData>._NextHandle)) }
+            DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
             return true
         }
-
+        if gameManager.IsDebug() { LogInfo("[BackpackService] AddItem FAILED | itemId=" + itemId + " amount=" + convert.ToString(amount) + " (backpack full?)") }
         return false
     }
 
     // --- CONSUME ITEM ---
     func ConsumeActiveItem(owner entity<Entity>, amountToConsume int) bool {
-        if owner == nil || amountToConsume <= 0 { return false }
-        if owner<backpackData> == nil { return false }
+        if owner<backpackData> == nil || amountToConsume <= 0 { return false }
 
         var activeSlot = owner<backpackData>._ActiveQuickbarSlot
+        var handle = owner<backpackData>._QuickSlotRefs[activeSlot] // Get Handle from Quick Slot Reference
 
-        if map.ContainKey(owner<backpackData>._SlotItemIDs, activeSlot) && map.ContainKey(owner<backpackData>._SlotAmounts, activeSlot) {
-            var currentAmt = owner<backpackData>._SlotAmounts[activeSlot] as int
+        if gameManager.IsDebug() { LogInfo("[BackpackService] ConsumeActiveItem | activeSlot=" + convert.ToString(activeSlot) + " handle=" + convert.ToString(handle) + " amountToConsume=" + convert.ToString(amountToConsume)) }
+
+        if handle != -1 && map.ContainKey(owner<backpackData>._ItemIDs, handle) {
+            var currentAmt = owner<backpackData>._ItemAmounts[handle] as int
             
             if currentAmt >= amountToConsume {
-                owner<backpackData>._SlotAmounts[activeSlot] = currentAmt - amountToConsume
+                owner<backpackData>._ItemAmounts[handle] = currentAmt - amountToConsume
                 
-                if owner<backpackData>._SlotAmounts[activeSlot] as int <= 0 {
-                    map.Remove(owner<backpackData>._SlotItemIDs, activeSlot)
-                    map.Remove(owner<backpackData>._SlotAmounts, activeSlot)
+                // If item is fully consumed, clean up data and references
+                if owner<backpackData>._ItemAmounts[handle] as int <= 0 {
+                    if gameManager.IsDebug() { LogInfo("[BackpackService] ConsumeActiveItem | item depleted, handle=" + convert.ToString(handle) + " removed from refs") }
+                    map.Remove(owner<backpackData>._ItemIDs, handle)
+                    map.Remove(owner<backpackData>._ItemAmounts, handle)
+                    
+                    // Clear from backpack references
+                    var bIndex = list.IndexOf(owner<backpackData>._BackpackRefs, handle)
+                    if bIndex != -1 { owner<backpackData>._BackpackRefs[bIndex] = -1 }
+                    
+                    // Clear from quick slot references
+                    var qIndex = list.IndexOf(owner<backpackData>._QuickSlotRefs, handle)
+                    if qIndex != -1 { owner<backpackData>._QuickSlotRefs[qIndex] = -1 }
                 }
                 
-                DispatchEventToEntity(OnBackpackDataChanged, globalEntity, PlatformType.Server, List<object>{owner})
+                DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
                 return true
             }
+            if gameManager.IsDebug() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | not enough amount: currentAmt=" + convert.ToString(currentAmt) + " < needed=" + convert.ToString(amountToConsume)) }
+        } else {
+            if gameManager.IsDebug() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | no item in active quick slot (handle=" + convert.ToString(handle) + ")") }
         }
         return false
     }
+
+    // --- QUICK SLOT MANAGEMENT ---
+    
+    // Toggles equip state of an item from the backpack to the quickbar
+    func ToggleEquipItem(owner entity<Entity>, backpackSlotIndex int) bool {
+        if owner<backpackData> == nil { return false }
+
+        var handle = owner<backpackData>._BackpackRefs[backpackSlotIndex]
+        if gameManager.IsDebug() { LogInfo("[BackpackService] ToggleEquipItem | backpackSlotIndex=" + convert.ToString(backpackSlotIndex) + " handle=" + convert.ToString(handle)) }
+        if handle == -1 { 
+            if gameManager.IsDebug() { LogInfo("[BackpackService] ToggleEquipItem | clicked empty slot, skip") }
+            return false
+        }
+
+        var qIndex = list.IndexOf(owner<backpackData>._QuickSlotRefs, handle)
+        if qIndex != -1 {
+            // Already equipped -> Unequip it
+            if gameManager.IsDebug() { LogInfo("[BackpackService] ToggleEquipItem | unequip handle=" + convert.ToString(handle) + " from qSlot=" + convert.ToString(qIndex)) }
+            owner<backpackData>._QuickSlotRefs[qIndex] = -1
+        } else {
+            // Not equipped -> Find first empty quick slot
+            var emptyQIndex = list.IndexOf(owner<backpackData>._QuickSlotRefs, -1)
+            if emptyQIndex != -1 {
+                if gameManager.IsDebug() { LogInfo("[BackpackService] ToggleEquipItem | equip handle=" + convert.ToString(handle) + " to qSlot=" + convert.ToString(emptyQIndex)) }
+                owner<backpackData>._QuickSlotRefs[emptyQIndex] = handle
+            } else {
+                // Quick slots are full -> Overwrite the currently active slot
+                if gameManager.IsDebug() { LogInfo("[BackpackService] ToggleEquipItem | quick slots full, overwrite activeSlot=" + convert.ToString(owner<backpackData>._ActiveQuickbarSlot)) }
+                owner<backpackData>._QuickSlotRefs[owner<backpackData>._ActiveQuickbarSlot] = handle
+            }
+        }
+        
+        // Notify UI to refresh
+        DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
+        return true
+    }
+
+    // Updates the currently selected quickbar slot
+    func SetActiveQuickSlot(owner entity<Entity>, slotIndex int) {
+        if owner<backpackData> == nil { return }
+        
+        LogInfo("[BackpackService] SetActiveQuickSlot | slotIndex=" + convert.ToString(slotIndex))
+        owner<backpackData>._ActiveQuickbarSlot = slotIndex
+        
+        // Notify UI to refresh highlight
+        DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
+    }
+
 }

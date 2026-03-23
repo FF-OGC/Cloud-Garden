@@ -8,7 +8,7 @@ import "../Grid/FloorGridData.fcg" as floorData
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Farming/CropGrowthManager.fcg" as cropManager
-
+import "../Backpack/BackpackManager.fcg" as backpackManager
 [platform_server]
 static graph GameManager {
     
@@ -108,6 +108,13 @@ static graph GameManager {
             var spawnPos = assignedZone<Transform>.Position
             Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
             if _IsDebug { LogInfo("[GameManager] Teleported player to new Farm Zone.") }
+        }
+
+        //4. Add Seed to Backpack
+        var seedId = "seed_pumpkin"
+        var amount = 10
+        if(backpackManager.AddHarvestedItem(player, seedId, amount)) {
+            if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
     }
 }

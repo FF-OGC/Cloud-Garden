@@ -1,23 +1,12 @@
-import "StdLibrary.fcc" as std
-import "EditorGenLib.fcc" as gen
-import "Hud.fcc" as hud
+import "StdLibrary.fcc" as StdLib
+import "EditorGenLib.fcc" as EditorLib
+import "Hud.fcc" as Hud
 
 [platform_client]
 graph ButtonClient {
-    
     event OnTapped(player entity<Player>) {
-        if player == nil { return }
-
-        var parentUI = thisEntity<UIWidget>.ParentUI
-        if parentUI == nil { return }
-
-        // Optional: Play sound here
-        // PlayOneShotSoundV2(EResSound.ClickButton, 1)
-
-        DispatchEventToEntity(
-            gen.OnPlayerTapButton, 
-            parentUI as entity<Entity>, 
-            PlatformType.Client, 
+        var _ParentUI = thisEntity<UIWidget>.ParentUI
+        DispatchEventToEntity(OnPlayerTapButton, _ParentUI<Entity>, PlatformType.Server, 
             List<object>{thisEntity, player})
     }
 }
