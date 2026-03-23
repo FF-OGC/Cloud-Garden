@@ -2,11 +2,12 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as Hud
 
+// DEPRECATED: Replace with ButtonClient.fcg + MyButton(Type="hoe") + HUDFarmAction.fcg
+// See HUDFarmAction.fcg for the new routing pattern.
 [platform_client]
 graph BtnFarmAction {
     
     event OnTapped(player entity<Player>) {
-        // Broadcast user input event to the logic controllers
         DispatchEventToEntity(OnPlayerHoeAction, globalEntity, PlatformType.Server,List<object>{player as entity<Entity>})
         LogInfo("[BtnFarmAction] Player hoe action.")
     }

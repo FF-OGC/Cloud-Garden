@@ -75,6 +75,39 @@
           }
         }
       ]
+    },
+    "CustomComponent62548545": {
+      "label": "MyButton",
+      "name": "CustomComponent62548545",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100000,
+      "PropDefines": [
+        {
+          "propID": 100001,
+          "name": "PROP_41899047",
+          "label": "Type",
+          "type": "String",
+          "value": "",
+          "observable": false,
+          "disabledType": true
+        },
+        {
+          "propID": 100002,
+          "name": "PROP_24899680",
+          "label": "Arg0",
+          "type": "Int",
+          "value": 0,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "compType": "InputEditor",
+            "disabled": true
+          }
+        }
+      ]
     }
   }
 }

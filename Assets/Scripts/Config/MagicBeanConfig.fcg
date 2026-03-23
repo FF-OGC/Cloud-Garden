@@ -1,5 +1,6 @@
 import "StdLibrary.fcc" as std
 
+[platform_server]
 static graph MagicBeanConfig {
     
     _Radius float = 5.0

@@ -8,6 +8,7 @@ import "./TrackerPoolManager.fcg" as poolManager
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 
 
+[platform_server]
 graph GridTrigger {
     _Floor entity<Entity> = nil
 

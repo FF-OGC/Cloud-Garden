@@ -27,7 +27,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "editorLockValue": false,
           "editorVisibleValue": true,
           "propsData": {
@@ -107,7 +110,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "propsData": {
@@ -193,8 +199,8 @@
       },
       "ecaScripts": [
         {
-          "fileId": "9ohxcl4km3f-mmlt6g4r-0os138q1b2u",
-          "filePath": "Assets\\Scripts\\HUD\\BtnFarmAction.fcg",
+          "fileId": "lonkdhlclgr-mmytmjv8-19clz3qpvwq",
+          "filePath": "Assets\\Scripts\\Services\\Utils\\ButtonClient.fcg",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -217,7 +223,10 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": null,
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "propsData": {
@@ -248,7 +257,16 @@
     "alpha": 100,
     "priority": 0
   },
-  "ecaScripts": [],
+  "ecaScripts": [
+    {
+      "fileId": "dsab088m7bn-mn32j7lu-kn5kd65za5p",
+      "filePath": "Assets\\Scripts\\HUD\\HUDFarmAction.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    }
+  ],
   "ecaProps": {
     "CustomHud": {},
     "Entity": {}

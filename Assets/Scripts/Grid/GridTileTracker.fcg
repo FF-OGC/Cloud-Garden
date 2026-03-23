@@ -9,6 +9,7 @@ import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 
+[platform_server]
 graph GridTileTracker {
     _Owner entity<Player> = nil
 

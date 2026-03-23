@@ -1,5 +1,6 @@
 import "StdLibrary.fcc" as std
 
+[platform_server]
 graph PlayerFarmingData {
     // --- RUNTIME PLAYER STATES ---
     CurrentFloor entity<Entity>

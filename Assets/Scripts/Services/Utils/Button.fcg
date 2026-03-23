@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as hud
 
+[platform_server]
 graph Button {
     
     event OnTapped(player entity<Player>) {

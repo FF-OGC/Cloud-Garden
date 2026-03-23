@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "../Core/GameManager.fcg" as gameMgr
 
+[platform_server]
 graph FarmZoneRegister {
     
     event OnAwake() {

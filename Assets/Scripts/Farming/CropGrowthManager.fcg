@@ -6,6 +6,7 @@ import "EditorGenLib.fcc" as gen
 import "../Core/GameManager.fcg" as gameMgr
 import "../Grid/FloorGridData.fcg" as floorData
 
+[platform_server]
 static graph CropGrowthManager {
     
     // Background async loop to check harvest timestamps

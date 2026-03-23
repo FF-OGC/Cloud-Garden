@@ -6,6 +6,7 @@ import "EditorGenLib.fcc" as gen
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/MagicBeanConfig.fcg" as beanCfg
 
+[platform_server]
 static graph MagicBeanManager {
     
     func SnapBeanstalkToConfig(beanstalk entity<Entity>) {

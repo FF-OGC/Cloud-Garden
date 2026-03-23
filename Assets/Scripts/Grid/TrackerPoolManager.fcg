@@ -4,6 +4,7 @@ import "EditorGenLib.fcc" as gen
 import "../Core/GameManager.fcg" as gameMgr
 import "./GridTileTracker.fcg" as gridTracker
 
+[platform_server]
 static graph TrackerPoolManager {
     
     _Pool List<entity<Entity>>

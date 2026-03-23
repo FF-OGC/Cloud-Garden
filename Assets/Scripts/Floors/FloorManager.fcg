@@ -6,6 +6,7 @@ import "Convert.fcc" as convert
 import "../Config/FloorConfig.fcg" as floorCfg
 import "../Config/MagicBeanConfig.fcg" as beanCfg
 
+[platform_server]
 static graph FloorManager {
     
     func SnapFloorsToConfig(zoneObj entity<Entity>, floors List<entity<Entity>>) {

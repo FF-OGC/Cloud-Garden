@@ -1,5 +1,8 @@
 import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
 
+// [platform_client]
+[platform_server]
 static graph ItemConfig {
     
     // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool
@@ -28,5 +31,45 @@ static graph ItemConfig {
         if seedId == "seed_pumpkin" { return "crop_pumpkin" }
         if seedId == "seed_tomato" { return "crop_tomato" }
         return "crop_default"
+    }
+
+    // ==========================================
+    // 1. UI DICTIONARY (For Backpack 2D Icons)
+    // ==========================================
+    func GetIconKey(itemId string) EResSprite {
+        // Replace these with your actual registered UI Resource Keys from the Editor
+        if itemId == "seed_pumpkin" { return EResSprite.seed_icon }
+        if itemId == "crop_pumpkin" { return EResSprite.seed_icon }
+        
+        // Return a default icon if not found
+        return EResSprite.seed_icon 
+    }
+
+    // ==========================================
+    // 2. 3D DICTIONARY (For Farming Visuals)
+    // Returns the correct 3D prefab based on Seed ID and Growth State
+    // ==========================================
+    func GetPlantPrefab(seedId string, state int) gen.EResPrefab {
+        
+        // STAGE 1: JUST PLANTED / NEED WATERING (Usually a tiny sprout or dry dirt)
+        if state == gen.EFarmSlotState.NeedWatering {
+            return gen.EResPrefab.seed_needwatering 
+        }
+        
+        // STAGE 2: GROWING (Differentiate by plant type)
+        if state == gen.EFarmSlotState.Growing {
+            if seedId == "seed_pumpkin" { return gen.EResPrefab.seed_model } 
+            if seedId == "seed_tomato" { return gen.EResPrefab.seed_model }   
+            return gen.EResPrefab.seed_model // Default growing model
+        }
+        
+        // STAGE 3: READY TO HARVEST (Differentiate by plant type)
+        if state == gen.EFarmSlotState.ReadyToHarvest {
+            if seedId == "seed_pumpkin" { return gen.EResPrefab.seed_growed } 
+            if seedId == "seed_tomato" { return gen.EResPrefab.seed_growed }   
+            return gen.EResPrefab.seed_growed // Default mature model
+        }
+
+        return gen.EResPrefab.dirt_tilled // Fallback
     }
 }

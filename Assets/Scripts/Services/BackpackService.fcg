@@ -5,9 +5,10 @@ import "Convert.fcc" as convert
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Config/ItemConfig.fcg" as itemCfg
 
+[platform_server]
 static graph BackpackService {
 
-    // Check if backpack has enough space
+    // --- CHECK SPACE ---
     func CanAddItem(owner entity<Entity>, itemId string, amount int) bool {
         if owner == nil || amount <= 0 { return false }
         if owner<backpackData> == nil { return false }
@@ -29,7 +30,60 @@ static graph BackpackService {
         return remaining <= 0 
     }
 
-    // Consume active handheld item
+    // --- ADD ITEM LOGIC ---
+    func AddItem(owner entity<Entity>, itemId string, amount int) bool {
+        if owner == nil || amount <= 0 { return false }
+        if owner<backpackData> == nil { return false }
+
+        var maxStack = itemCfg.GetMaxStack(itemId)
+        var remaining = amount
+
+        // Pass 1: Try to stack with existing items
+        for i = 0, owner<backpackData>._MaxCapacity, 1 {
+            if remaining <= 0 { break }
+            if map.ContainKey(owner<backpackData>._SlotItemIDs, i) && map.ContainKey(owner<backpackData>._SlotAmounts, i) {
+                var currentId = owner<backpackData>._SlotItemIDs[i] as string
+                var currentAmt = owner<backpackData>._SlotAmounts[i] as int
+
+                if currentId == itemId && currentAmt < maxStack {
+                    var spaceLeft = maxStack - currentAmt
+                    if remaining <= spaceLeft {
+                        owner<backpackData>._SlotAmounts[i] = currentAmt + remaining
+                        remaining = 0
+                    } else {
+                        owner<backpackData>._SlotAmounts[i] = maxStack
+                        remaining = remaining - spaceLeft
+                    }
+                }
+            }
+        }
+
+        // Pass 2: Find empty slots for remaining items
+        if remaining > 0 {
+            for i = 0, owner<backpackData>._MaxCapacity, 1 {
+                if remaining <= 0 { break }
+                if !map.ContainKey(owner<backpackData>._SlotItemIDs, i) {
+                    owner<backpackData>._SlotItemIDs[i] = itemId
+                    if remaining <= maxStack {
+                        owner<backpackData>._SlotAmounts[i] = remaining
+                        remaining = 0
+                    } else {
+                        owner<backpackData>._SlotAmounts[i] = maxStack
+                        remaining = remaining - maxStack
+                    }
+                }
+            }
+        }
+
+        if remaining < amount {
+            DispatchEventToEntity(OnBackpackDataChanged, globalEntity, PlatformType.Server, List<object>{owner})
+            return true
+        }
+
+        return false
+    }
+
+    // --- CONSUME ITEM ---
     func ConsumeActiveItem(owner entity<Entity>, amountToConsume int) bool {
         if owner == nil || amountToConsume <= 0 { return false }
         if owner<backpackData> == nil { return false }
@@ -37,18 +91,17 @@ static graph BackpackService {
         var activeSlot = owner<backpackData>._ActiveQuickbarSlot
 
         if map.ContainKey(owner<backpackData>._SlotItemIDs, activeSlot) && map.ContainKey(owner<backpackData>._SlotAmounts, activeSlot) {
-            var currentAmt = owner<backpackData>._SlotAmounts[activeSlot]
+            var currentAmt = owner<backpackData>._SlotAmounts[activeSlot] as int
             
             if currentAmt >= amountToConsume {
                 owner<backpackData>._SlotAmounts[activeSlot] = currentAmt - amountToConsume
                 
-                if owner<backpackData>._SlotAmounts[activeSlot] <= 0 {
+                if owner<backpackData>._SlotAmounts[activeSlot] as int <= 0 {
                     map.Remove(owner<backpackData>._SlotItemIDs, activeSlot)
                     map.Remove(owner<backpackData>._SlotAmounts, activeSlot)
                 }
                 
-                // Broadcast event to force UI update
-                DispatchEvent(OnBackpackDataChanged, globalEntity, List<object>{owner})
+                DispatchEventToEntity(OnBackpackDataChanged, globalEntity, PlatformType.Server, List<object>{owner})
                 return true
             }
         }

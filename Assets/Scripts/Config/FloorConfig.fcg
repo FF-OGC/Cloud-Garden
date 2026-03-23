@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 
+[platform_server]
 static graph FloorConfig {
     
     _Heights List<float> = nil

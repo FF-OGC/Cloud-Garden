@@ -73,6 +73,30 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "xjgzlb8rg9d-mmoeqpfa-xwekt0hkgik",
+      "filePath": "Assets\\Scripts\\Farming\\PlayerFarmingData.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "27ykchjri9q-mmyqw2k5-li1bvsc4tb",
+      "filePath": "Assets\\Scripts\\Backpack\\PlayerBackpackVisual.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "8yb3woegsye-mmyqw2j8-7972yfngcu2",
+      "filePath": "Assets\\Scripts\\Backpack\\BackpackData.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,
@@ -276,7 +300,8 @@
     "playerskill_cityhero_cd_percent": 100,
     "playerskill_electricgirl_cd_percent": 100,
     "playerskill_auroraboy_cd_percent": 100,
-    "DisableEnemyFootstepVibrate": false
+    "DisableEnemyFootstepVibrate": false,
+    "receive_damage": 100
   },
   "physicsData": {
     "ECCTParam_Gravity": {

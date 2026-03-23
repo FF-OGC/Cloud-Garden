@@ -18,6 +18,18 @@
           },
           "scriptName": "hoe_btn",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "yjcwv27zj1-mn2k0ht7-9vgbl65yep",
+            "filePath": "Assets\\UI\\Backpack.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "backpack",
+          "children": []
         }
       ]
     },
@@ -161,7 +173,20 @@
     },
     "texture": {
       "id": "texture",
-      "children": []
+      "children": [
+        {
+          "refer": {
+            "fileId": "ewlrxjsiknq-mn2oav28-lhfhhaiyi6b",
+            "filePath": "Assets\\Sprites\\DustIconTemp.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_icon",
+          "children": []
+        }
+      ]
     },
     "effecttype": {
       "id": "effecttype",

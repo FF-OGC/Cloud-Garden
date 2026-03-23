@@ -1,5 +1,6 @@
 import "StdLibrary.fcc" as std
 
+[platform_server]
 static graph FarmGridConfig {
     
     _TileSize float = 1.0 

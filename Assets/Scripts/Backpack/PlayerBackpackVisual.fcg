@@ -2,122 +2,193 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "List.fcc" as list
 import "Map.fcc" as map
-import "Hud.fcc" as hud
 import "Convert.fcc" as convert
+import "Hud.fcc" as hud
 
-import "../Core/GameManager.fcg" as gameMgr
 import "./BackpackData.fcg" as backpackData
-import "./BackpackSlotVisual.fcg" as slotVisual
+import "../Services/Utils/UIUtil.fcg" as uiUtil
+import "../Config/ItemConfig.fcg" as itemCfg
 
+[platform_server]
 graph PlayerBackpackVisual {
     
+    // Internal UI References
     _BackpackUI entity<CustomUI>
     _MainPanel entity<UIWidget>
-    _SlotContainer entity<UIWidget> 
+    _QuickSlotPanel entity<UIWidget>
+    _ToggleBtn entity<UIWidget>
 
     _IsOpen bool = false
+    _IsDebug bool = true
+    _AllSlots List<entity<Entity>> = List<entity<Entity>>{}
 
     event OnAwake() {
-        InitializeSlots()
-    }
+        // Assuming the UI is created and attached to the player here
+        // Replace EResUI.Backpack with your actual UI Resource Key if needed
+        CreateCustomUI(out var uiInstance, thisEntity<Player>, EResUI.backpack)
+        if uiInstance != nil {
+            InitUIReferences(uiInstance)
 
-    func InitializeSlots() {
-        if _SlotContainer == nil { return }
-        var slots = GetChildren(_SlotContainer)
-        var totalSlots = list.Length(slots)
-
-        for i = 0, totalSlots, 1 {
-            var slotObj = slots[i]
-            if slotObj != nil && HasComponent(slotObj, typeof(slotVisual)) {
-                slotObj<slotVisual>.SlotIndex = i
-            }
+            _IsOpen = false
+            if _MainPanel != nil { _MainPanel<UIWidget>.IsVisible = false } // Hide main bag
+            if _QuickSlotPanel != nil { _QuickSlotPanel<UIWidget>.IsVisible = true } // Show quickbar
+            if _ToggleBtn != nil { _ToggleBtn<UIWidget>.IsVisible = true } // Show backpack icon
+            
+            RefreshVisuals()
         }
     }
 
+    event OnBackpackDataChanged(owner entity<Entity>) {
+        if owner == nil || owner != thisEntity<Entity> { return }
+        RefreshVisuals()
+    }
 
 
+    // Finds all UI components dynamically using their paths
+    func InitUIReferences(backpackUI entity<CustomUI>) {
+        if backpackUI == nil { return }
+        _BackpackUI = backpackUI
+
+        // 1. Find main panels by exact path in the UI hierarchy
+        _MainPanel = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root")
+        _QuickSlotPanel = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/quick_slot")
+        _ToggleBtn = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/icon_backpack")
+
+        // 2. Find Quick Slots first (index 0-4)
+        var quickFound = 0
+        for i = 0, 5, 1 {
+            var path = "/quick_slot/" + convert.ToString(i)
+            var slotObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, path)
+            if slotObj != nil {
+                list.Append(_AllSlots, slotObj as entity<Entity>)
+                quickFound = quickFound + 1
+            }
+        }
+        if _IsDebug { LogInfo("[BackpackVisual] Quick slots found: " + convert.ToString(quickFound) + "/5") }
+
+        // 3. Find Backpack Slots after (index 5+)
+        var bagFound = 0
+        for i = 0, 40, 1 {
+            var path = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
+            var slotObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, path)
+            if slotObj != nil {
+                list.Append(_AllSlots, slotObj as entity<Entity>)
+                bagFound = bagFound + 1
+            }
+        }
+        if _IsDebug { LogInfo("[BackpackVisual] Bag slots found: " + convert.ToString(bagFound) + "/40") }
+
+        // 4. Log total indexed slots
+        var totalSlots = list.Length(_AllSlots)
+        if _IsDebug { LogInfo("[BackpackVisual] Total slots indexed: " + convert.ToString(totalSlots)) }
+    }
+
+    // Toggles only the root panel, leaving quick_slot visible
     func ToggleBackpack() {
+        if _IsDebug { LogInfo("[BackpackVisual] Toggling backpack") }
         if _MainPanel == nil { return }
         _IsOpen = !_IsOpen
         _MainPanel<UIWidget>.IsVisible = _IsOpen
         if _IsOpen { RefreshVisuals() }
     }
 
+    // Refreshes the display data for all registered slots
     func RefreshVisuals() {
-        if thisEntity<backpackData> == nil || _SlotContainer == nil { return }
+        if thisEntity<backpackData> == nil {
+            if _IsDebug { LogInfo("[BackpackVisual] RefreshVisuals: BackpackData component not found on this entity!") }
+            return
+        }
         
-        var slots = GetChildren(_SlotContainer)
-        var totalSlots = list.Length(slots)
+        var totalSlots = list.Length(_AllSlots)
+        if _IsDebug { LogInfo("[BackpackVisual] RefreshVisuals: scanning " + convert.ToString(totalSlots) + " slots") }
 
         for i = 0, totalSlots, 1 {
-            var slotObj = slots[i]
-            if slotObj != nil && HasComponent(slotObj, typeof(slotVisual)) {
+            var slotObj = _AllSlots[i]
+            if slotObj != nil {
                 if map.ContainKey(thisEntity<backpackData>._SlotItemIDs, i) && map.ContainKey(thisEntity<backpackData>._SlotAmounts, i) {
                     var itemId = thisEntity<backpackData>._SlotItemIDs[i] as string
                     var amount = thisEntity<backpackData>._SlotAmounts[i] as int
-                    slotObj<slotVisual>.SetData(itemId, amount)
+                    if _IsDebug { LogInfo("[BackpackVisual] Slot " + convert.ToString(i) + " -> " + itemId + " x" + convert.ToString(amount)) }
+                    _SetSlotData(slotObj, itemId, amount)
                 } else {
-                    slotObj<slotVisual>.SetEmpty()
+                    _SetSlotEmpty(slotObj)
                 }
             }
         }
     }
 
-    // Add this function to the end of PlayerBackpackVisual.fcg
+    // Searches _AllSlots (and parent) to resolve a clicked entity → slot index
+    func GetSlotIndex(e entity<Entity>) int {
+        if e == nil { return -1 }
+        var len = list.Length(_AllSlots)
+        for i = 0, len, 1 {
+            if _AllSlots[i] == e { return i }
+        }
+        var parent = e<Transform>.Parent as entity<Entity>
+        if parent != nil {
+            for i = 0, len, 1 {
+                if _AllSlots[i] == parent { return i }
+            }
+        }
+        return -1
+    }
+
+    func _SetSlotData(slotObj entity<Entity>, itemId string, amount int) {
+        if slotObj == nil { return }
+        var iconObj entity<Entity> = nil
+        var rarityObj = uiUtil.GetChildSafe(slotObj<Transform>, 1)
+        if rarityObj != nil { iconObj = uiUtil.GetChildSafe(rarityObj<Transform>, 0) }
+        if iconObj == nil { iconObj = uiUtil.GetChildSafe(slotObj<Transform>, 0) }
+        if iconObj != nil {
+            iconObj<UIWidgetImage>.Alpha = 1.0
+            iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
+        }
+        var textObj = uiUtil.GetChildSafe(slotObj<Transform>, 4)
+        if textObj == nil { textObj = uiUtil.GetChildSafe(slotObj<Transform>, 1) }
+        if textObj != nil {
+            textObj<UIWidgetLabel>.Alpha = 1.0
+            textObj<UIWidgetLabel>.Content = convert.ToString(amount)
+        }
+    }
+
+    func _SetSlotEmpty(slotObj entity<Entity>) {
+        if slotObj == nil { return }
+        var iconObj entity<Entity> = nil
+        var rarityObj = uiUtil.GetChildSafe(slotObj<Transform>, 1)
+        if rarityObj != nil { iconObj = uiUtil.GetChildSafe(rarityObj<Transform>, 0) }
+        if iconObj == nil { iconObj = uiUtil.GetChildSafe(slotObj<Transform>, 0) }
+        if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
+        var textObj = uiUtil.GetChildSafe(slotObj<Transform>, 4)
+        if textObj == nil { textObj = uiUtil.GetChildSafe(slotObj<Transform>, 1) }
+        if textObj != nil { textObj<UIWidgetLabel>.Alpha = 0.0 }
+    }
+
+    // Handles the logic when any slot is clicked
     func HandleSlotPressed(clickedIndex int) {
         if thisEntity<backpackData> == nil { return }
 
-        // Logic when backpack is closed (Only use the first 5 slots)
+        if _IsDebug {
+            if map.ContainKey(thisEntity<backpackData>._SlotItemIDs, clickedIndex) {
+                var itemInSlot = thisEntity<backpackData>._SlotItemIDs[clickedIndex] as string
+                var amtInSlot = thisEntity<backpackData>._SlotAmounts[clickedIndex] as int
+                LogInfo("[BackpackVisual] Clicked slot " + convert.ToString(clickedIndex) + ": " + itemInSlot + " x" + convert.ToString(amtInSlot))
+            } else {
+                LogInfo("[BackpackVisual] Clicked slot " + convert.ToString(clickedIndex) + ": empty")
+            }
+        }
+        
+        // If backpack is closed, only interact with quickbar slots (0 to 4)
         if !_IsOpen {
             if clickedIndex >= 0 && clickedIndex <= 4 {
                 thisEntity<backpackData>._ActiveQuickbarSlot = clickedIndex
-                if gameMgr.IsDebug() { LogInfo("[BackpackVisual] Equipped item in slot: " + convert.ToString(clickedIndex)) }
-                
-                // TODO: Call the function to draw the highlight border here
+                // TODO: Update highlight visual here
             }
             return
         }
         
-        // Logic when backpack is open (Click to move items, sort...)
+        // If backpack is open, handle inventory management
         if _IsOpen {
-            if gameMgr.IsDebug() { LogInfo("[BackpackVisual] Selecting slot: " + convert.ToString(clickedIndex)) }
-            // TODO: Smart transfer logic here
+            // TODO: Smart transfer or swap logic here
         }
     }
-
-    // Listen to global event bus: Refresh visuals when data changes.
-    event OnBackpackDataChanged(owner entity<Entity>) {
-        if owner == nil || owner != thisEntity<Entity> { return }
-        if _IsOpen {
-            RefreshVisuals()
-        }
-    }
-
-    // Listen to the global tap event from ButtonClient
-    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
-        if player == nil || player != thisEntity<Entity> || button == nil { return }
-
-        // Check if the clicked button has our Backpack slot visual component
-        if HasComponent(button, typeof(slotVisual)) {
-            var clickedIndex = button<slotVisual>.SlotIndex
-            if player<backpackData> == nil { return }
-
-            // Logic when backpack is closed (Equipping quickbar)
-            if !_IsOpen {
-                if clickedIndex >= 0 && clickedIndex <= 4 {
-                    player<backpackData>._ActiveQuickbarSlot = clickedIndex
-                    
-                    // TODO: Highlight the equipped slot UI here
-                }
-                return
-            }
-            
-            // Logic when backpack is open (Moving items around)
-            if _IsOpen {
-                // TODO: Smart transfer or item swapping logic
-            }
-        }
-    }
-
-    
 }

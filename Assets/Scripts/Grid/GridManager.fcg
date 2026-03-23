@@ -8,6 +8,7 @@ import "./FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/FarmGridConfig.fcg" as gridCfg
 
+[platform_server]
 static graph GridManager {
     
     // Khởi tạo lưới HÌNH VUÔNG

@@ -2,27 +2,34 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as hud
 
-import "./PlayerBackpackVisual.fcg" as playerVisual
-import "./BackpackSlotVisual.fcg" as slotVisual
+import "./PlayerBackpackVisual.fcg" as playerBackpackVisual
 
+[platform_server]
 graph HUDBackpack {
     
-    // Handle event OnPlayerTapButton from ButtonClient
-    event OnPlayerTapButton(button entity<UIWidgetButton>, owner entity<Player>) {
-        if owner == nil || button == nil { return }
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
 
-        // Call VisualManager on the Player entity
-        if owner<playerVisual> == nil { return }
+        if player<playerBackpackVisual> == nil { return }
 
-        // Check if the clicked button is a Backpack slot
-        if HasComponent(button, typeof(slotVisual)) {
-            var clickedIndex = button<slotVisual>.SlotIndex as int
+        // --- THE DATA-DRIVEN ROUTER ---
+        if HasComponent(button, typeof(MyButton)) {
+            var btnType = button<MyButton>.Type
             
-            // Command VisualManager to handle the slot press
-            owner<playerVisual>.HandleSlotPressed(clickedIndex)
+            // Route: Any slot clicked (quick_slot or backpack_slot)
+            // BackpackSlotVisual may be on the button itself (quick slot)
+            // or on the parent slot entity (bag slot uses a child btn button)
+            if btnType == "backpack_slot" || btnType == "quick_slot" {
+                var clickedIndex = player<playerBackpackVisual>.GetSlotIndex(button as entity<Entity>)
+                if clickedIndex < 0 { return }
+                player<playerBackpackVisual>.HandleSlotPressed(clickedIndex)
+            } else if btnType == "toggle_bag" {
+                player<playerBackpackVisual>.ToggleBackpack()
+            } else if btnType == "close_bag" {
+                if player<playerBackpackVisual>._IsOpen { player<playerBackpackVisual>.ToggleBackpack() }
+            }
+            
+            return
         }
-
-        // Future: If we have a Close button, check here:
-        // else if button == visualManager.GetWidget(EResKey.CloseButton) { ... }
     }
 }

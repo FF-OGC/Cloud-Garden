@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as StdLib
 import "EditorGenLib.fcc" as EditorLib
 import "Player.fcc" as Player
 import "Hud.fcc" as Hud 
+[platform_server]
 graph PlayerDefaultHUD {
     
     event OnAwake() {

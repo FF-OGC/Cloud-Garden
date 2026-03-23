@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 
+[platform_server]
 graph FloorGridData {
     // --- OWNERSHIP DATA ---
     Owner entity<Entity> // Store the player entity who owns this floor
@@ -19,14 +20,14 @@ graph FloorGridData {
     func InitMaps() {
         Owner = nil // Default: No owner
         
-        CellStates = map.New()
-        SoilTiers = map.New()
-        PlantedSeeds = map.New()
+        CellStates = map.New() as Map<string, int>
+        SoilTiers = map.New() as Map<string, int>
+        PlantedSeeds = map.New() as Map<string, string>
 
-        HarvestTimes = map.New()
-        CropPositions = map.New()
+        HarvestTimes = map.New() as Map<string, float>
+        CropPositions = map.New() as Map<string, Vector3>
         
-        SoilVisuals = map.New()
-        PlantVisuals = map.New()
+        SoilVisuals = map.New() as Map<string, entity<Entity>>
+        PlantVisuals = map.New() as Map<string, entity<Entity>>
     }
 }

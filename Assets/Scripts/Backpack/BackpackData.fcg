@@ -1,8 +1,9 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 import "EditorGenLib.fcc" as gen
-import "../Config/ItemConfig.fcg" as itemCfg 
 
+// [platform_client]
+[platform_server]
 graph BackpackData {
     
     _SlotItemIDs Map<int, string> 
@@ -12,61 +13,16 @@ graph BackpackData {
     _MaxCapacity int = 20
 
     event OnAwake() {
-        _SlotItemIDs = map.New()
-        _SlotAmounts = map.New()
+        // Fixed: Correct Map initialization syntax
+        _SlotItemIDs = map.New() as Map<int, string>
+        _SlotAmounts = map.New() as Map<int, int>
         _ActiveQuickbarSlot = 0
         
         // Debug initial item
         _SlotItemIDs[0] = "seed_pumpkin"
-        _SlotAmounts[0] = 50
+        _SlotAmounts[0] = 5
     }
 
-    // Listen to event add item request
-    event OnRequestAddItem(owner entity<Entity>, itemId string, amount int) {
-        if owner == nil || owner != thisEntity<Entity> { return }
-        if amount <= 0 { return }
-        
-        var maxStack = itemCfg.GetMaxStack(itemId) 
-        var remaining = amount
+    
 
-        // Pass 1: Try to stack with existing items
-        for i = 0, _MaxCapacity, 1 {
-            if remaining <= 0 { break }
-            if map.ContainKey(_SlotItemIDs, i) && map.ContainKey(_SlotAmounts, i) {
-                var currentId = _SlotItemIDs[i] as string
-                var currentAmt = _SlotAmounts[i] as int
-
-                if currentId == itemId && currentAmt < maxStack {
-                    var spaceLeft = maxStack - currentAmt
-                    if remaining <= spaceLeft {
-                        _SlotAmounts[i] = currentAmt + remaining
-                        remaining = 0
-                    } else {
-                        _SlotAmounts[i] = maxStack
-                        remaining = remaining - spaceLeft
-                    }
-                }
-            }
-        }
-
-        // Pass 2: Find empty slots
-        if remaining > 0 {
-            for i = 0, _MaxCapacity, 1 {
-                if remaining <= 0 { break }
-                if !map.ContainKey(_SlotItemIDs, i) {
-                    _SlotItemIDs[i] = itemId
-                    if remaining <= maxStack {
-                        _SlotAmounts[i] = remaining
-                        remaining = 0
-                    } else {
-                        _SlotAmounts[i] = maxStack
-                        remaining = remaining - maxStack
-                    }
-                }
-            }
-        }
-
-        // Notify UI to refresh
-        DispatchEvent(gen.OnBackpackDataChanged, globalEntity, List<object>{owner})
-    }
 }

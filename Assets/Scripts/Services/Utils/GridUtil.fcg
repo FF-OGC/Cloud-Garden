@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "Math.fcc" as math
 import "Convert.fcc" as convert
 
+[platform_server]
 static graph GridUtil {
     
     // Generates a string key from a Vector3 position (e.g. "10_5")
