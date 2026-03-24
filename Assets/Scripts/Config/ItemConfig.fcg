@@ -36,7 +36,7 @@ static graph ItemConfig {
     // ==========================================
     // 1. UI DICTIONARY (For Backpack 2D Icons)
     // ==========================================
-    func GetIconKey(itemId string) EResSprite {
+    func GetIconKey(itemId string) SpriteID {
         // Replace these with your actual registered UI Resource Keys from the Editor
         if itemId == "seed_pumpkin" { return EResSprite.seed_icon }
         if itemId == "crop_pumpkin" { return EResSprite.seed_icon }
@@ -49,7 +49,7 @@ static graph ItemConfig {
     // 2. 3D DICTIONARY (For Farming Visuals)
     // Returns the correct 3D prefab based on Seed ID and Growth State
     // ==========================================
-    func GetPlantPrefab(seedId string, state int) gen.EResPrefab {
+    func GetPlantPrefab(seedId string, state int) PrefabID {
         
         // STAGE 1: JUST PLANTED / NEED WATERING (Usually a tiny sprout or dry dirt)
         if state == gen.EFarmSlotState.NeedWatering {

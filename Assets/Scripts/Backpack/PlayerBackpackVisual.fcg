@@ -105,6 +105,9 @@ graph PlayerBackpackVisual {
             if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
                 var itemId = thisEntity<backpackData>._ItemIDs[handle] as string
                 var amount = thisEntity<backpackData>._ItemAmounts[handle] as int
+                if(gameManager._IsDebug) {
+                    LogInfo("[PlayerBackpackVisual] Path" + path)
+                }
                 _SetSlotVisual(path, itemId, amount)
                 
                 // Show 'equipped' icon if handle exists in QuickSlotRefs
