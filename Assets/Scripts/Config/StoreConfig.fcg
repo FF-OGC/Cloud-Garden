@@ -1,0 +1,21 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+
+// Static configuration for shop initial states. No runtime data here.
+static graph StoreConfig {
+    
+    // Returns all items available in the store
+    func GetStoreItems() List<string> {
+        return List<string>{"seed_pumpkin"}
+    }
+
+    // Returns the default max stock for an item
+    func GetDefaultStock(itemId string) int {
+        if itemId == "seed_pumpkin" { return 50 }
+        if itemId == "seed_carrot" { return 30 }
+        if itemId == "watering_can" { return 5 }
+        return 0
+    }
+
+    func GetSlotCount() int { return 40 }
+}

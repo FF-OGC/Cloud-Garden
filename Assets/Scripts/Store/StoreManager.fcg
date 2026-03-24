@@ -1,0 +1,58 @@
+import "StdLibrary.fcc" as std
+import "Player.fcc" as playerLib
+import "Convert.fcc" as convert
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+
+import "../Services/StoreService.fcg" as storeService
+import "./StoreData.fcg" as storeData
+import "../Backpack/BackpackManager.fcg" as backpackManager
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph StoreManager {
+
+    event OnPlayerEnterStore(player entity<Player>) {
+        if gameManager.IsDebug() { LogInfo("[StoreManager] OnPlayerEnterStore") }
+        SyncStoreDataToPlayer(player)
+        DispatchEventToEntity(OnPlayerEnterStore, player, PlatformType.Server, List<object>{player})
+    }
+
+    event OnPlayerExitStore(player entity<Player>) {
+        if gameManager.IsDebug() { LogInfo("[StoreManager] OnPlayerExitStore") }
+        DispatchEventToEntity(OnPlayerExitStore, player, PlatformType.Server, List<object>{player})
+    }
+
+    event OnPlayerToggleStore(player entity<Player>) {
+        if gameManager.IsDebug() { LogInfo("[StoreManager] OnPlayerToggleStore") }
+        DispatchEventToEntity(OnPlayerToggleStore, player, PlatformType.Server, List<object>{player})
+    }
+
+    event OnRequestBuyItem(player entity<Player>, itemId string, amount int) {
+        if gameManager.IsDebug() { LogInfo("[StoreManager] OnRequestBuyItem | player=" + player<Entity>.Name + " itemId=" + itemId + " amount=" + convert.ToString(amount)) }
+        if player == nil || amount <= 0 { return }
+
+        if !storeService.CanBuy(itemId, amount) {
+            if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Not enough stock") }
+            DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Not enough stock!", nil, nil})
+            return
+        }
+
+        storeService.ExecuteBuy(itemId, amount)
+
+        if !backpackManager.AddItem(player, itemId, amount) {
+            if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Backpack full") }
+            DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Backpack is full!", nil, nil})
+            return
+        }
+
+        if gameManager.IsDebug() { LogInfo("[StoreManager] SUCCESS: Bought " + convert.ToString(amount) + "x " + itemId) }
+        DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, true, "Purchase successful!", storeData._ItemIDs, storeData._ItemAmounts})
+    }
+
+    func SyncStoreDataToPlayer(player entity<Player>) {
+        if player == nil { return }
+        if gameManager.IsDebug() { LogInfo("[StoreManager] SyncStoreDataToPlayer") }
+        DispatchEventToEntity(OnSyncStoreData, player, PlatformType.Server, List<object>{player, storeData._ItemIDs, storeData._ItemAmounts})
+    }
+}

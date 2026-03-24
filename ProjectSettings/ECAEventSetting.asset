@@ -4,33 +4,6 @@
   },
   "_entityId": "YNTKwtqc",
   "customEventDefines": {
-    "signal_60093422": {
-      "name": "OnFarmCellStateChanged",
-      "eventType": 0,
-      "enitityType": "Component",
-      "typeID": 100002,
-      "props": [
-        {
-          "name": "floor",
-          "value": "Entity",
-          "key": 1
-        },
-        {
-          "name": "gridPos",
-          "value": "Vector3",
-          "key": 2
-        },
-        {
-          "name": "newState",
-          "value": "Int",
-          "key": 3
-        }
-      ],
-      "propCount": 3,
-      "apiTargetV2": "both",
-      "version": 45,
-      "key": "signal_60093422"
-    },
     "signal_86389280": {
       "name": "OnPlayerHoeAction",
       "eventType": 0,
@@ -113,14 +86,189 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_76789303"
+    },
+    "signal_53917574": {
+      "name": "OnRequestBuyItem",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100005,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "itemId",
+          "value": "String",
+          "key": 2
+        },
+        {
+          "name": "amount",
+          "value": "Int",
+          "key": 3
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_53917574"
+    },
+    "signal_74145831": {
+      "name": "OnBuyItemResponse",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100006,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "isSuccess",
+          "value": "Bool",
+          "key": 2
+        },
+        {
+          "name": "message",
+          "value": "String",
+          "key": 3
+        },
+        {
+          "name": "newIds",
+          "value": "ListT_String",
+          "key": 4
+        },
+        {
+          "name": "newAmounts",
+          "value": "ListT_Int",
+          "key": 5
+        }
+      ],
+      "propCount": 5,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_74145831"
+    },
+    "signal_13434618": {
+      "name": "OnSyncStoreData",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100007,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "ids",
+          "value": "ListT_String",
+          "key": 2
+        },
+        {
+          "name": "amounts",
+          "value": "ListT_Int",
+          "key": 3
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_13434618"
+    },
+    "signal_16737112": {
+      "name": "OnPlayerEnterStore",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100008,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_16737112"
+    },
+    "signal_60093422": {
+      "name": "OnFarmCellStateChanged",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100002,
+      "props": [
+        {
+          "name": "floor",
+          "value": "Entity",
+          "key": 1
+        },
+        {
+          "name": "gridPos",
+          "value": "Vector3",
+          "key": 2
+        },
+        {
+          "name": "newState",
+          "value": "Int",
+          "key": 3
+        }
+      ],
+      "propCount": 3,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_60093422"
+    },
+    "signal_98373386": {
+      "name": "OnPlayerExitStore",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100009,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_98373386"
+    },
+    "signal_88875793": {
+      "name": "OnPlayerToggleStore",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100010,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_88875793"
     }
   },
   "customName": {
-    "OnFarmCellStateChanged": "signal_60093422",
     "OnPlayerHoeAction": "signal_86389280",
     "OnPlayerTapButton": "signal_20131491",
     "OnRequestAddItem": "signal_22656937",
-    "OnBackpackDataChanged": "signal_76789303"
+    "OnBackpackDataChanged": "signal_76789303",
+    "OnRequestBuyItem": "signal_53917574",
+    "OnBuyItemResponse": "signal_74145831",
+    "OnSyncStoreData": "signal_13434618",
+    "OnPlayerEnterStore": "signal_16737112",
+    "OnFarmCellStateChanged": "signal_60093422",
+    "OnPlayerExitStore": "signal_98373386",
+    "OnPlayerToggleStore": "signal_88875793"
   },
   "children": []
 }

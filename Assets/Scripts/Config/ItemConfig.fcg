@@ -33,6 +33,16 @@ static graph ItemConfig {
         return "crop_default"
     }
 
+    func GetItemName(itemId string) string {
+        if itemId == "seed_pumpkin" { return "Pumpkin Seed" }
+        if itemId == "seed_tomato" { return "Tomato Seed" }
+        if itemId == "seed_carrot" { return "Carrot Seed" }
+        if itemId == "crop_pumpkin" { return "Pumpkin" }
+        if itemId == "crop_tomato" { return "Tomato" }
+        if itemId == "watering_can" { return "Watering Can" }
+        return itemId
+    }
+
     // ==========================================
     // 1. UI DICTIONARY (For Backpack 2D Icons)
     // ==========================================

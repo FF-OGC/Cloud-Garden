@@ -113,6 +113,22 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "gro3t6rdyw6-mn4evrpo-xh100c1zgjg",
+      "filePath": "Assets\\Scripts\\Store\\HUDStore.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "3yne33zgjpe-mn4ff31s-hdvau0znnav",
+      "filePath": "Assets\\Scripts\\Store\\PlayerStoreVisual.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

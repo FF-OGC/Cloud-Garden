@@ -1,0 +1,58 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+import "Player.fcc" as playerLib
+import "Convert.fcc" as convert
+
+import "./PlayerStoreVisual.fcg" as playerStoreVisual
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+graph HUDStore {
+    
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        LogInfo("[HUDStore] OnPlayerTapButton FIRED | hasMyButton=" + convert.ToString(HasComponent(button, typeof(MyButton))) + " entityName=" + button<Entity>.Name)
+        if player == nil || button == nil {
+            LogWarning("[HUDStore] OnPlayerTapButton: player or button is nil")
+            return
+        }
+        if player<playerStoreVisual> == nil {
+            LogWarning("[HUDStore] OnPlayerTapButton: playerStoreVisual is nil on player")
+            return
+        }
+
+        var actualBtn = button
+        if !HasComponent(button, typeof(MyButton)) {
+            var storeUI = player<playerStoreVisual>._StoreUI
+            var entityName = button<Entity>.Name
+            LogWarning("[HUDStore] Button '" + entityName + "' has no MyButton, trying child /btn...")
+            var btnChild = GetWidgetByPath(player, storeUI, "/root/scroll/layout/" + entityName + "/btn")
+            if btnChild != nil && HasComponent(btnChild, typeof(MyButton)) {
+                LogInfo("[HUDStore] Found MyButton on child btn of '" + entityName + "'")
+            } else {
+                LogWarning("[HUDStore] No MyButton found on '" + entityName + "' or its /btn child")
+                return
+            }
+        }
+
+        var btnType = actualBtn<MyButton>.Type
+        var slotIndex = actualBtn<MyButton>.Arg0
+        LogInfo("[HUDStore] Processing btnType=" + btnType + " slotIndex=" + convert.ToString(slotIndex))
+
+        if btnType == "store_slot" {
+            player<playerStoreVisual>.HandleSlotPressed(slotIndex)
+        } else if btnType == "store_increase" {
+            player<playerStoreVisual>.HandleIncrease()
+        } else if btnType == "store_decrease" {
+            player<playerStoreVisual>.HandleDecrease()
+        } else if btnType == "btn_buy" {
+            player<playerStoreVisual>.HandleBuyAction()
+        } else if btnType == "btn_close_store" {
+            if player<playerStoreVisual>._IsOpen {
+                player<playerStoreVisual>.ToggleStoreUI()
+            }
+        } else {
+            LogWarning("[HUDStore] Unknown btnType: " + btnType)
+        }
+    }
+}

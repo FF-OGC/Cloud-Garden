@@ -5,18 +5,12 @@ import "../Services/BackpackService.fcg" as backpackService
 [platform_server]
 static graph BackpackManager {
 
-    // Handles the request to add items. Delegates complex calculations to Service.
-    func AddHarvestedItem(owner entity<Entity>, itemId string, amount int) bool {
+    func AddItem(owner entity<Entity>, itemId string, amount int) bool {
         if owner == nil || amount <= 0 { return false }
-        
-        // 1. Ask Service if there is enough space
         if backpackService.CanAddItem(owner, itemId, amount) {
-            
-            // 2. Ask Service to perform the actual addition
             return backpackService.AddItem(owner, itemId, amount)
         }
-        
-        return false // Backpack is full
+        return false
     }
 
     // Handles the request to consume held item. Delegates to Service.

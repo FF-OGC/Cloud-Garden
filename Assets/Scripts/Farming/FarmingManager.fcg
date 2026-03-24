@@ -209,8 +209,8 @@ static graph FarmingManager {
 
                 if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvesting " + harvestCount + " crops of " + targetCropId) }
 
-                var isAdded = backpackMgr.AddHarvestedItem(player, targetCropId, harvestCount)
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddHarvestedItem result=" + isAdded) }
+                var isAdded = backpackMgr.AddItem(player, targetCropId, harvestCount)
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddItem result=" + isAdded) }
 
                 if isAdded {
                     for i = 0, harvestCount, 1 {

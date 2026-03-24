@@ -30,6 +30,30 @@
           },
           "scriptName": "backpack",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "s78vxkahbs9-mn4dtnse-jf2n7y2lv8h",
+            "filePath": "Assets\\UI\\Store.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "store",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "wgjnw2zrz2-mn4ivivb-5prucu7w8u3",
+            "filePath": "Assets\\UI\\StoreBtn.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "store_btn",
+          "children": []
         }
       ]
     },
