@@ -21,9 +21,13 @@ import "../Services/Utils/GridUtil.fcg" as gridUtil
 [platform_server]
 static graph FarmingManager {
     
-    // Fixed: Added gen. prefix
     event OnPlayerHoeAction(player entity<Entity>) {
-        if player == nil || player<playerFarmingData>.CurrentFloor == nil { return }
+        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] >>> OnPlayerHoeAction FIRED") }
+
+        if player == nil || player<playerFarmingData>.CurrentFloor == nil {
+            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: player is nil or CurrentFloor is nil") }
+            return
+        }
 
         var gridPos = player<playerFarmingData>.CurrentGridPos
         var key = gridUtil.GetKeyFromPos(gridPos)
@@ -31,10 +35,16 @@ static graph FarmingManager {
         var floorObj = player<playerFarmingData>.CurrentFloor
         var cellStates = floorObj<floorData>.CellStates
 
-        if(floorObj<floorData>.Owner != nil && floorObj<floorData>.Owner != player) { return }
+        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] gridPos=" + gridPos + " key=" + key) }
+
+        if(floorObj<floorData>.Owner != nil && floorObj<floorData>.Owner != player) {
+            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: floor owner mismatch") }
+            return
+        }
 
         if map.ContainKey(cellStates, key) {
             var intentState = cellStates[key] as int
+            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] intentState=" + intentState) }
             
             var targetPositions = List<Vector3>{}
             list.Append(targetPositions, gridPos)
@@ -55,12 +65,16 @@ static graph FarmingManager {
             }
 
             var validCount = list.Length(validKeys)
-            if validCount == 0 { return }
+            if validCount == 0 {
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: validCount=0") }
+                return
+            }
 
             // ==========================================
             // STEP 1: GRASS -> TILLED DIRT
             // ==========================================
             if intentState == gen.EFarmSlotState.Grass {
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP1: Grass->Tilled, count=" + validCount) }
                 for i = 0, validCount, 1 {
                     var k = validKeys[i]
                     var p = validPositions[i]
@@ -74,26 +88,43 @@ static graph FarmingManager {
             // STEP 2: TILLED DIRT -> NEED WATERING (Planting)
             // ==========================================
             } else if intentState == gen.EFarmSlotState.Tilled {
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2: Tilled->NeedWatering (Planting)") }
                 
-                if player<backpackData> == nil { return }
+                if player<backpackData> == nil {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: backpackData is nil") }
+                    return
+                }
                 
                 var activeSlot = player<backpackData>._ActiveQuickbarSlot
-                var handle = player<backpackData>._QuickSlotRefs[activeSlot] // Get Handle from QuickSlot
+                var handle = player<backpackData>._QuickSlotRefs[activeSlot]
 
-                // Check if the slot is empty or data is invalid
-                if handle == -1 { return } 
-                if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return }
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] activeSlot=" + activeSlot + " handle=" + handle) }
+
+                if handle == -1 {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: handle is -1 (empty slot)") }
+                    return
+                }
+                if !map.ContainKey(player<backpackData>._ItemIDs, handle) {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: no ItemID for handle=" + handle) }
+                    return
+                }
 
                 var holdItemId = player<backpackData>._ItemIDs[handle] as string
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] holdItemId=" + holdItemId + " type=" + itemCfg.GetType(holdItemId)) }
 
-                if itemCfg.GetType(holdItemId) != 1 { return } // Must be Seed
+                if itemCfg.GetType(holdItemId) != 1 {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: item is not Seed (type!=1)") }
+                    return
+                }
 
                 var availableAmt = player<backpackData>._ItemAmounts[handle] as int
                 var amountToPlant = validCount
                 if availableAmt < validCount { amountToPlant = availableAmt }
 
-                // LOGIC: FarmingManager -> BackpackManager (Direct Call)
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] availableAmt=" + availableAmt + " amountToPlant=" + amountToPlant) }
+
                 var isRemoved = backpackMgr.ConsumeActiveItem(player, amountToPlant)
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ConsumeActiveItem result=" + isRemoved) }
                 
                 if isRemoved {
                     for i = 0, amountToPlant, 1 {
@@ -107,12 +138,14 @@ static graph FarmingManager {
                         
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
                     }
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Planted " + amountToPlant + " seeds successfully") }
                 }
 
             // ==========================================
             // STEP 3: NEED WATERING -> GROWING
             // ==========================================
             } else if intentState == gen.EFarmSlotState.NeedWatering {
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP3: NeedWatering->Growing, count=" + validCount) }
                 for i = 0, validCount, 1 {
                     var k = validKeys[i]
                     var p = validPositions[i]
@@ -127,6 +160,7 @@ static graph FarmingManager {
                         if timeLeft > 0.0 {
                             var newTargetTime = currentTime + (timeLeft / 2.0)
                             floorObj<floorData>.HarvestTimes[k] = newTargetTime
+                            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Watered: timeLeft=" + timeLeft + " newTarget=" + newTargetTime) }
                         }
                     }
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Growing})
@@ -136,16 +170,22 @@ static graph FarmingManager {
             // STEP 4: GROWING (Idle)
             // ==========================================
             } else if intentState == gen.EFarmSlotState.Growing {
-                // Do nothing
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP4: Growing (idle, no action)") }
             
             // ==========================================
             // STEP 5: READY TO HARVEST -> TILLED DIRT
             // ==========================================
             } else if intentState == gen.EFarmSlotState.ReadyToHarvest { 
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP5: ReadyToHarvest->Tilled") }
                 
-                if !map.ContainKey(floorObj<floorData>.PlantedSeeds, key) { return }
+                if !map.ContainKey(floorObj<floorData>.PlantedSeeds, key) {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: no PlantedSeeds for key=" + key) }
+                    return
+                }
                 var anchorSeedId = floorObj<floorData>.PlantedSeeds[key] as string
                 var targetCropId = itemCfg.GetHarvestYield(anchorSeedId)
+
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] anchorSeed=" + anchorSeedId + " cropId=" + targetCropId) }
 
                 var finalHarvestKeys = List<string>{}
                 var finalHarvestPos = List<Vector3>{}
@@ -162,10 +202,15 @@ static graph FarmingManager {
                 }
 
                 var harvestCount = list.Length(finalHarvestKeys)
-                if harvestCount == 0 { return }
+                if harvestCount == 0 {
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: harvestCount=0") }
+                    return
+                }
 
-                // LOGIC: FarmingManager -> BackpackManager (Direct Call)
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvesting " + harvestCount + " crops of " + targetCropId) }
+
                 var isAdded = backpackMgr.AddHarvestedItem(player, targetCropId, harvestCount)
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddHarvestedItem result=" + isAdded) }
 
                 if isAdded {
                     for i = 0, harvestCount, 1 {
@@ -179,8 +224,11 @@ static graph FarmingManager {
                         if map.ContainKey(floorObj<floorData>.CropPositions, k) { map.Remove(floorObj<floorData>.CropPositions, k) }
                         if map.ContainKey(floorObj<floorData>.PlantedSeeds, k) { map.Remove(floorObj<floorData>.PlantedSeeds, k) }
                     }
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvest complete, cleared " + harvestCount + " cells") }
                 }
             }
+        } else {
+            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: key=" + key + " not found in cellStates") }
         }
     }
 }

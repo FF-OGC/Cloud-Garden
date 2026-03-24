@@ -210,9 +210,15 @@
       "ecaProps": {
         "HudButtonWidget": {},
         "HudWidget": {},
-        "Entity": {}
+        "Entity": {},
+        "CustomComponent62548545": {
+          "PROP_41899047": "hoe",
+          "PROP_24899680": 0
+        }
       },
-      "componentList": [],
+      "componentList": [
+        "CustomComponent62548545"
+      ],
       "entityTagData": {
         "tagPointers": []
       }

@@ -6,62 +6,75 @@ import "EditorGenLib.fcc" as gen
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/ItemConfig.fcg" as itemCfg
+import "../Services/Utils/GridUtil.fcg" as gridUtil
 
 [platform_server]
 static graph FarmVisualManager {
     
     event OnFarmCellStateChanged(floor entity<Entity>, gridPos Vector3, newState int) {
-        var key = convert.ToString(gridPos.X) + "_" + convert.ToString(gridPos.Z)
+        var key = gridUtil.GetKeyFromPos(gridPos)
         var floorPos = floor<Transform>.Position
         
+        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] >>> OnFarmCellStateChanged key=" + key + " newState=" + newState) }
+
         // --- CASE 1: TILLED DIRT (Grass -> Tilled OR Harvest -> Tilled) ---
         if (newState == gen.EFarmSlotState.Tilled) {
-            // Destroy existing plant visual if we are harvesting
+            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] CASE1: Tilled state") }
+
             if map.ContainKey(floor<floorData>.PlantVisuals, key) {
                 var oldPlant = floor<floorData>.PlantVisuals[key] as entity
                 if oldPlant != nil { Destroy(oldPlant) }
                 map.Remove(floor<floorData>.PlantVisuals, key)
+                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Destroyed old plant visual for key=" + key) }
             }
 
-            // Spawn Tilled Soil Visual ONLY if it doesn't exist yet
             if !map.ContainKey(floor<floorData>.SoilVisuals, key) {
                 CreateFromPrefab(out var soilObj, gen.EResPrefab.dirt_tilled)
                 if soilObj != nil {
                     soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y + 0.01, floorPos.Z + gridPos.Z}
                     floor<floorData>.SoilVisuals[key] = soilObj
+                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Spawned soil visual at key=" + key) }
+                } else {
+                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn dirt_tilled prefab") }
                 }
+            } else {
+                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Soil visual already exists for key=" + key) }
             }
             return
         }
 
         // --- CASE 2: PLANTING, WATERING, GROWING ---
+        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] CASE2: Plant state change") }
         
-        // Remove old plant state visual
         if map.ContainKey(floor<floorData>.PlantVisuals, key) {
             var oldPlant = floor<floorData>.PlantVisuals[key] as entity
             if oldPlant != nil { Destroy(oldPlant) }
             map.Remove(floor<floorData>.PlantVisuals, key)
+            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Removed old plant visual for key=" + key) }
         }
 
-        // DETERMINE WHICH SEED IS PLANTED IN THIS CELL
         var plantedSeedId = "unknown"
         if map.ContainKey(floor<floorData>.PlantedSeeds, key) {
             plantedSeedId = floor<floorData>.PlantedSeeds[key] as string
         }
 
-        // ONLY SPAWN VISUAL IF A PLANT EXISTS
+        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] plantedSeedId=" + plantedSeedId) }
+
         if plantedSeedId != "unknown" {
-            
-            // --- CALL 3D DICTIONARY HERE ---
-            // Pass the seed ID and the cell's new state to get the correct 3D model
             var prefabToSpawn = itemCfg.GetPlantPrefab(plantedSeedId, newState)
+            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Spawning plant prefab for seed=" + plantedSeedId + " state=" + newState) }
             
             CreateFromPrefab(out var plantObj, prefabToSpawn)
             if plantObj != nil {
-                var soilHeightOffset = 0.1 // Adjust if your dirt model has thickness
+                var soilHeightOffset = 0.1
                 plantObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, floorPos.Y + soilHeightOffset, floorPos.Z + gridPos.Z}
                 floor<floorData>.PlantVisuals[key] = plantObj
+                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Plant visual spawned OK at key=" + key) }
+            } else {
+                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn plant prefab") }
             }
+        } else {
+            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] No seed planted at key=" + key + ", skipping visual") }
         }
     }
 }

@@ -25,10 +25,11 @@ graph GridTileTracker {
         var floorPos = floor<Transform>.Position
         var playerPos = player<Player>.Position
         
-        var newGridPos = gridUtil.SnapToGrid(playerPos, floorPos, tileSize)
+        var newWorldPos = gridUtil.SnapToGrid(playerPos, floorPos, tileSize)
+        var localGridPos = Vector3{newWorldPos.X - floorPos.X, 0.0, newWorldPos.Z - floorPos.Z}
 
-        player<playerFarmingData>.CurrentGridPos = newGridPos
-        thisEntity<Transform>.Position = newGridPos
-        if(gameMgr.IsDebug()) { LogInfo("[GridTileTracker] Player left grid tile. New grid position: " + newGridPos.X + ", " + newGridPos.Z) }
+        player<playerFarmingData>.CurrentGridPos = localGridPos
+        thisEntity<Transform>.Position = newWorldPos
+        if(gameMgr.IsDebug()) { LogInfo("[GridTileTracker] local=" + localGridPos + " world=" + newWorldPos) }
     }
 }

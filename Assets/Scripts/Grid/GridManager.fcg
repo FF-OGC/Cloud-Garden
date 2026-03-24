@@ -7,6 +7,7 @@ import "EditorGenLib.fcc" as gen
 import "./FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/FarmGridConfig.fcg" as gridCfg
+import "../Services/Utils/GridUtil.fcg" as gridUtil
 
 [platform_server]
 static graph GridManager {
@@ -31,8 +32,8 @@ static graph GridManager {
                         var worldX = convert.IntToFloat(x) * tileSize
                         var worldZ = convert.IntToFloat(z) * tileSize
 
-                        var pos = Vector3{worldX, 0, worldZ}
-                        var key = convert.ToString(pos.X) + "_" + convert.ToString(pos.Z)
+                        var pos = Vector3{worldX, 0.0, worldZ}
+                        var key = gridUtil.GetKeyFromPos(pos)
                         floor<floorData>.CellStates[key] = gen.EFarmSlotState.Grass
                         LogInfo("[GridManager] Grid state: " + floor<floorData>.CellStates[key])
                         // LogInfo("[GridManager] Grid position: " + pos.X + ", " + pos.Z)

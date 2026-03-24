@@ -2,7 +2,7 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as hud
 
-[platform_client]
+[platform_server]
 graph HUDFarmAction {
 
     event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
@@ -12,7 +12,7 @@ graph HUDFarmAction {
             var btnType = button<MyButton>.Type
 
             if btnType == "hoe" {
-                DispatchEventToEntity(gen.OnPlayerHoeAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
+                DispatchEventToEntity(OnPlayerHoeAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
             }
         }
     }
