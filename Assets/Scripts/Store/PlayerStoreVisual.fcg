@@ -30,15 +30,7 @@ graph PlayerStoreVisual {
         _CachedItemIDs = list.New(0, 10) as List<string>
         _CachedItemAmounts = list.New(0, 10) as List<int>
 
-        
-
-    }
-
-    event OnPlayerJoin(player entity<Player>) {
-        if thisEntity<Player> != player { return }
         _InitStoreUI()
-        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] UI created and hidden") }
-
     }
 
     // --- TRIGGER EVENTS ---
@@ -71,7 +63,10 @@ graph PlayerStoreVisual {
     event OnSyncStoreData(player entity<Player>, ids List<string>, amounts List<int>) {
         if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] OnSyncStoreData received, itemCount=" + convert.ToString(list.Length(ids))) }
         _UpdateCache(ids, amounts)
-        if _IsOpen { RenderShopUI() }
+        if _IsOpen {
+            RenderShopUI()
+            _UpdateBuyAmountUI()
+        }
     }
 
     event OnBuyItemResponse(player entity<Player>, isSuccess bool, message string, newIds List<string>, newAmounts List<int>) {
@@ -148,6 +143,7 @@ graph PlayerStoreVisual {
         
         _SetSlotHighlight(prevIndex, false)
         _SetSlotHighlight(_SelectedSlotIndex, true)
+        _UpdateSelectionInfo()
         _UpdateBuyAmountUI()
     }
 
@@ -180,12 +176,13 @@ graph PlayerStoreVisual {
     // --- RENDERING ---
 
     func RenderShopUI() {
+        LogInfo("[PlayerStoreVisual] RenderShopUI CALLED | _StoreUI=" + convert.ToString(_StoreUI != nil) + " _IsOpen=" + convert.ToString(_IsOpen))
         if _StoreUI == nil { return }
         
         var itemCount = list.Length(_CachedItemIDs)
         var slotCount = storeCfg.GetSlotCount()
         
-        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] RenderShopUI itemCount=" + convert.ToString(itemCount)) }
+        LogInfo("[PlayerStoreVisual] RenderShopUI itemCount=" + convert.ToString(itemCount) + " slotCount=" + convert.ToString(slotCount))
 
         for i = 0, slotCount, 1 {
             var slotPath = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
@@ -202,13 +199,36 @@ graph PlayerStoreVisual {
         }
     }
 
+    func _UpdateSelectionInfo() {
+        if _StoreUI == nil || _SelectedSlotIndex < 0 || _SelectedSlotIndex >= list.Length(_CachedItemIDs) { return }
+        var itemId = _CachedItemIDs[_SelectedSlotIndex] as string
+        
+        var nameLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/name")
+        if nameLabel != nil {
+            nameLabel<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+        }
+
+        var rarityObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity")
+        if rarityObj != nil {
+            rarityObj<UIWidgetImage>.Alpha = 1.0
+        }
+
+        var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity/icon")
+        if iconObj != nil {
+            iconObj<UIWidgetImage>.Alpha = 1.0
+            iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
+        }
+    }
+
     func _UpdateBuyAmountUI() {
         if _StoreUI == nil { return }
-        var currentLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/selection_info/seed/purchase_slider/current")
+        var currentLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/current")
+        var maxLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/maximum")
+        LogInfo("[PlayerStoreVisual] _UpdateBuyAmountUI | currentFound=" + convert.ToString(currentLabel != nil) + " maxFound=" + convert.ToString(maxLabel != nil) + " _BuyAmount=" + convert.ToString(_BuyAmount) + " _SelectedSlotIndex=" + convert.ToString(_SelectedSlotIndex))
+        
         if currentLabel != nil {
             currentLabel<UIWidgetLabel>.Content = convert.ToString(_BuyAmount)
         }
-        var maxLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/selection_info/seed/purchase_slider/maximum")
         if maxLabel != nil {
             if _SelectedSlotIndex >= 0 && _SelectedSlotIndex < list.Length(_CachedItemAmounts) {
                 maxLabel<UIWidgetLabel>.Content = convert.ToString(_CachedItemAmounts[_SelectedSlotIndex] as int)
@@ -228,13 +248,19 @@ graph PlayerStoreVisual {
             var slotCount = storeCfg.GetSlotCount()
             var assignedCount = 0
             for i = 0, slotCount, 1 {
-                var btn = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/scroll/layout/slot (" + convert.ToString(i) + ")/btn")
+                var slotBase = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
+                var btn = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotBase + "/btn")
                 if btn != nil {
                     btn<MyButton>.Arg0 = i
+                    btn<UIWidgetButton>.Alpha = 0.0
                     assignedCount = assignedCount + 1
                 }
+                var nonum = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotBase + "/nonum")
+                if nonum != nil { nonum<UIWidgetImage>.Alpha = 0.0 }
             }
-            if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _InitStoreUI: Assigned Arg0 to " + convert.ToString(assignedCount) + "/" + convert.ToString(slotCount) + " slot buttons") }
+            if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _InitStoreUI: Setup " + convert.ToString(assignedCount) + "/" + convert.ToString(slotCount) + " slots (btn+nonum alpha=0)") }
+
+            _HideUnusedInspectorElements()
 
             _IsOpen = false
             if _RootPanel != nil { _RootPanel<UIWidget>.IsVisible = false }
@@ -254,40 +280,81 @@ graph PlayerStoreVisual {
 
     // --- UI HELPERS ---
 
-    func _SetSlotVisual(slotPath string, itemId string, amount int) {
-        var iconName = itemCfg.GetIconKey(itemId)
-        var displayName = itemCfg.GetItemName(itemId)
-        var amountStr = convert.ToString(amount)
-        
-        LogInfo("[PlayerStoreVisual] _SetSlotVisual path=" + slotPath + " itemId=" + itemId + " displayName=" + displayName + " amount=" + amountStr)
+    func _HideUnusedInspectorElements() {
+        if _StoreUI == nil { return }
+        var seedBase = "/root/bg_inspector/selection_info/seed"
 
+        var noneLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/none")
+        if noneLabel != nil { noneLabel<UIWidgetLabel>.Alpha = 0.0 }
+
+        var mutation = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/mutation")
+        if mutation != nil { mutation<UIWidgetLabel>.Alpha = 0.0 }
+
+        var prePrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_price")
+        if prePrice != nil { prePrice<UIWidgetLabel>.Alpha = 0.0 }
+
+        var iconPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/icon_price")
+        if iconPrice != nil { iconPrice<UIWidgetImage>.Alpha = 0.0 }
+
+        var price = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/price")
+        if price != nil { price<UIWidgetLabel>.Alpha = 0.0 }
+
+        var preWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_weight")
+        if preWeight != nil { preWeight<UIWidgetLabel>.Alpha = 0.0 }
+
+        var weight = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/weight")
+        if weight != nil { weight<UIWidgetLabel>.Alpha = 0.0 }
+
+        var introduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/introduce")
+        if introduce != nil { introduce<UIWidgetLabel>.Alpha = 0.0 }
+
+        var count = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/count")
+        if count != nil { count<UIWidgetLabel>.Alpha = 0.0 }
+
+        var preCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_count")
+        if preCount != nil { preCount<UIWidgetLabel>.Alpha = 0.0 }
+
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _HideUnusedInspectorElements done") }
+    }
+
+    func _SetSlotVisual(slotPath string, itemId string, amount int) {
         var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/rarity/icon")
+        if iconObj == nil {
+            iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/icon")
+        }
         if iconObj != nil {
             iconObj<UIWidgetImage>.Alpha = 1.0
-            iconObj<UIWidgetImage>.SpriteName = iconName
+            iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
         } else {
-            LogWarning("[PlayerStoreVisual] _SetSlotVisual: icon NOT FOUND at " + slotPath + "/rarity/icon")
+            LogWarning("[PlayerStoreVisual] _SetSlotVisual: icon NOT FOUND at " + slotPath)
         }
-        
+
         var nameObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/name")
         if nameObj != nil {
             nameObj<UIWidgetLabel>.Alpha = 1.0
-            nameObj<UIWidgetLabel>.Content = displayName
-        } else {
-            LogWarning("[PlayerStoreVisual] _SetSlotVisual: name NOT FOUND at " + slotPath + "/name")
+            nameObj<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
         }
 
         var numObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/num")
         if numObj != nil {
             numObj<UIWidgetLabel>.Alpha = 1.0
-            numObj<UIWidgetLabel>.Content = amountStr
-        } else {
-            LogWarning("[PlayerStoreVisual] _SetSlotVisual: num NOT FOUND at " + slotPath + "/num")
+            numObj<UIWidgetLabel>.Content = convert.ToString(amount)
         }
+
+        var priceObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/price")
+        if priceObj != nil { priceObj<UIWidgetLabel>.Alpha = 0.0 }
+
+        var weightObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/weight")
+        if weightObj != nil { weightObj<UIWidgetLabel>.Alpha = 0.0 }
+
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _SetSlotVisual path=" + slotPath + " icon=" + convert.ToString(iconObj != nil) + " name=" + convert.ToString(nameObj != nil) + " num=" + convert.ToString(numObj != nil)) }
     }
 
     func _ClearSlotVisual(slotPath string) {
         var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/rarity/icon")
+        if iconObj == nil {
+            iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/icon")
+        }
         if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
         
         var nameObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/name")
@@ -296,9 +363,11 @@ graph PlayerStoreVisual {
         var numObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/num")
         if numObj != nil { numObj<UIWidgetLabel>.Alpha = 0.0 }
 
-        if gameManager.IsDebug() {
-            LogInfo("[PlayerStoreVisual] _ClearSlotVisual path=" + slotPath + " icon=" + convert.ToString(iconObj != nil)  + " name=" + convert.ToString(nameObj != nil) + " num=" + convert.ToString(numObj != nil))
-        }
+        var priceObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/price")
+        if priceObj != nil { priceObj<UIWidgetLabel>.Alpha = 0.0 }
+
+        var weightObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/weight")
+        if weightObj != nil { weightObj<UIWidgetLabel>.Alpha = 0.0 }
     }
 
     func _SetSlotHighlight(slotIndex int, isHighlighted bool) {
@@ -308,8 +377,8 @@ graph PlayerStoreVisual {
         if highlight != nil {
             if isHighlighted { 
                 highlight<UIWidgetImage>.Alpha = 1.0
-            }else { 
-                highlight<UIWidgetImage>.Alpha = 0.
+            } else { 
+                highlight<UIWidgetImage>.Alpha = 0.0
             }
         }
     }

@@ -48,11 +48,26 @@ static graph StoreManager {
 
         if gameManager.IsDebug() { LogInfo("[StoreManager] SUCCESS: Bought " + convert.ToString(amount) + "x " + itemId) }
         DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, true, "Purchase successful!", storeData._ItemIDs, storeData._ItemAmounts})
+
+        BroadcastStoreDataToAll(player)
     }
 
     func SyncStoreDataToPlayer(player entity<Player>) {
         if player == nil { return }
         if gameManager.IsDebug() { LogInfo("[StoreManager] SyncStoreDataToPlayer") }
         DispatchEventToEntity(OnSyncStoreData, player, PlatformType.Server, List<object>{player, storeData._ItemIDs, storeData._ItemAmounts})
+    }
+
+    func BroadcastStoreDataToAll(excludePlayer entity<Player>) {
+        var players = gameManager.GetConnectedPlayers()
+        if players == nil { return }
+        var count = list.Length(players)
+        for i = 0, count, 1 {
+            var p = players[i] as entity<Player>
+            if p != nil && p != excludePlayer {
+                DispatchEventToEntity(OnSyncStoreData, p, PlatformType.Server, List<object>{p, storeData._ItemIDs, storeData._ItemAmounts})
+            }
+        }
+        if gameManager.IsDebug() { LogInfo("[StoreManager] BroadcastStoreDataToAll: synced " + convert.ToString(count - 1) + " other players") }
     }
 }

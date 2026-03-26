@@ -9,6 +9,7 @@ import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Farming/CropGrowthManager.fcg" as cropManager
 import "../Backpack/BackpackManager.fcg" as backpackManager
+import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
     
@@ -19,6 +20,7 @@ static graph GameManager {
     // Dynamically populated at runtime by FarmZoneRegister. No Editor setup needed!
     _FarmZones List<entity<Entity>> = nil
     _AllFloorsInWorld List<entity<Entity>> = nil
+    _ConnectedPlayers List<entity<Player>> = nil
 
     func IsDebug() bool { return _IsDebug }
     func GetGameTime() float { return _GameTime }
@@ -29,6 +31,7 @@ static graph GameManager {
         // Initialize empty lists to receive data dynamically
         _FarmZones = list.New(0, 10) as List<entity<Entity>>
         _AllFloorsInWorld = list.New(0, 10) as List<entity<Entity>>
+        _ConnectedPlayers = list.New(0, 10) as List<entity<Player>>
         
         trackerPool.InitPool()
         start StartGlobalClock()
@@ -65,7 +68,18 @@ static graph GameManager {
         if _IsDebug { LogInfo("[GameManager] Successfully registered new Farm Zone dynamically.") }
     }
 
+    func GetConnectedPlayers() List<entity<Player>> { return _ConnectedPlayers }
+
+    event OnUserQuitOrUserMatchEnd(player entity<Player>) {
+        if player == nil { return }
+        var idx = list.IndexOf(_ConnectedPlayers, player)
+        if idx != -1 { list.Remove(_ConnectedPlayers, idx) }
+        if _IsDebug { LogInfo("[GameManager] Player left. Connected: " + list.Length(_ConnectedPlayers)) }
+    }
+
     event OnPlayerJoin(player entity<Player>) {
+        list.Append(_ConnectedPlayers, player)
+        if _IsDebug { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
         LogInfo("[Game Manager] FarmZones: " + list.Length(_FarmZones) + " AllFloorsInWorld: " + list.Length(_AllFloorsInWorld))
         // AddScript(player, playerFarmingData)
         

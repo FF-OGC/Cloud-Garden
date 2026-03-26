@@ -2142,14 +2142,14 @@
                             "priority": 0,
                             "image": {
                               "source": {
-                                "fileId": "ry8jmbn7bt-mf689oxl-yfp61brvwdl",
-                                "filePath": "Assets\\Resources\\Texture\\Icon\\empty.png",
+                                "fileId": "ewlrxjsiknq-mn2oav28-lhfhhaiyi6b",
+                                "filePath": "Assets\\Sprites\\DustIconTemp.png",
                                 "_tag": {
                                   "type": "GFileRefer"
                                 },
                                 "fileType": "texture"
                               },
-                              "color": "#ffffff",
+                              "color": "#FFFFFF",
                               "reverse": {
                                 "x": false,
                                 "y": false
@@ -2349,7 +2349,7 @@
                                 "y": 20
                               }
                             },
-                            "alpha": 100,
+                            "alpha": 36.8,
                             "priority": 0,
                             "image": {
                               "source": {
@@ -3109,7 +3109,7 @@
                             "valueTag": "unlockedValue"
                           },
                           "editorLockValue": false,
-                          "editorVisibleValue": true,
+                          "editorVisibleValue": false,
                           "propsData": {
                             "activeSelf": true,
                             "transform": {
@@ -3193,7 +3193,7 @@
                         "valueTag": "unlockedValue"
                       },
                       "editorLockValue": false,
-                      "editorVisibleValue": true,
+                      "editorVisibleValue": false,
                       "propsData": {
                         "activeSelf": true,
                         "transform": {
@@ -3515,7 +3515,7 @@
                         "tagPointers": []
                       },
                       "editorLockValue": false,
-                      "editorVisibleValue": true
+                      "editorVisibleValue": false
                     }
                   ],
                   "prefabVariant": null,
@@ -67265,8 +67265,8 @@
                         "priority": 0,
                         "image": {
                           "source": {
-                            "fileId": "ry8jmbn7bt-mf689oxl-yfp61brvwdl",
-                            "filePath": "Assets\\Resources\\Texture\\Icon\\empty.png",
+                            "fileId": "ewlrxjsiknq-mn2oav28-lhfhhaiyi6b",
+                            "filePath": "Assets\\Sprites\\DustIconTemp.png",
                             "_tag": {
                               "type": "GFileRefer"
                             },
