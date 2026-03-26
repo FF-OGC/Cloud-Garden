@@ -7,8 +7,8 @@ static graph ItemConfig {
     
     // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool
     func GetType(itemId string) int {
-        if itemId == "seed_pumpkin" || itemId == "seed_tomato" { return 1 }
-        if itemId == "crop_pumpkin" || itemId == "crop_tomato" { return 2 }
+        if itemId == "seed_apple" || itemId == "seed_tomato" { return 1 }
+        if itemId == "crop_apple" || itemId == "crop_tomato" { return 2 }
         return 3
     }
 
@@ -21,23 +21,23 @@ static graph ItemConfig {
 
     // Returns Growth Time (in seconds) for seeds
     func GetGrowthTime(itemId string) float {
-        if itemId == "seed_pumpkin" { return 120.0 }
+        if itemId == "seed_apple" { return 120.0 }
         if itemId == "seed_tomato" { return 90.0 }
         return 60.0 // Default fallback time
     }
 
     // Maps the Seed ID to its corresponding Crop ID yield
     func GetHarvestYield(seedId string) string {
-        if seedId == "seed_pumpkin" { return "crop_pumpkin" }
+        if seedId == "seed_apple" { return "crop_apple" }
         if seedId == "seed_tomato" { return "crop_tomato" }
         return "crop_default"
     }
 
     func GetItemName(itemId string) string {
-        if itemId == "seed_pumpkin" { return "Pumpkin Seed" }
+        if itemId == "seed_apple" { return "Apple Seed" }
         if itemId == "seed_tomato" { return "Tomato Seed" }
         if itemId == "seed_carrot" { return "Carrot Seed" }
-        if itemId == "crop_pumpkin" { return "Pumpkin" }
+        if itemId == "crop_apple" { return "Apple" }
         if itemId == "crop_tomato" { return "Tomato" }
         if itemId == "watering_can" { return "Watering Can" }
         return itemId
@@ -48,11 +48,10 @@ static graph ItemConfig {
     // ==========================================
     func GetIconKey(itemId string) SpriteID {
         // Replace these with your actual registered UI Resource Keys from the Editor
-        if itemId == "seed_pumpkin" { return EResSprite.seed_icon }
-        if itemId == "crop_pumpkin" { return EResSprite.seed_icon }
+        if itemId == "seed_apple" { return EResSprite.seed_apple }
+        if itemId == "crop_apple" { return EResSprite.crop_apple }
         
-        // Return a default icon if not found
-        return EResSprite.seed_icon 
+        return EResSprite.seed_apple 
     }
 
     // ==========================================
@@ -68,14 +67,14 @@ static graph ItemConfig {
         
         // STAGE 2: GROWING (Differentiate by plant type)
         if state == gen.EFarmSlotState.Growing {
-            if seedId == "seed_pumpkin" { return gen.EResPrefab.seed_model } 
+            if seedId == "seed_apple" { return gen.EResPrefab.seed_model } 
             if seedId == "seed_tomato" { return gen.EResPrefab.seed_model }   
             return gen.EResPrefab.seed_model // Default growing model
         }
         
         // STAGE 3: READY TO HARVEST (Differentiate by plant type)
         if state == gen.EFarmSlotState.ReadyToHarvest {
-            if seedId == "seed_pumpkin" { return gen.EResPrefab.seed_growed } 
+            if seedId == "seed_apple" { return gen.EResPrefab.seed_growed } 
             if seedId == "seed_tomato" { return gen.EResPrefab.seed_growed }   
             return gen.EResPrefab.seed_growed // Default mature model
         }

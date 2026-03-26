@@ -8,7 +8,7 @@ graph BackpackData {
     
     // 1. ORIGINAL DATA (SINGLE SOURCE OF TRUTH)
     _NextHandle int = 0 // Unique ID for each item instance
-    _ItemIDs Map<int, string> // Key: Handle -> Value: Item ID (e.g., "seed_pumpkin")
+    _ItemIDs Map<int, string> // Key: Handle -> Value: Item ID (e.g., "seed_apple")
     _ItemAmounts Map<int, int> // Key: Handle -> Value: Amount
 
     // 2. REFERENCES (FOR UI SLOTS)

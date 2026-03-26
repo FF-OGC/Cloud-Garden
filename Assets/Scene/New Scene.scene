@@ -9023,7 +9023,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "editorLockValue": false,
           "editorVisibleValue": true,
           "position": {
@@ -9128,7 +9131,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3
@@ -9148,9 +9152,9 @@
         "z": 19.46293067932129
       },
       "scale": {
-        "x": 30,
-        "y": 30,
-        "z": 30
+        "x": 3,
+        "y": 3,
+        "z": 3
       },
       "rotation": {
         "x": 0,

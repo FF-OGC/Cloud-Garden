@@ -125,7 +125,7 @@ static graph GameManager {
         }
 
         //4. Add Seed to Backpack
-        var seedId = "seed_pumpkin"
+        var seedId = "seed_apple"
         var amount = 10
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }

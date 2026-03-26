@@ -209,6 +209,30 @@
           },
           "scriptName": "seed_icon",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "bpsnh2zwc1-mn6zthn5-ywmqtu1wsfr",
+            "filePath": "Assets\\Sprites\\fruit_apple.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_apple",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "7qw78tyiy3t-mn6zti0u-r3w69he1bgq",
+            "filePath": "Assets\\Sprites\\seed_apple.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_apple",
+          "children": []
         }
       ]
     },
