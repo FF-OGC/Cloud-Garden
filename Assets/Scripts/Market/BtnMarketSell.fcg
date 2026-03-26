@@ -1,0 +1,12 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+
+[platform_client]
+graph BtnMarketSell {
+
+    event OnTapped(player entity<Player>) {
+        LogInfo("[BtnMarketSell] OnTapped FIRED! Dispatching OnMarketSellTapped to player")
+        DispatchEventToEntity(OnMarketSellTapped, player, PlatformType.Server, List<object>{player})
+    }
+}

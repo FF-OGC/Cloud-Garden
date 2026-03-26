@@ -73,6 +73,19 @@
             "compType": "InputEditor",
             "disabled": true
           }
+        },
+        {
+          "propID": 100007,
+          "name": "PROP_46699519",
+          "label": "Market",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "disabledType": true,
+          "param": {
+            "compType": "InputEditor",
+            "disabled": true
+          }
         }
       ]
     },

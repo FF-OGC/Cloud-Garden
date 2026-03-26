@@ -1,10 +1,10 @@
 {
-  "_entityName": "StoreBtn",
+  "_entityName": "Sell",
   "_tag": {
     "type": "UIRootEntity",
     "resourceId": ""
   },
-  "_entityId": "pf6mtHWK",
+  "_entityId": "avsxI3mu",
   "children": [
     {
       "_entityName": "Button",
@@ -12,17 +12,14 @@
         "type": "UIButtonEntity",
         "resourceId": ""
       },
-      "_entityId": "bye9UBgH",
+      "_entityId": "vytcpgge",
       "children": [],
       "prefabVariant": null,
       "activeValue": {
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": {
-        "selfValue": true,
-        "valueTag": "unlockedValue"
-      },
+      "unlockedValue": null,
       "editorLockValue": false,
       "editorVisibleValue": true,
       "propsData": {
@@ -42,8 +39,8 @@
             "y": 0.5
           },
           "anchoredPosition": {
-            "x": -46,
-            "y": 7
+            "x": 475,
+            "y": 91
           },
           "sizeDelta": {
             "x": 150,
@@ -108,8 +105,8 @@
       },
       "ecaScripts": [
         {
-          "fileId": "5j5fw09i10i-mn4jedoc-8ze0qqk9ak8",
-          "filePath": "Assets\\Scripts\\Store\\BtnStoreToggle.fcg",
+          "fileId": "6y9xwu6wfoa-mn7gjzk0-u6jwa6j60up",
+          "filePath": "Assets\\Scripts\\Market\\BtnMarketSell.fcg",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -136,17 +133,14 @@
         "type": "UITextEntity",
         "resourceId": ""
       },
-      "_entityId": "Ht4IG954",
+      "_entityId": "qvRzMx4B",
       "children": [],
       "prefabVariant": null,
       "activeValue": {
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": {
-        "selfValue": true,
-        "valueTag": "unlockedValue"
-      },
+      "unlockedValue": null,
       "editorLockValue": false,
       "editorVisibleValue": true,
       "propsData": {
@@ -166,8 +160,8 @@
             "y": 0.5
           },
           "anchoredPosition": {
-            "x": -47,
-            "y": 6
+            "x": 475,
+            "y": 91
           },
           "sizeDelta": {
             "x": 120,
@@ -177,7 +171,7 @@
         "alpha": 100,
         "priority": 0,
         "text": {
-          "value": "Store",
+          "value": "Sell",
           "key": "",
           "font": "Default",
           "fontSize": 24,
@@ -226,10 +220,7 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": {
-    "selfValue": true,
-    "valueTag": "unlockedValue"
-  },
+  "unlockedValue": null,
   "editorLockValue": false,
   "editorVisibleValue": true,
   "propsData": {
@@ -269,7 +260,7 @@
   "entityTagData": {
     "tagPointers": []
   },
-  "layer": 254,
+  "layer": 255,
   "discriminator": "ISceneLike",
   "version": 3
 }

@@ -129,6 +129,14 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "yyb9u2z3du-mn7938a1-qfme3piabsd",
+      "filePath": "Assets\\Scripts\\Market\\HUDMarketAction.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

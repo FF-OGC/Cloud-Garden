@@ -1,0 +1,105 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "./MarketConfig.fcg" as marketCfg
+import "./MarketRuntimeData.fcg" as marketData
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph MarketVisual {
+
+    _ProducePool Map<string, List<entity<Entity>>>
+
+    func InitProducePool() {
+        _ProducePool = map.New() as Map<string, List<entity<Entity>>>
+
+        var items = marketCfg.GetSellableItems()
+        var itemCount = list.Length(items)
+
+        for i = 0, itemCount, 1 {
+            var itemId = items[i] as string
+            var poolList = list.New(0, 4) as List<entity<Entity>>
+
+            for j = 0, 4, 1 {
+                var prefab = marketCfg.GetProducePrefab(itemId)
+                CreateFromPrefab(out var model, prefab)
+                if model != nil {
+                    model<Transform>.Position = Vector3{0, -9999, 0}
+                    list.Append(poolList, model as entity<Entity>)
+                }
+            }
+
+            _ProducePool[itemId] = poolList
+            if gameManager.IsDebug() { LogInfo("[MarketVisual] InitProducePool | " + itemId + " pool size=4") }
+        }
+    }
+
+    func UpdateTableDisplay(market entity<Entity>) {
+        if market == nil { return }
+        if market<marketData> == nil { return }
+
+        var marketPos = market<Transform>.Position
+        var items = marketCfg.GetSellableItems()
+        var itemCount = list.Length(items)
+
+        for i = 0, itemCount, 1 {
+            var itemId = items[i] as string
+            var tableIndex = list.IndexOf(market<marketData>._TableItemIDs, itemId)
+            var hasStock = false
+
+            if tableIndex != -1 {
+                var amount = market<marketData>._TableItemAmounts[tableIndex] as int
+                hasStock = amount > 0
+            }
+
+            var activeIndex = list.IndexOf(market<marketData>._ActiveProduceItemIDs, itemId)
+            var hasActiveModel = activeIndex != -1
+
+            if hasStock && !hasActiveModel {
+                var model = GetModelFromPool(itemId)
+                if model != nil {
+                    var offset = marketCfg.GetTableItemOffset(i)
+                    model<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
+                    list.Append(market<marketData>._ActiveProduceItemIDs, itemId)
+                    list.Append(market<marketData>._ActiveProduceModels, model)
+                    if gameManager.IsDebug() { LogInfo("[MarketVisual] SHOW " + itemId) }
+                }
+            } else if !hasStock && hasActiveModel {
+                var model = market<marketData>._ActiveProduceModels[activeIndex] as entity<Entity>
+                ReturnModelToPool(itemId, model)
+                list.RemoveAt(market<marketData>._ActiveProduceItemIDs, activeIndex)
+                list.RemoveAt(market<marketData>._ActiveProduceModels, activeIndex)
+                if gameManager.IsDebug() { LogInfo("[MarketVisual] HIDE " + itemId) }
+            }
+        }
+    }
+
+    func GetModelFromPool(itemId string) entity<Entity> {
+        if !map.ContainKey(_ProducePool, itemId) { return nil }
+
+        var poolList = _ProducePool[itemId] as List<entity<Entity>>
+        var count = list.Length(poolList)
+        if count > 0 {
+            var model = poolList[count - 1] as entity<Entity>
+            list.RemoveAt(poolList, count - 1)
+            return model
+        }
+
+        var prefab = marketCfg.GetProducePrefab(itemId)
+        CreateFromPrefab(out var newModel, prefab)
+        return newModel
+    }
+
+    func ReturnModelToPool(itemId string, model entity<Entity>) {
+        if model == nil { return }
+        model<Transform>.Position = Vector3{0, -9999, 0}
+
+        if map.ContainKey(_ProducePool, itemId) {
+            var poolList = _ProducePool[itemId] as List<entity<Entity>>
+            list.Append(poolList, model)
+        }
+    }
+}

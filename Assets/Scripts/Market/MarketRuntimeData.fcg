@@ -1,0 +1,56 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Convert.fcc" as convert
+
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+graph MarketRuntimeData {
+
+    _FarmZone entity<Entity> = nil
+    _Owner entity<Player> = nil
+
+    _TableItemIDs List<string> = nil
+    _TableItemAmounts List<int> = nil
+
+    _QueueCustomerIDs List<int> = nil
+    _QueueItemIDs List<string> = nil
+    _QueueItemAmounts List<int> = nil
+
+    _NextCustomerID int = 1
+    _IsTransacting bool = false
+    _IsInitialized bool = false
+
+    _SlotNPCs List<entity<Entity>> = nil
+    _ActiveProduceModels List<entity<Entity>> = nil
+    _ActiveProduceItemIDs List<string> = nil
+
+    event OnAwake() {
+        EnsureInit()
+    }
+
+    func EnsureInit() {
+        if _IsInitialized { return }
+
+        _TableItemIDs = List<string>{}
+        _TableItemAmounts = List<int>{}
+
+        _QueueCustomerIDs = List<int>{}
+        _QueueItemIDs = List<string>{}
+        _QueueItemAmounts = List<int>{}
+
+        _SlotNPCs = List<entity<Entity>>{}
+        _ActiveProduceModels = List<entity<Entity>>{}
+        _ActiveProduceItemIDs = List<string>{}
+
+        for i = 0, 5, 1 {
+            list.Append(_QueueCustomerIDs, -1)
+            list.Append(_QueueItemIDs, "")
+            list.Append(_QueueItemAmounts, 0)
+            list.Append(_SlotNPCs, nil)
+        }
+
+        _IsInitialized = true
+        LogInfo("[MarketRuntimeData] Initialized on entity.")
+    }
+}

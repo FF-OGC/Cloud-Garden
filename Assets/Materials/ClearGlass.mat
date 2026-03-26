@@ -1,0 +1,42 @@
+{
+  "_tag": {
+    "type": "Material"
+  },
+  "_entityId": "kEv3uWP8",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "shader": {
+    "fileId": "s-ea4a068a-065d-4b63-89b5-0ebcf49e2b14",
+    "filePath": "lib://ffshaders/BRMobile/UGC/AlphaBlendColor",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "shader"
+  },
+  "paramValue": {
+    "_Color": {
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 0.2
+    },
+    "_Brightness": 1,
+    "_MainTex": {
+      "Texture": null,
+      "Tiling": {
+        "x": 1,
+        "y": 1
+      },
+      "Offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "_CullMode": 2
+  }
+}
+//"{FE:{"v":"1.11.3368683","c":{"FF":4701},"s":100}

@@ -1,0 +1,63 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+
+static graph MarketConfig {
+
+    func GetSellableItems() List<string> {
+        return List<string>{"crop_apple", "crop_tomato"}
+    }
+
+    func IsSellable(itemId string) bool {
+        var items = GetSellableItems()
+        var count = list.Length(items)
+        for i = 0, count, 1 {
+            if items[i] as string == itemId { return true }
+        }
+        return false
+    }
+
+    func GetTransactionTimeMs(itemId string) int {
+        return 1000
+    }
+
+    func GetQueueSize() int { return 5 }
+
+    func GetQueueSlotOffset(slotIndex int) Vector3 {
+        if slotIndex == 0 { return Vector3{2, 0, 0} }
+        if slotIndex == 1 { return Vector3{2, 0, -2} }
+        if slotIndex == 2 { return Vector3{2, 0, -4} }
+        if slotIndex == 3 { return Vector3{2, 0, -6} }
+        if slotIndex == 4 { return Vector3{2, 0, -8} }
+        return Vector3{2, 0, -10}
+    }
+
+    func GetGateOffset() Vector3 {
+        return Vector3{2, 0, -12}
+    }
+
+    func GetTableItemOffset(index int) Vector3 {
+        if index == 0 { return Vector3{-1, 1, 0} }
+        if index == 1 { return Vector3{-1, 1, -1} }
+        if index == 2 { return Vector3{-1, 1, -2} }
+        if index == 3 { return Vector3{-1, 1, -3} }
+        return Vector3{-1, 1, -4}
+    }
+
+    func GetMaxTableSlots() int { return 5 }
+
+    func GetProducePrefab(itemId string) PrefabID {
+        if itemId == "crop_apple" { return gen.EResPrefab.seed_growed }
+        if itemId == "crop_tomato" { return gen.EResPrefab.seed_growed }
+        return gen.EResPrefab.seed_growed
+    }
+
+    func GetNPCPrefab() PrefabID {
+        return gen.EResPrefab.npc_customer
+    }
+
+    func GetCustomerMinAmount() int { return 1 }
+    func GetCustomerMaxAmount() int { return 5 }
+
+    func GetNPCTweenTimeMs() int { return 2000 }
+}

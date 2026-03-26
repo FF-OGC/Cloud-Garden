@@ -1,0 +1,134 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "Playable.fcc" as playable
+
+import "./MarketConfig.fcg" as marketCfg
+import "./MarketRuntimeData.fcg" as marketData
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph CustomerVisualManager {
+
+    _NPCPool List<entity<Entity>>
+
+    func InitNPCPool() {
+        _NPCPool = list.New(0, 40) as List<entity<Entity>>
+
+        var npcPrefab = marketCfg.GetNPCPrefab()
+        for i = 0, 40, 1 {
+            CreateFromPrefab(out var npc, npcPrefab)
+            if npc != nil {
+                npc<Transform>.Position = Vector3{0, -9999, 0}
+                list.Append(_NPCPool, npc as entity<Entity>)
+            }
+        }
+
+        if gameManager.IsDebug() { LogInfo("[CustomerVisual] InitNPCPool | Created 40 NPCs") }
+    }
+
+    func SpawnCustomer(market entity<Entity>, slotIndex int) {
+        if market == nil || slotIndex < 0 || slotIndex >= 5 { return }
+        if market<marketData> == nil { return }
+
+        var npc = GetNPCFromPool()
+        if npc == nil {
+            if gameManager.IsDebug() { LogInfo("[CustomerVisual] SpawnCustomer FAILED | pool empty") }
+            return
+        }
+
+        var marketPos = market<Transform>.Position
+        var gateOffset = marketCfg.GetGateOffset()
+        var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y, marketPos.Z + gateOffset.Z}
+
+        npc<Transform>.Position = gatePos
+        market<marketData>._SlotNPCs[slotIndex] = npc
+
+        var slotOffset = marketCfg.GetQueueSlotOffset(slotIndex)
+        var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y, marketPos.Z + slotOffset.Z}
+
+        TweenMoveTo(npc, gatePos, targetPos, marketCfg.GetNPCTweenTimeMs())
+
+        if gameManager.IsDebug() { LogInfo("[CustomerVisual] SpawnCustomer | slot=" + convert.ToString(slotIndex)) }
+    }
+
+    func AnimateLeaving(market entity<Entity>, slotIndex int) {
+        if market == nil || slotIndex < 0 || slotIndex >= 5 { return }
+        var data = market<marketData>
+        if data == nil { return }
+
+        var npc = market<marketData>._SlotNPCs[slotIndex] as entity<Entity>
+        if npc == nil { return }
+
+        market<marketData>._SlotNPCs[slotIndex] = nil
+
+        var marketPos = market<Transform>.Position
+        var gateOffset = marketCfg.GetGateOffset()
+        var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y, marketPos.Z + gateOffset.Z}
+        var currentPos = npc<Transform>.Position
+
+        TweenMoveTo(npc, currentPos, gatePos, marketCfg.GetNPCTweenTimeMs())
+        start DelayedReturn(npc, marketCfg.GetNPCTweenTimeMs() + 500)
+
+        if gameManager.IsDebug() { LogInfo("[CustomerVisual] AnimateLeaving | slot=" + convert.ToString(slotIndex)) }
+    }
+
+    func AdvanceQueue(market entity<Entity>) {
+        if market == nil { return }
+        var data = market<marketData>
+        if data == nil { return }
+
+        var marketPos = market<Transform>.Position
+
+        for i = 0, 4, 1 {
+            var npc = market<marketData>._SlotNPCs[i] as entity<Entity>
+            if npc != nil {
+                var slotOffset = marketCfg.GetQueueSlotOffset(i)
+                var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y, marketPos.Z + slotOffset.Z}
+                var currentPos = npc<Transform>.Position
+                TweenMoveTo(npc, currentPos, targetPos, 1000)
+            }
+        }
+
+        if gameManager.IsDebug() { LogInfo("[CustomerVisual] AdvanceQueue | NPCs moving forward") }
+    }
+
+    func TweenMoveTo(npc entity<Entity>, fromPos Vector3, toPos Vector3, timeMs int) {
+        var curve = CreateCurve(List<float>{0, 0, 1, 1})
+        CreateTween(
+            npc,
+            Transform.Position,
+            Vector3{fromPos.X, fromPos.Y, fromPos.Z},
+            Vector3{toPos.X, toPos.Y, toPos.Z},
+            TweenStyle.Once,
+            curve,
+            timeMs,
+            out var tweenResult,
+            true)
+    }
+
+    func GetNPCFromPool() entity<Entity> {
+        var count = list.Length(_NPCPool)
+        if count > 0 {
+            var npc = _NPCPool[count - 1] as entity<Entity>
+            list.RemoveAt(_NPCPool, count - 1)
+            return npc
+        }
+
+        var npcPrefab = marketCfg.GetNPCPrefab()
+        CreateFromPrefab(out var newNPC, npcPrefab)
+        return newNPC
+    }
+
+    func ReturnNPCToPool(npc entity<Entity>) {
+        if npc == nil { return }
+        npc<Transform>.Position = Vector3{0, -9999, 0}
+        list.Append(_NPCPool, npc)
+    }
+
+    async func DelayedReturn(npc entity<Entity>, delayMs int) {
+        WaitForMillisecond(delayMs)
+        ReturnNPCToPool(npc)
+    }
+}

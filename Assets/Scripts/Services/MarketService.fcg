@@ -1,0 +1,121 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Convert.fcc" as convert
+
+import "../Market/MarketRuntimeData.fcg" as marketData
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph MarketService {
+
+    func AddToTable(market entity<Entity>, itemId string, amount int) {
+        if market == nil || amount <= 0 { return }
+        if market<marketData> == nil {
+            LogError("[MarketService] AddToTable FAILED | market entity has no MarketRuntimeData!")
+            return
+        }
+
+        var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
+        if index != -1 {
+            var current = market<marketData>._TableItemAmounts[index] as int
+            var newTotal = current + amount
+            market<marketData>._TableItemAmounts[index] = newTotal
+            if gameManager.IsDebug() { LogInfo("[MarketService] AddToTable | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(newTotal)) }
+        } else {
+            list.Append(market<marketData>._TableItemIDs, itemId)
+            list.Append(market<marketData>._TableItemAmounts, amount)
+            if gameManager.IsDebug() { LogInfo("[MarketService] AddToTable | NEW " + itemId + " amount=" + convert.ToString(amount)) }
+        }
+    }
+
+    func RemoveFromTable(market entity<Entity>, itemId string, amount int) bool {
+        if market == nil || amount <= 0 { return false }
+        if market<marketData> == nil { return false }
+
+        var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
+        if index == -1 { return false }
+
+        var current = market<marketData>._TableItemAmounts[index] as int
+        if current < amount { return false }
+
+        var remaining = current - amount
+        if remaining <= 0 {
+            list.RemoveAt(market<marketData>._TableItemIDs, index)
+            list.RemoveAt(market<marketData>._TableItemAmounts, index)
+        } else {
+            market<marketData>._TableItemAmounts[index] = remaining
+        }
+        if gameManager.IsDebug() { LogInfo("[MarketService] RemoveFromTable | " + itemId + " -" + convert.ToString(amount) + " rem=" + convert.ToString(remaining)) }
+        return true
+    }
+
+    func GetTableAmount(market entity<Entity>, itemId string) int {
+        if market == nil { return 0 }
+        if market<marketData> == nil { return 0 }
+
+        var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
+        if index != -1 {
+            return market<marketData>._TableItemAmounts[index] as int
+        }
+        return 0
+    }
+
+    func SetCustomer(market entity<Entity>, slot int, id int, itemId string, amount int) {
+        if market == nil { return }
+        if market<marketData> == nil || slot < 0 || slot >= 5 { return }
+
+        market<marketData>._QueueCustomerIDs[slot] = id
+        market<marketData>._QueueItemIDs[slot] = itemId
+        market<marketData>._QueueItemAmounts[slot] = amount
+        if gameManager.IsDebug() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId) }
+    }
+
+    func ClearCustomer(market entity<Entity>, slot int) {
+        if market == nil { return }
+        if market<marketData> == nil || slot < 0 || slot >= 5 { return }
+
+        market<marketData>._QueueCustomerIDs[slot] = -1
+        market<marketData>._QueueItemIDs[slot] = ""
+        market<marketData>._QueueItemAmounts[slot] = 0
+    }
+
+    func ShiftQueueForward(market entity<Entity>) {
+        if market == nil { return }
+        if market<marketData> == nil { return }
+
+        for i = 1, 5, 1 {
+            var cid = market<marketData>._QueueCustomerIDs[i] as int
+            var citem = market<marketData>._QueueItemIDs[i] as string
+            var camt = market<marketData>._QueueItemAmounts[i] as int
+            var cnpc = market<marketData>._SlotNPCs[i] as entity<Entity>
+
+            market<marketData>._QueueCustomerIDs[i - 1] = cid
+            market<marketData>._QueueItemIDs[i - 1] = citem
+            market<marketData>._QueueItemAmounts[i - 1] = camt
+            market<marketData>._SlotNPCs[i - 1] = cnpc
+        }
+        ClearCustomer(market, 4)
+        market<marketData>._SlotNPCs[4] = nil
+        if gameManager.IsDebug() { LogInfo("[MarketService] ShiftQueueForward | Queue shifted") }
+    }
+
+    func IsSlotEmpty(market entity<Entity>, slot int) bool {
+        if market == nil { return true }
+        if market<marketData> == nil { return true }
+        if slot < 0 || slot >= 5 { return true }
+        return market<marketData>._QueueCustomerIDs[slot] as int == -1
+    }
+
+    func GetOccupiedSlotCount(market entity<Entity>) int {
+        if market == nil { return 0 }
+        if market<marketData> == nil { return 0 }
+
+        var count = 0
+        for i = 0, 5, 1 {
+            if market<marketData>._QueueCustomerIDs[i] as int != -1 {
+                count = count + 1
+            }
+        }
+        return count
+    }
+}

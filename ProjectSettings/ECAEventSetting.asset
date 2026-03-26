@@ -255,6 +255,89 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_88875793"
+    },
+    "signal_37131010": {
+      "name": "OnPlayerEnterMarket",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100011,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "market",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_37131010"
+    },
+    "signal_36246097": {
+      "name": "OnPlayerExitMarket",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100012,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "market",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_36246097"
+    },
+    "signal_28748972": {
+      "name": "OnRequestRestock",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100013,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "market",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_28748972"
+    },
+    "signal_73265997": {
+      "name": "OnMarketSellTapped",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100014,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_73265997"
     }
   },
   "customName": {
@@ -268,7 +351,11 @@
     "OnPlayerEnterStore": "signal_16737112",
     "OnFarmCellStateChanged": "signal_60093422",
     "OnPlayerExitStore": "signal_98373386",
-    "OnPlayerToggleStore": "signal_88875793"
+    "OnPlayerToggleStore": "signal_88875793",
+    "OnPlayerEnterMarket": "signal_37131010",
+    "OnPlayerExitMarket": "signal_36246097",
+    "OnRequestRestock": "signal_28748972",
+    "OnMarketSellTapped": "signal_73265997"
   },
   "children": []
 }

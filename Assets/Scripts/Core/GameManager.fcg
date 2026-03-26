@@ -9,6 +9,7 @@ import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Farming/CropGrowthManager.fcg" as cropManager
 import "../Backpack/BackpackManager.fcg" as backpackManager
+import "../Market/MarketManager.fcg" as marketManager
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
@@ -57,6 +58,11 @@ static graph GameManager {
                 var fCount = list.Length(zoneObj<FarmZoneData>.Floors)
                 for j = 0, fCount, 1 { list.Append(_AllFloorsInWorld, zoneObj<FarmZoneData>.Floors[j]) }
             }
+        }
+
+        // Register linked market stall
+        if zoneObj<FarmZoneData> != nil && zoneObj<FarmZoneData>.Market != nil {
+            marketManager.RegisterMarket(zoneObj<FarmZoneData>.Market, zoneObj)
         }
         
         // Start the background growth tick only once when the first zone registers
@@ -111,7 +117,8 @@ static graph GameManager {
                         }
                     }
                     assignedZone = zone
-                    if _IsDebug { LogInfo("[GameManager] Assigned new Farm Zone to player.") }
+                    marketManager.AssignMarketOwner(zone, player)
+                    if _IsDebug { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
                     break
                 }
             }
@@ -130,5 +137,6 @@ static graph GameManager {
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
+        backpackManager.AddItem(player, "crop_apple", 10)
     }
 }

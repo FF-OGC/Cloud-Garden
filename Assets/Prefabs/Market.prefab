@@ -1,0 +1,215 @@
+{
+  "_entityName": "Market",
+  "_tag": {
+    "type": "Prefab"
+  },
+  "_entityId": "qyR9uUGc",
+  "children": [
+    {
+      "_entityName": "Market",
+      "_tag": {
+        "type": "SceneEditEntity",
+        "resourceId": "Primitive/Empty"
+      },
+      "_entityId": "c6etLcdH",
+      "children": [
+        {
+          "_entityName": "Market Trigger",
+          "_tag": {
+            "type": "UGCSceneEntity",
+            "resourceId": ""
+          },
+          "_entityId": "L0gqtVpm",
+          "children": [],
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "position": {
+            "x": 0,
+            "y": 0.33699995279312134,
+            "z": 0
+          },
+          "scale": {
+            "x": 2.5940001010894775,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": true,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [
+            "ColliderShape",
+            "Collider"
+          ],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "materials": [],
+          "colliders": [
+            {
+              "enable": true,
+              "colliderType": "Box",
+              "meshUUID": null,
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "size": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "radius": 0.5,
+              "height": 1,
+              "isConvexIfMesh": false
+            }
+          ],
+          "IsNPC": false,
+          "isCreateAsEmpty": false,
+          "Rigidbody": {
+            "Type": 1,
+            "Mass": 1,
+            "CenterOfMass": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "UseGravity": true,
+            "Drag": 0.05,
+            "AngularDrag": 0.05,
+            "FreezePosX": false,
+            "FreezeRotX": false,
+            "FreezePosY": false,
+            "FreezeRotY": false,
+            "FreezePosZ": false,
+            "FreezeRotZ": false
+          },
+          "ecaScripts": [
+            {
+              "fileId": "4svktyn2les-mn7938a5-dypm0f02i0l",
+              "filePath": "Assets\\Scripts\\Market\\MarketTrigger.fcg",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "ugcscript"
+            }
+          ],
+          "ecaProps": {
+            "CustomLevelObject": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {},
+            "ColliderShape": {},
+            "Collider": {}
+          },
+          "propsData": {},
+          "entityVersion": 3,
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "prefabVariant": null
+        }
+      ],
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": null,
+      "position": {
+        "x": -20,
+        "y": 0,
+        "z": -34.573001861572266
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "BTPath": [
+        null
+      ],
+      "visible": true,
+      "VisibilityLayer": 0,
+      "modelOptimization": 0,
+      "streamingLayer": "",
+      "attributes": [
+        2,
+        4
+      ],
+      "isTrigger": false,
+      "collidable": true,
+      "physicalLayer": 0,
+      "physicalMaterial": null,
+      "aoiSetting": 0,
+      "initialTypes": {},
+      "componentList": [],
+      "entityTagData": {
+        "tagPointers": []
+      },
+      "tempIndex": 10,
+      "itemID": 160,
+      "seParent": null,
+      "ecaScripts": [
+        {
+          "fileId": "4o1whl7uuv2-mn7938a4-o1br0qqag0j",
+          "filePath": "Assets\\Scripts\\Market\\MarketRuntimeData.fcg",
+          "_tag": {
+            "type": "GFileRefer"
+          },
+          "fileType": "ugcscript"
+        }
+      ],
+      "ecaProps": {
+        "DummyLevelObject": {},
+        "LevelObject": {},
+        "Transform": {},
+        "Entity": {},
+        "Visibility": {},
+        "Collider": {}
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "prefabVariant": null
+    }
+  ],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "HintCraftlandCombineMesh": false,
+  "discriminator": "ISceneLike"
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

@@ -1,0 +1,291 @@
+{
+  "_entityName": "Bodypart",
+  "_tag": {
+    "type": "BodyPartEntity"
+  },
+  "_entityId": "hDqQ5rXb",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "skeleton": {
+    "fileId": "UMA_101000006",
+    "filePath": "lib://ffuma/101000006",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "uma"
+  },
+  "bodyparts": [
+    {
+      "id": "bpc_60742457",
+      "name": "Bottom",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_LeftLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_LeftLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_LeftAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "BoneName": "bone_RightLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_RightLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_RightAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bpc_61932676",
+      "name": "Top",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_Spine",
+                      "Include": false,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_Spine1",
+                          "Include": false,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_Neck",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_Head",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "bone_LeftClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_LeftForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_LeftHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Left_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 L ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 L ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "bone_RightClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_RightForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_RightHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Right_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 R ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 R ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

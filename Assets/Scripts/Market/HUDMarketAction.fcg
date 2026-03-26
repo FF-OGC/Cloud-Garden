@@ -1,0 +1,69 @@
+import "StdLibrary.fcc" as std
+import "Hud.fcc" as hud
+import "EditorGenLib.fcc" as gen
+import "Convert.fcc" as convert
+
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+graph HUDMarketAction {
+
+    _SellBtnUI entity<CustomUI>
+    _IsInZone bool = false
+    _CurrentMarket entity<Entity> = nil
+
+    event OnAwake() {
+        LogInfo("[HUDMarketAction] OnAwake START | player=" + convert.ToString(thisEntity<Player> != nil))
+        CreateCustomUI(out var btnInstance, thisEntity<Player>, EResUI.market_sell_btn)
+        if btnInstance != nil {
+            _SellBtnUI = btnInstance
+            _SellBtnUI<CustomUI>.IsVisible = false
+            LogInfo("[HUDMarketAction] Sell button UI created OK, hidden")
+        } else {
+            LogError("[HUDMarketAction] FAILED to create sell button UI!")
+        }
+    }
+
+    event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
+        LogInfo("[HUDMarketAction] OnPlayerEnterMarket FIRED | player=" + convert.ToString(player != nil) + " market=" + convert.ToString(market != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
+        if player != thisEntity<Player> { return }
+        _IsInZone = true
+        _CurrentMarket = market
+        if _SellBtnUI != nil {
+            _SellBtnUI<CustomUI>.IsVisible = true
+            LogInfo("[HUDMarketAction] Sell button SHOWN")
+        } else {
+            LogWarning("[HUDMarketAction] _SellBtnUI is nil, cannot show!")
+        }
+    }
+
+    event OnPlayerExitMarket(player entity<Player>, market entity<Entity>) {
+        LogInfo("[HUDMarketAction] OnPlayerExitMarket FIRED")
+        if player != thisEntity<Player> { return }
+        _IsInZone = false
+        _CurrentMarket = nil
+        if _SellBtnUI != nil {
+            _SellBtnUI<CustomUI>.IsVisible = false
+        }
+    }
+
+    event OnMarketSellTapped(player entity<Player>) {
+        LogInfo("[HUDMarketAction] OnMarketSellTapped FIRED | player=" + convert.ToString(player != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
+
+        if player == nil { return }
+        if player != thisEntity<Player> {
+            LogInfo("[HUDMarketAction] SKIP: not my player")
+            return
+        }
+
+        LogInfo("[HUDMarketAction] CHECK | _IsInZone=" + convert.ToString(_IsInZone) + " _CurrentMarket=" + convert.ToString(_CurrentMarket != nil))
+
+        if !_IsInZone || _CurrentMarket == nil {
+            LogWarning("[HUDMarketAction] ABORT: not in zone or no current market")
+            return
+        }
+
+        LogInfo("[HUDMarketAction] Sell tapped -> dispatching OnRequestRestock")
+        DispatchEventToEntity(OnRequestRestock, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, _CurrentMarket})
+    }
+}

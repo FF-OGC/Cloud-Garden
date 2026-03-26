@@ -12,6 +12,10 @@ static graph ItemConfig {
         return 3
     }
 
+    func IsSellable(itemId string) bool {
+        return GetType(itemId) == 2
+    }
+
     // Returns Maximum Stack Size for a specific item
     func GetMaxStack(itemId string) int {
         if GetType(itemId) == 1 { return 99 } // Seeds can stack up to 99

@@ -54,6 +54,18 @@
           },
           "scriptName": "store_btn",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "2w3np29cvzg-mn793my8-kzr8btpqqw",
+            "filePath": "Assets\\UI\\Sell.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "market_sell_btn",
+          "children": []
         }
       ]
     },
@@ -183,6 +195,18 @@
             "fileType": "prefab"
           },
           "scriptName": "seed_growed",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "w3w0p8etnp-mn7a3w9k-kng8ysaef9",
+            "filePath": "Assets\\Prefabs\\Customer.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "npc_customer",
           "children": []
         }
       ]

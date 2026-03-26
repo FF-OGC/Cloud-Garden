@@ -1,0 +1,232 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "./MarketConfig.fcg" as marketCfg
+import "./MarketRuntimeData.fcg" as marketData
+import "../Services/MarketService.fcg" as marketService
+import "./MarketVisual.fcg" as marketVisual
+import "./CustomerVisualManager.fcg" as customerVisual
+import "../Backpack/BackpackData.fcg" as backpackData
+import "../Services/BackpackService.fcg" as backpackService
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph MarketManager {
+
+    _Markets List<entity<Entity>> = nil
+    _ZoneToMarket Map<entity<Entity>, entity<Entity>> = nil
+    _IsInitialized bool = false
+
+    event OnAwake() {
+        _Markets = list.New(0, 10) as List<entity<Entity>>
+        _ZoneToMarket = map.New() as Map<entity<Entity>, entity<Entity>>
+        customerVisual.InitNPCPool()
+        marketVisual.InitProducePool()
+        _IsInitialized = true
+        start TransactionLoopAll()
+        if gameManager.IsDebug() { LogInfo("[MarketManager] OnAwake | Initialized. Waiting for market registrations.") }
+    }
+
+    func RegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>) {
+        if marketEntity == nil { return }
+
+        LogInfo("[MarketManager] RegisterMarket | entityName='" + marketEntity<Entity>.Name + "' hasMarketData=" + convert.ToString(marketEntity<marketData> != nil))
+
+        if marketEntity<marketData> == nil {
+            LogError("[MarketManager] RegisterMarket FAILED | entity '" + marketEntity<Entity>.Name + "' has no MarketRuntimeData! Attach MarketRuntimeData.fcg to THIS entity.")
+            return
+        }
+
+        marketEntity<marketData>.EnsureInit()
+        list.Append(_Markets, marketEntity)
+
+        if farmZone != nil {
+            marketEntity<marketData>._FarmZone = farmZone
+            _ZoneToMarket[farmZone] = marketEntity
+
+            if farmZone<gen.FarmZoneData> != nil && farmZone<gen.FarmZoneData>.Owner != nil {
+                marketEntity<marketData>._Owner = farmZone<gen.FarmZoneData>.Owner as entity<Player>
+            }
+        }
+
+        start DelayedMaintain(marketEntity)
+        LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets)))
+    }
+
+    async func DelayedMaintain(market entity<Entity>) {
+        WaitForMillisecond(500)
+        MaintainQueue(market)
+    }
+
+    func GetMarketForZone(zone entity<Entity>) entity<Entity> {
+        if zone == nil { return nil }
+        if map.ContainKey(_ZoneToMarket, zone) {
+            return _ZoneToMarket[zone] as entity<Entity>
+        }
+        return nil
+    }
+
+    func AssignMarketOwner(zone entity<Entity>, player entity<Player>) {
+        var market = GetMarketForZone(zone)
+        if market != nil && market<marketData> != nil {
+            market<marketData>._Owner = player
+            if gameManager.IsDebug() { LogInfo("[MarketManager] AssignMarketOwner | zone assigned to player") }
+        }
+    }
+
+    // ===== TRIGGER EVENTS =====
+
+    event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
+        LogInfo("[MarketManager] OnPlayerEnterMarket | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil))
+        if market<marketData> == nil {
+            LogError("[MarketManager] TRIGGER entity '" + market<Entity>.Name + "' has NO MarketRuntimeData! Make sure MarketTrigger and MarketRuntimeData are on the SAME entity.")
+        }
+        DispatchEventToEntity(OnPlayerEnterMarket, player, PlatformType.Server, List<object>{player, market})
+    }
+
+    event OnPlayerExitMarket(player entity<Player>, market entity<Entity>) {
+        DispatchEventToEntity(OnPlayerExitMarket, player, PlatformType.Server, List<object>{player, market})
+    }
+
+    // ===== FLOW 1: RESTOCK =====
+
+    event OnRequestRestock(player entity<Player>, market entity<Entity>) {
+        LogInfo("[MarketManager] OnRequestRestock | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil))
+        if player == nil || market == nil {
+            LogWarning("[MarketManager] OnRequestRestock ABORT: player or market nil")
+            return
+        }
+        if market<marketData> == nil {
+            LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!")
+            return
+        }
+        if player<backpackData> == nil {
+            LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil")
+            return
+        }
+
+        var activeSlot = player<backpackData>._ActiveQuickbarSlot
+        var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+
+        if handle == -1 {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | no item in active slot") }
+            return
+        }
+
+        if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return }
+
+        var itemId = player<backpackData>._ItemIDs[handle] as string
+        var amount = player<backpackData>._ItemAmounts[handle] as int
+
+        if !marketCfg.IsSellable(itemId) {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | " + itemId + " not sellable") }
+            return
+        }
+        if amount <= 0 { return }
+
+        if !backpackService.ConsumeActiveItem(player, amount) {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | ConsumeActiveItem failed") }
+            return
+        }
+
+        marketService.AddToTable(market, itemId, amount)
+        marketVisual.UpdateTableDisplay(market)
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId) }
+        CheckAndStartTransaction(market)
+    }
+
+    // ===== FLOW 2: QUEUE MAINTENANCE =====
+
+    func MaintainQueue(market entity<Entity>) {
+        if market == nil { return }
+        var queueSize = marketCfg.GetQueueSize()
+        for i = 0, queueSize, 1 {
+            if marketService.IsSlotEmpty(market, i) {
+                FillSlot(market, i)
+            }
+        }
+        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue | occupied=" + convert.ToString(marketService.GetOccupiedSlotCount(market))) }
+    }
+
+    func FillSlot(market entity<Entity>, slot int) {
+        var items = marketCfg.GetSellableItems()
+        var itemCount = list.Length(items)
+        if itemCount <= 0 { return }
+
+        if market<marketData> == nil { return }
+
+        var customerId = market<marketData>._NextCustomerID
+        market<marketData>._NextCustomerID = market<marketData>._NextCustomerID + 1
+
+        var itemIndex = customerId % itemCount
+        var itemId = items[itemIndex] as string
+
+        var minAmt = marketCfg.GetCustomerMinAmount()
+        var maxAmt = marketCfg.GetCustomerMaxAmount()
+        var range = maxAmt - minAmt + 1
+        var amount = minAmt + (customerId % range)
+
+        marketService.SetCustomer(market, slot, customerId, itemId, amount)
+        customerVisual.SpawnCustomer(market, slot)
+    }
+
+    // ===== FLOW 3: TRANSACTION =====
+
+    async func TransactionLoopAll() {
+        WaitForMillisecond(1500)
+        while true {
+            var count = list.Length(_Markets)
+            for i = 0, count, 1 {
+                var market = _Markets[i] as entity<Entity>
+                if market != nil && market<marketData> != nil {
+                    if !market<marketData>._IsTransacting {
+                        CheckAndStartTransaction(market)
+                    }
+                }
+            }
+            WaitForMillisecond(1000)
+        }
+    }
+
+    func CheckAndStartTransaction(market entity<Entity>) {
+        if market == nil { return }
+        if market<marketData> == nil || market<marketData>._IsTransacting { return }
+        if marketService.IsSlotEmpty(market, 0) { return }
+
+        var wantedItem = market<marketData>._QueueItemIDs[0] as string
+        var wantedAmount = market<marketData>._QueueItemAmounts[0] as int
+        if wantedAmount <= 0 { return }
+
+        var tableAmount = marketService.GetTableAmount(market, wantedItem)
+        if tableAmount < wantedAmount { return }
+
+        market<marketData>._IsTransacting = true
+        start ExecuteTransaction(market, wantedItem, wantedAmount)
+    }
+
+    async func ExecuteTransaction(market entity<Entity>, itemId string, amount int) {
+        var timePerUnit = marketCfg.GetTransactionTimeMs(itemId)
+        var totalTimeMs = timePerUnit * amount
+
+        marketService.RemoveFromTable(market, itemId, amount)
+        marketVisual.UpdateTableDisplay(market)
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] Transaction | " + convert.ToString(amount) + "x " + itemId + " duration=" + convert.ToString(totalTimeMs) + "ms") }
+
+        WaitForMillisecond(totalTimeMs)
+
+        customerVisual.AnimateLeaving(market, 0)
+        marketService.ClearCustomer(market, 0)
+        marketService.ShiftQueueForward(market)
+        customerVisual.AdvanceQueue(market)
+
+        market<marketData>._IsTransacting = false
+
+        MaintainQueue(market)
+        CheckAndStartTransaction(market)
+    }
+}

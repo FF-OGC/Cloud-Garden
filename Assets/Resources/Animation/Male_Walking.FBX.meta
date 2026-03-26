@@ -1,0 +1,301 @@
+{
+  "fileId": "wrikgn8r308-mn7e1gaj-643cijp8ioo",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [],
+    "BoneInfos": [
+      {
+        "Name": "Male_Walking.sk",
+        "BoneNodes": [
+          {
+            "ChildBones": [
+              {
+                "ChildBones": [
+                  {
+                    "ChildBones": [],
+                    "BoneName": "Bip01 Footsteps"
+                  },
+                  {
+                    "ChildBones": [
+                      {
+                        "ChildBones": [
+                          {
+                            "ChildBones": [
+                              {
+                                "ChildBones": [
+                                  {
+                                    "ChildBones": [
+                                      {
+                                        "ChildBones": [
+                                          {
+                                            "ChildBones": [],
+                                            "BoneName": "Male_Bone002"
+                                          },
+                                          {
+                                            "ChildBones": [],
+                                            "BoneName": "Male_Bone003"
+                                          },
+                                          {
+                                            "ChildBones": [],
+                                            "BoneName": "Male_Bone004"
+                                          },
+                                          {
+                                            "ChildBones": [],
+                                            "BoneName": "Male_Bone001"
+                                          }
+                                        ],
+                                        "BoneName": "Male_Dummy001"
+                                      }
+                                    ],
+                                    "BoneName": "bone_Head"
+                                  }
+                                ],
+                                "BoneName": "bone_Neck"
+                              },
+                              {
+                                "ChildBones": [],
+                                "BoneName": "bone_Left_Spine_Backpack"
+                              },
+                              {
+                                "ChildBones": [],
+                                "BoneName": "bone_Right_Spine_Weapon"
+                              },
+                              {
+                                "ChildBones": [],
+                                "BoneName": "bone_Left_Spine_Weapon"
+                              },
+                              {
+                                "ChildBones": [
+                                  {
+                                    "ChildBones": [
+                                      {
+                                        "ChildBones": [
+                                          {
+                                            "ChildBones": [
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Left_Finger02"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Left_Finger01"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Left_Finger12"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Left_Finger11"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Left_Finger22"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Left_Finger21"
+                                              },
+                                              {
+                                                "ChildBones": [],
+                                                "BoneName": "bone_Left_Weapon"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Left_Finger32"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Left_Finger31"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Left_Finger42"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Left_Finger41"
+                                              }
+                                            ],
+                                            "BoneName": "bone_LeftHand"
+                                          }
+                                        ],
+                                        "BoneName": "bone_LeftForeArm"
+                                      }
+                                    ],
+                                    "BoneName": "bone_LeftArm"
+                                  }
+                                ],
+                                "BoneName": "bone_LeftClav"
+                              },
+                              {
+                                "ChildBones": [
+                                  {
+                                    "ChildBones": [
+                                      {
+                                        "ChildBones": [
+                                          {
+                                            "ChildBones": [
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Right_Finger02"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Right_Finger01"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Right_Finger12"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Right_Finger11"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Right_Finger22"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Right_Finger21"
+                                              },
+                                              {
+                                                "ChildBones": [],
+                                                "BoneName": "bone_Right_Weapon"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Right_Finger32"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Right_Finger31"
+                                              },
+                                              {
+                                                "ChildBones": [
+                                                  {
+                                                    "ChildBones": [],
+                                                    "BoneName": "bone_Right_Finger42"
+                                                  }
+                                                ],
+                                                "BoneName": "bone_Right_Finger41"
+                                              }
+                                            ],
+                                            "BoneName": "bone_RightHand"
+                                          }
+                                        ],
+                                        "BoneName": "bone_RightForeArm"
+                                      }
+                                    ],
+                                    "BoneName": "bone_RightArm"
+                                  }
+                                ],
+                                "BoneName": "bone_RightClav"
+                              }
+                            ],
+                            "BoneName": "bone_Spine1"
+                          }
+                        ],
+                        "BoneName": "bone_Spine"
+                      },
+                      {
+                        "ChildBones": [
+                          {
+                            "ChildBones": [
+                              {
+                                "ChildBones": [
+                                  {
+                                    "ChildBones": [],
+                                    "BoneName": "bone_LeftToe"
+                                  }
+                                ],
+                                "BoneName": "bone_LeftAnkle"
+                              }
+                            ],
+                            "BoneName": "bone_LeftLeg"
+                          }
+                        ],
+                        "BoneName": "bone_LeftLegUpper"
+                      },
+                      {
+                        "ChildBones": [
+                          {
+                            "ChildBones": [
+                              {
+                                "ChildBones": [
+                                  {
+                                    "ChildBones": [],
+                                    "BoneName": "bone_RightToe"
+                                  }
+                                ],
+                                "BoneName": "bone_RightAnkle"
+                              }
+                            ],
+                            "BoneName": "bone_RightLeg"
+                          }
+                        ],
+                        "BoneName": "bone_RightLegUpper"
+                      },
+                      {
+                        "ChildBones": [],
+                        "BoneName": "bone_Hips_Dummy"
+                      }
+                    ],
+                    "BoneName": "bone_Hips"
+                  }
+                ],
+                "BoneName": "Bip01"
+              }
+            ],
+            "BoneName": "bone_Root"
+          }
+        ],
+        "OrgExtName": ".sk"
+      }
+    ],
+    "Anims": [
+      {
+        "OrgExtName": ".Anim",
+        "Name": "defaultClipName.Anim",
+        "Size": 125630,
+        "ClipData": {
+          "Name": "defaultClipName",
+          "BakeStart": 0.0416666679084301,
+          "BakeStop": 1.0416666269302368,
+          "SampleRate": 24
+        },
+        "magicNumber": {
+          "magicNumber1": 100,
+          "magicNumber2": 98,
+          "magicNumber3": 158,
+          "magicNumber4": 134,
+          "version": 1009715
+        }
+      }
+    ],
+    "ManifestJSON": {
+      "FBXName": "Male_Walking",
+      "ImportSucceeded": true,
+      "MaterialCount": 0,
+      "MaterialDetail": [],
+      "MeshCount": 0,
+      "MeshDetail": []
+    }
+  }
+}

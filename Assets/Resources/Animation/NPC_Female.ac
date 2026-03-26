@@ -1,0 +1,811 @@
+{
+  "_entityName": "ACEntity",
+  "_tag": {
+    "type": "ACEntity"
+  },
+  "_entityId": "YF9tF3YC",
+  "children": [
+    {
+      "_entityName": "Idle",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "Jg0jHhcx",
+      "children": [
+        {
+          "_entityName": "BaseLayer",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "mRVqIxZy",
+          "children": [
+            {
+              "_entityName": "Female_Idle.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "Sq5fSyE4",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.3,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF:0",
+                "filePath": "lib://FFAnim/Female_Idle.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 0,
+              "endTime": 2
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": true,
+          "mute": false,
+          "bodypartId": null,
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": true,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "niFl5Fuv",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": true
+    },
+    {
+      "_entityName": "Ordering",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "CD8BqZ5Q",
+      "children": [
+        {
+          "_entityName": "Bottom",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "g2eehkek",
+          "children": [
+            {
+              "_entityName": "Female_Sitting.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "E2Fqxjql",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF:16",
+                "filePath": "lib://FFAnim/Female_Sitting.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 1,
+              "startTime": 0,
+              "endTime": 2
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": false,
+          "bodypartId": "bpc_60742457",
+          "DisableChanged": false
+        },
+        {
+          "_entityName": "Top",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "gwkTSY74",
+          "children": [
+            {
+              "_entityName": "Female_Think.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "c9HLTfSf",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF1:4",
+                "filePath": "lib://FFAnim/Female_Think.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 2,
+              "startTime": 0,
+              "endTime": 7
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": false,
+          "bodypartId": "bpc_61932676",
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": true,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "f78Jdqn7",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": false
+    },
+    {
+      "_entityName": "Walk",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "ItVGY18y",
+      "children": [
+        {
+          "_entityName": "BaseLayer",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "yzWyM3UY",
+          "children": [
+            {
+              "_entityName": "defaultClipName.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "B4XfBLlT",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": null,
+              "unlockedValue": null,
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.3,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "g3rmej7mjni-mn7e1g4k-8m709jmbu62-defaultClipName.Anim",
+                "filePath": "fab://Assets\\Resources\\Animation\\Female_Walking.FBX\\defaultClipName.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 0,
+              "endTime": 1
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": null,
+          "unlockedValue": null,
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": true,
+          "mute": false,
+          "bodypartId": null,
+          "DisableChanged": false
+        },
+        {
+          "_entityName": "Bottom",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "T4Ntonih",
+          "children": [],
+          "prefabVariant": null,
+          "activeValue": null,
+          "unlockedValue": null,
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": true,
+          "bodypartId": "bpc_60742457",
+          "DisableChanged": false
+        },
+        {
+          "_entityName": "Top",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "xgZQEenB",
+          "children": [],
+          "prefabVariant": null,
+          "activeValue": null,
+          "unlockedValue": null,
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": true,
+          "bodypartId": "bpc_61932676",
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": true,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "k91xG83Y",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": false
+    },
+    {
+      "_entityName": "Sit",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "JDFmEUT7",
+      "children": [
+        {
+          "_entityName": "Bottom",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "SI1ACSBr",
+          "children": [
+            {
+              "_entityName": "Female_Idle.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "cG1bARPO",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.3,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF:0",
+                "filePath": "lib://FFAnim/Female_Idle.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 0,
+              "endTime": 2
+            },
+            {
+              "_entityName": "Female_Sitting.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "cUFvyuUM",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.43,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF:16",
+                "filePath": "lib://FFAnim/Female_Sitting.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 1.566,
+              "endTime": 3.566
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": false,
+          "bodypartId": "bpc_60742457",
+          "DisableChanged": false
+        },
+        {
+          "_entityName": "Top",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "OFL8nRUN",
+          "children": [
+            {
+              "_entityName": "Female_Idle.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "ThJQN3VF",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.3,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "UGC_NPC_FEMALE_ANIMREF:0",
+                "filePath": "lib://FFAnim/Female_Idle.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 0,
+              "endTime": 2
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": false,
+          "bodypartId": "bpc_61932676",
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": false,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "nV9aXqH6",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": false
+    },
+    {
+      "_entityName": "Eating",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "HkqFue3x",
+      "children": [
+        {
+          "_entityName": "Base Layer",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "M0gMMfkP",
+          "children": [],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": true,
+          "mute": false,
+          "bodypartId": null,
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": false,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "E25gpSwX",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": false
+    },
+    {
+      "_entityName": "Cooking",
+      "_tag": {
+        "type": "ACStateEntity"
+      },
+      "_entityId": "UzYcaPjb",
+      "children": [
+        {
+          "_entityName": "Top",
+          "_tag": {
+            "type": "ACLayerEntity"
+          },
+          "_entityId": "ZMuOx5kl",
+          "children": [
+            {
+              "_entityName": "defaultClipName.anim",
+              "_tag": {
+                "type": "ACClipEntity"
+              },
+              "_entityId": "DtVQUsGL",
+              "children": [],
+              "prefabVariant": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "editorLockValue": false,
+              "editorVisibleValue": true,
+              "speed": 1,
+              "loop": false,
+              "fadeInTime": 0.3,
+              "enablefadeTime": true,
+              "clipRefer": {
+                "fileId": "ao2uyn6fkvd-mmvf0gg1-2nkkgkdwm17-defaultClipName.Anim",
+                "filePath": "fab://Assets\\Animation\\TestCookingFemale (1).FBX\\defaultClipName.anim",
+                "_tag": {
+                  "type": "GFileRefer"
+                },
+                "fileType": "anim"
+              },
+              "wrapMode": 0,
+              "postExtrapolate": 0,
+              "startTime": 0,
+              "endTime": 8
+            }
+          ],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "isLoop": false,
+          "isBaseLayer": false,
+          "mute": false,
+          "bodypartId": "bpc_61932676",
+          "DisableChanged": false
+        }
+      ],
+      "prefabVariant": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "isLoop": false,
+      "_eventFrameList": [],
+      "eventFrameGroup": {
+        "_entityName": "",
+        "_tag": {
+          "type": "ACEventFrameGroup"
+        },
+        "_entityId": "rY1ZPxZL",
+        "children": [],
+        "prefabVariant": null,
+        "activeValue": {
+          "selfValue": true,
+          "valueTag": "activeValue"
+        },
+        "unlockedValue": {
+          "selfValue": true,
+          "valueTag": "unlockedValue"
+        },
+        "editorLockValue": false,
+        "editorVisibleValue": true,
+        "DisableChanged": false
+      },
+      "selectedBodyparts": [],
+      "muteEvent": false,
+      "DisableChanged": false
+    }
+  ],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "version": 3,
+  "preModel": {
+    "fileId": "UMA_101000006",
+    "filePath": "lib://ffuma/101000006",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "uma"
+  },
+  "bpcFile": {
+    "fileId": "zvybnig70eg-mn7a9cz2-fwokvld0kps",
+    "filePath": "Assets\\Resources\\Animation\\Test.bpc",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "bpc"
+  }
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
