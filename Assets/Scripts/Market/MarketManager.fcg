@@ -4,7 +4,7 @@ import "Map.fcc" as map
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 
-import "./MarketConfig.fcg" as marketCfg
+import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "../Services/MarketService.fcg" as marketService
 import "./MarketVisual.fcg" as marketVisual
@@ -154,21 +154,30 @@ static graph MarketManager {
 
     func MaintainQueue(market entity<Entity>) {
         if market == nil { return }
-        var queueSize = marketCfg.GetQueueSize()
+        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue START") }
+        var queueSize = marketCfg.GetQueueSize() as int
         for i = 0, queueSize, 1 {
-            if marketService.IsSlotEmpty(market, i) {
+            var isEmpty = marketService.IsSlotEmpty(market, i)
+            if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue | slot " + convert.ToString(i) + " empty=" + convert.ToString(isEmpty)) }
+            if isEmpty {
                 FillSlot(market, i)
             }
         }
-        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue | occupied=" + convert.ToString(marketService.GetOccupiedSlotCount(market))) }
+        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue DONE | occupied=" + convert.ToString(marketService.GetOccupiedSlotCount(market))) }
     }
 
     func FillSlot(market entity<Entity>, slot int) {
         var items = marketCfg.GetSellableItems()
         var itemCount = list.Length(items) as int
-        if itemCount <= 0 { return }
+        if itemCount <= 0 {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | no sellable items") }
+            return
+        }
 
-        if market<marketData> == nil { return }
+        if market<marketData> == nil {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | marketData nil") }
+            return
+        }
         market<marketData>.EnsureInit()
 
         var customerId = market<marketData>._NextCustomerID as int
@@ -182,6 +191,7 @@ static graph MarketManager {
         var range = (maxAmt - minAmt + 1) as int
         var amount = (minAmt + (customerId % range)) as int
 
+        if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId) }
         marketService.SetCustomer(market, slot, customerId, itemId, amount)
         customerVisual.SpawnCustomer(market, slot)
     }
@@ -190,8 +200,12 @@ static graph MarketManager {
 
     async func TransactionLoopAll() {
         WaitForMillisecond(2000)
+        if gameManager.IsDebug() { LogInfo("[MarketManager] TransactionLoopAll STARTED | markets=" + convert.ToString(list.Length(_Markets))) }
         while true {
             var count = list.Length(_Markets) as int
+            if count == 0 {
+                if gameManager.IsDebug() { LogInfo("[MarketManager] TransactionLoop | no markets registered yet") }
+            }
             for i = 0, count, 1 {
                 var market = _Markets[i] as entity<Entity>
                 if market != nil && market<marketData> != nil {
@@ -200,36 +214,63 @@ static graph MarketManager {
                     }
                 }
             }
-            WaitForMillisecond(1000)
+            WaitForMillisecond(3000)
         }
     }
 
     func CheckAndStartTransaction(market entity<Entity>) {
         if market == nil { return }
-        if market<marketData> == nil || market<marketData>._IsTransacting { return }
-        if marketService.IsSlotEmpty(market, 0) { return }
+        if market<marketData> == nil {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | marketData nil") }
+            return
+        }
+        if market<marketData>._IsTransacting {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | already transacting") }
+            return
+        }
+        if marketService.IsSlotEmpty(market, 0) {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | slot0 empty, no customers") }
+            return
+        }
 
         var wantedItem = market<marketData>._QueueItemIDs[0] as string
         var wantedAmount = market<marketData>._QueueItemAmounts[0] as int
-        if wantedAmount <= 0 { return }
+        var customerId = market<marketData>._QueueCustomerIDs[0] as int
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction | customer=" + convert.ToString(customerId) + " wants " + convert.ToString(wantedAmount) + "x " + wantedItem) }
+
+        if wantedAmount <= 0 {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | wantedAmount <= 0") }
+            return
+        }
 
         var tableAmount = marketService.GetTableAmount(market, wantedItem) as int
-        if tableAmount < wantedAmount { return }
+        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction | tableStock=" + convert.ToString(tableAmount) + " needed=" + convert.ToString(wantedAmount)) }
 
+        if tableAmount < wantedAmount {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | not enough stock (" + convert.ToString(tableAmount) + " < " + convert.ToString(wantedAmount) + ") for " + wantedItem) }
+            return
+        }
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction START | selling " + convert.ToString(wantedAmount) + "x " + wantedItem + " to customer " + convert.ToString(customerId)) }
         market<marketData>._IsTransacting = true
         start ExecuteTransaction(market, wantedItem, wantedAmount)
     }
 
     async func ExecuteTransaction(market entity<Entity>, itemId string, amount int) {
+        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction BEGIN | " + convert.ToString(amount) + "x " + itemId) }
+
         var timePerUnit = marketCfg.GetTransactionTimeMs(itemId) as int
         var totalTimeMs = (timePerUnit * amount) as int
 
         marketService.RemoveFromTable(market, itemId, amount)
         marketVisual.UpdateTableDisplay(market)
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] Transaction | " + convert.ToString(amount) + "x " + itemId + " duration=" + convert.ToString(totalTimeMs) + "ms") }
+        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
 
         WaitForMillisecond(totalTimeMs)
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | wait done, customer leaving") }
 
         customerVisual.AnimateLeaving(market, 0)
         marketService.ClearCustomer(market, 0)
@@ -238,6 +279,7 @@ static graph MarketManager {
 
         market<marketData>._IsTransacting = false
 
+        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction DONE | refilling queue") }
         MaintainQueue(market)
         CheckAndStartTransaction(market)
     }

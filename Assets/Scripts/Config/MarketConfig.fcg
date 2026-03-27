@@ -5,7 +5,7 @@ import "EditorGenLib.fcc" as gen
 static graph MarketConfig {
 
     func GetSellableItems() List<string> {
-        return List<string>{"crop_apple", "crop_tomato"}
+        return List<string>{"crop_apple"}
     }
 
     func IsSellable(itemId string) bool {
