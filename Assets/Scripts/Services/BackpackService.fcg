@@ -90,6 +90,7 @@ static graph BackpackService {
 
         if remaining < amount { // Added at least some items
             if gameManager.IsDebug() { LogInfo("[BackpackService] AddItem | itemId=" + itemId + " requested=" + convert.ToString(amount) + " added=" + convert.ToString(amount - remaining) + " nextHandle=" + convert.ToString(owner<backpackData>._NextHandle)) }
+            AutoFillQuickSlots(owner)
             DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
             return true
         }
@@ -135,6 +136,26 @@ static graph BackpackService {
             if gameManager.IsDebug() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | no item in active quick slot (handle=" + convert.ToString(handle) + ")") }
         }
         return false
+    }
+
+    // --- AUTO FILL QUICK SLOTS ---
+    func AutoFillQuickSlots(owner entity<Entity>) {
+        if owner<backpackData> == nil { return }
+
+        for q = 0, 5, 1 {
+            if owner<backpackData>._QuickSlotRefs[q] != -1 { continue }
+
+            for b = 0, owner<backpackData>._MaxCapacity, 1 {
+                var handle = owner<backpackData>._BackpackRefs[b]
+                if handle == -1 { continue }
+
+                if !list.Contain(owner<backpackData>._QuickSlotRefs, handle) {
+                    owner<backpackData>._QuickSlotRefs[q] = handle
+                    if gameManager.IsDebug() { LogInfo("[BackpackService] AutoFill | qSlot=" + convert.ToString(q) + " <- handle=" + convert.ToString(handle)) }
+                    break
+                }
+            }
+        }
     }
 
     // --- QUICK SLOT MANAGEMENT ---

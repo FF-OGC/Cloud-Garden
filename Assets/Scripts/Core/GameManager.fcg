@@ -147,11 +147,13 @@ static graph GameManager {
 
         //4. Add Seed to Backpack
         var seedId = "seed_apple"
-        var amount = 10
+        var amount = 50
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
-        backpackManager.AddItem(player, "crop_apple", 10)
+        // backpackManager.AddItem(player, "crop_apple", 10)
+
+        player<Player>.DisableFallDamage = true
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {

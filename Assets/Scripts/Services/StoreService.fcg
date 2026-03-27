@@ -8,32 +8,39 @@ import "../Core/GameManager.fcg" as gameManager
 [platform_server]
 static graph StoreService {
 
+    func FindSlotWithStock(itemId string, amount int) int {
+        var count = list.Length(storeData._ItemIDs)
+        for i = 0, count, 1 {
+            var id = storeData._ItemIDs[i] as string
+            if id == itemId {
+                var stock = storeData._ItemAmounts[i] as int
+                if stock >= amount {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
     // --- CHECK LOGIC ---
     func CanBuy(itemId string, amount int) bool {
         if amount <= 0 { return false }
 
-        var index = list.IndexOf(storeData._ItemIDs, itemId)
-        if index != -1 {
-            var currentStock = storeData._ItemAmounts[index] as int
-            if currentStock >= amount {
-                return true
-            }
-        }
-        
+        var slot = FindSlotWithStock(itemId, amount)
+        if slot != -1 { return true }
+
         if gameManager.IsDebug() { LogInfo("[StoreService] CanBuy FAILED | itemId=" + itemId + " not enough stock.") }
         return false
     }
 
     // --- EXECUTE LOGIC ---
     func ExecuteBuy(itemId string, amount int) bool {
-        var index = list.IndexOf(storeData._ItemIDs, itemId)
-        if index != -1 {
-            var currentStock = storeData._ItemAmounts[index] as int
-            if currentStock >= amount {
-                storeData._ItemAmounts[index] = currentStock - amount
-                if gameManager.IsDebug() { LogInfo("[StoreService] ExecuteBuy | Sold " + convert.ToString(amount) + " " + itemId) }
-                return true
-            }
+        var slot = FindSlotWithStock(itemId, amount)
+        if slot != -1 {
+            var currentStock = storeData._ItemAmounts[slot] as int
+            storeData._ItemAmounts[slot] = currentStock - amount
+            if gameManager.IsDebug() { LogInfo("[StoreService] ExecuteBuy | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slot)) }
+            return true
         }
         return false
     }

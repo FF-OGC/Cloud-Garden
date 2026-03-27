@@ -341,7 +341,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 23,
+          "tempIndex": 25,
           "itemID": 222,
           "seParent": null,
           "ecaScripts": [
@@ -400,9 +400,9 @@
         "z": -34.46836853027344
       },
       "scale": {
-        "x": 1,
-        "y": 1,
-        "z": 1
+        "x": 3,
+        "y": 3,
+        "z": 3
       },
       "rotation": {
         "x": 0,

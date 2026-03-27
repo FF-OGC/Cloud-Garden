@@ -6,7 +6,7 @@ static graph StoreConfig {
     
     // Returns all items available in the store
     func GetStoreItems() List<string> {
-        return List<string>{"seed_apple"}
+        return List<string>{"seed_apple", "seed_apple", "seed_apple", "seed_apple"}
     }
 
     // Returns the default max stock for an item

@@ -30,6 +30,8 @@ static graph StoreData {
             var stock = storeConfig.GetDefaultStock(itemId)
             list.Append(_ItemIDs, itemId)
             list.Append(_ItemAmounts, stock)
+
+
             if gameManager.IsDebug() { LogInfo("[StoreData] ResetRestock: added " + itemId + " stock=" + convert.ToString(stock)) }
         }
         if gameManager.IsDebug() { LogInfo("[StoreData] ResetRestock: total " + convert.ToString(count) + " items loaded") }
