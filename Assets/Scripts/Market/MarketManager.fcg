@@ -114,6 +114,12 @@ static graph MarketManager {
             LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!")
             return
         }
+
+        if market<marketData>._Owner != nil && market<marketData>._Owner != player {
+            LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall")
+            return
+        }
+
         if player<backpackData> == nil {
             LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil")
             return

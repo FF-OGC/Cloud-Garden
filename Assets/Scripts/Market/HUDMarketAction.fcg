@@ -4,6 +4,7 @@ import "EditorGenLib.fcc" as gen
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameManager
+import "./MarketRuntimeData.fcg" as marketData
 
 [platform_server]
 graph HUDMarketAction {
@@ -27,6 +28,12 @@ graph HUDMarketAction {
     event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
         LogInfo("[HUDMarketAction] OnPlayerEnterMarket FIRED | player=" + convert.ToString(player != nil) + " market=" + convert.ToString(market != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
         if player != thisEntity<Player> { return }
+
+        if market<marketData> != nil && market<marketData>._Owner != nil && market<marketData>._Owner != player {
+            LogInfo("[HUDMarketAction] SKIP: player is NOT the owner of this market stall")
+            return
+        }
+
         _IsInZone = true
         _CurrentMarket = market
         if _SellBtnUI != nil {
@@ -60,6 +67,11 @@ graph HUDMarketAction {
 
         if !_IsInZone || _CurrentMarket == nil {
             LogWarning("[HUDMarketAction] ABORT: not in zone or no current market")
+            return
+        }
+
+        if _CurrentMarket<marketData> != nil && _CurrentMarket<marketData>._Owner != nil && _CurrentMarket<marketData>._Owner != player {
+            LogWarning("[HUDMarketAction] ABORT: player is NOT the owner of this market stall")
             return
         }
 
