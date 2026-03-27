@@ -6789,7 +6789,7 @@
             }
           ],
           "PROP_46699519": {
-            "entityId": "mX6mHVRV",
+            "entityId": "UcqI9MNE",
             "fileId": "ew30utg8hd7-lw7lj2ed-m7knbltuzlg",
             "_tag": {
               "type": "EntityRefer"
@@ -9562,7 +9562,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 0,
             "y": 0.33699995279312134,
@@ -9665,7 +9668,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3,
@@ -9678,7 +9682,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": -20,
         "y": 0,
@@ -9715,7 +9722,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 10,
+      "tempIndex": 1,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -9938,7 +9945,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 0,
             "y": 0.33699995279312134,
@@ -10041,7 +10051,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3,
@@ -10054,7 +10065,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": 20,
         "y": 0,
@@ -10091,7 +10105,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 11,
+      "tempIndex": 2,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -10314,7 +10328,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 0,
             "y": 0.33699995279312134,
@@ -10417,7 +10434,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3,
@@ -10430,7 +10448,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": 20,
         "y": 0,
@@ -10467,7 +10488,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 12,
+      "tempIndex": 3,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -10504,7 +10525,10 @@
               "selfValue": true,
               "valueTag": "activeValue"
             },
-            "unlockedValue": null,
+            "unlockedValue": {
+              "selfValue": true,
+              "valueTag": "unlockedValue"
+            },
             "scale": {
               "x": 1,
               "y": 1,
@@ -10558,7 +10582,10 @@
               "selfValue": true,
               "valueTag": "activeValue"
             },
-            "unlockedValue": null,
+            "unlockedValue": {
+              "selfValue": true,
+              "valueTag": "unlockedValue"
+            },
             "position": {
               "x": 0,
               "y": 0.33699995279312134,
@@ -10658,7 +10685,8 @@
               "Entity": {},
               "Visibility": {},
               "ColliderShape": {},
-              "Collider": {}
+              "Collider": {},
+              "MeshRender": {}
             },
             "propsData": {},
             "entityVersion": 3,
@@ -10676,7 +10704,7 @@
         "type": "SceneEditEntity",
         "resourceId": "Primitive/Empty"
       },
-      "_entityId": "mX6mHVRV",
+      "_entityId": "UcqI9MNE",
       "children": [
         {
           "_entityName": "Market Trigger",
@@ -10684,13 +10712,16 @@
             "type": "UGCSceneEntity",
             "resourceId": ""
           },
-          "_entityId": "ktr6fWKu",
+          "_entityId": "xG78oJvL",
           "children": [],
           "activeValue": {
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 0,
             "y": 0.33699995279312134,
@@ -10793,7 +10824,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3,
@@ -10806,16 +10838,19 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": -20,
         "y": 0,
         "z": 30
       },
       "scale": {
-        "x": 3,
-        "y": 3,
-        "z": 3
+        "x": 1,
+        "y": 1,
+        "z": 1
       },
       "rotation": {
         "x": 0,
@@ -10843,11 +10878,18 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 13,
+      "tempIndex": 6,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
-        null
+        {
+          "fileId": "4o1whl7uuv2-mn7938a4-o1br0qqag0j",
+          "filePath": "Assets\\Scripts\\Market\\MarketRuntimeData.fcg",
+          "_tag": {
+            "type": "GFileRefer"
+          },
+          "fileType": "ugcscript"
+        }
       ],
       "ecaProps": {
         "DummyLevelObject": {},
@@ -10867,13 +10909,16 @@
           "fileType": "Prefab"
         },
         "snapShots": {
-          "mX6mHVRV": {
+          "UcqI9MNE": {
             "_entityId": "c6etLcdH",
             "activeValue": {
               "selfValue": true,
               "valueTag": "activeValue"
             },
-            "unlockedValue": null,
+            "unlockedValue": {
+              "selfValue": true,
+              "valueTag": "unlockedValue"
+            },
             "scale": {
               "x": 1,
               "y": 1,
@@ -10907,12 +10952,6 @@
                 "fileId": "4o1whl7uuv2-mn7938a4-o1br0qqag0j",
                 "filePath": "Assets\\Scripts\\Market\\MarketRuntimeData.fcg",
                 "fileType": "ugcscript"
-              },
-              null,
-              {
-                "fileId": "4svktyn2les-mn7938a5-dypm0f02i0l",
-                "filePath": "Assets\\Scripts\\Market\\MarketTrigger.fcg",
-                "fileType": "ugcscript"
               }
             ],
             "ecaProps": {
@@ -10924,21 +10963,24 @@
               "Collider": {}
             }
           },
-          "ktr6fWKu": {
+          "xG78oJvL": {
             "_entityName": "Market Trigger",
             "_entityId": "L0gqtVpm",
             "activeValue": {
               "selfValue": true,
               "valueTag": "activeValue"
             },
-            "unlockedValue": null,
+            "unlockedValue": {
+              "selfValue": true,
+              "valueTag": "unlockedValue"
+            },
             "position": {
               "x": 0,
-              "y": 0.3366284966468811,
+              "y": 0.33699995279312134,
               "z": 0
             },
             "scale": {
-              "x": 2.594460964202881,
+              "x": 2.5940001010894775,
               "y": 1,
               "z": 1
             },
@@ -11017,7 +11059,13 @@
               "FreezePosZ": false,
               "FreezeRotZ": false
             },
-            "ecaScripts": [],
+            "ecaScripts": [
+              {
+                "fileId": "4svktyn2les-mn7938a5-dypm0f02i0l",
+                "filePath": "Assets\\Scripts\\Market\\MarketTrigger.fcg",
+                "fileType": "ugcscript"
+              }
+            ],
             "ecaProps": {
               "CustomLevelObject": {},
               "LevelObject": {},
@@ -11025,7 +11073,8 @@
               "Entity": {},
               "Visibility": {},
               "ColliderShape": {},
-              "Collider": {}
+              "Collider": {},
+              "MeshRender": {}
             },
             "propsData": {},
             "entityVersion": 3

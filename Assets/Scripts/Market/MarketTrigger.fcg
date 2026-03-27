@@ -14,7 +14,7 @@ graph MarketTrigger {
         LogInfo("[MarketTrigger] OnTriggerEnter | enterEntity=" + convert.ToString(enterEntity != nil) + " isPlayer=" + convert.ToString(HasComponent(enterEntity, typeof(Player))))
         if !HasComponent(enterEntity, typeof(Player)) { return }
         var player = enterEntity as entity<Player>
-        var market = thisEntity as entity<Entity>
+        var market = thisEntity<Transform>.Parent as entity<Entity>
 
         LogInfo("[MarketTrigger] Player entered market zone | dispatching OnPlayerEnterMarket to globalEntity")
         DispatchEventToEntity(OnPlayerEnterMarket, globalEntity, PlatformType.Server, List<object>{player, market})

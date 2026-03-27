@@ -6,7 +6,7 @@
   "_entityId": "qyR9uUGc",
   "children": [
     {
-      "_entityName": "Market",
+      "_entityName": "Market (2)",
       "_tag": {
         "type": "SceneEditEntity",
         "resourceId": "Primitive/Empty"
@@ -25,7 +25,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 0,
             "y": 0.33699995279312134,
@@ -128,7 +131,8 @@
             "Entity": {},
             "Visibility": {},
             "ColliderShape": {},
-            "Collider": {}
+            "Collider": {},
+            "MeshRender": {}
           },
           "propsData": {},
           "entityVersion": 3,
@@ -141,11 +145,14 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
-        "x": -20,
+        "x": 20,
         "y": 0,
-        "z": -34.573001861572266
+        "z": 30
       },
       "scale": {
         "x": 1,
@@ -178,7 +185,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 10,
+      "tempIndex": 3,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -205,8 +212,14 @@
     }
   ],
   "prefabVariant": null,
-  "activeValue": null,
-  "unlockedValue": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,

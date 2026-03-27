@@ -10,15 +10,13 @@ static graph MarketService {
 
     func AddToTable(market entity<Entity>, itemId string, amount int) {
         if market == nil || amount <= 0 { return }
-        if market<marketData> == nil {
-            LogError("[MarketService] AddToTable FAILED | market entity has no MarketRuntimeData!")
-            return
-        }
+        if market<marketData> == nil { return }
+        market<marketData>.EnsureInit()
 
         var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
         if index != -1 {
             var current = market<marketData>._TableItemAmounts[index] as int
-            var newTotal = current + amount
+            var newTotal = (current + amount) as int
             market<marketData>._TableItemAmounts[index] = newTotal
             if gameManager.IsDebug() { LogInfo("[MarketService] AddToTable | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(newTotal)) }
         } else {
@@ -31,6 +29,7 @@ static graph MarketService {
     func RemoveFromTable(market entity<Entity>, itemId string, amount int) bool {
         if market == nil || amount <= 0 { return false }
         if market<marketData> == nil { return false }
+        market<marketData>.EnsureInit()
 
         var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
         if index == -1 { return false }
@@ -38,7 +37,7 @@ static graph MarketService {
         var current = market<marketData>._TableItemAmounts[index] as int
         if current < amount { return false }
 
-        var remaining = current - amount
+        var remaining = (current - amount) as int
         if remaining <= 0 {
             list.RemoveAt(market<marketData>._TableItemIDs, index)
             list.RemoveAt(market<marketData>._TableItemAmounts, index)
@@ -52,6 +51,7 @@ static graph MarketService {
     func GetTableAmount(market entity<Entity>, itemId string) int {
         if market == nil { return 0 }
         if market<marketData> == nil { return 0 }
+        market<marketData>.EnsureInit()
 
         var index = list.IndexOf(market<marketData>._TableItemIDs, itemId)
         if index != -1 {
@@ -63,10 +63,11 @@ static graph MarketService {
     func SetCustomer(market entity<Entity>, slot int, id int, itemId string, amount int) {
         if market == nil { return }
         if market<marketData> == nil || slot < 0 || slot >= 5 { return }
+        market<marketData>.EnsureInit()
 
-        market<marketData>._QueueCustomerIDs[slot] = id
-        market<marketData>._QueueItemIDs[slot] = itemId
-        market<marketData>._QueueItemAmounts[slot] = amount
+        market<marketData>._QueueCustomerIDs[slot] = id as int
+        market<marketData>._QueueItemIDs[slot] = itemId as string
+        market<marketData>._QueueItemAmounts[slot] = amount as int
         if gameManager.IsDebug() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId) }
     }
 
@@ -74,14 +75,15 @@ static graph MarketService {
         if market == nil { return }
         if market<marketData> == nil || slot < 0 || slot >= 5 { return }
 
-        market<marketData>._QueueCustomerIDs[slot] = -1
-        market<marketData>._QueueItemIDs[slot] = ""
-        market<marketData>._QueueItemAmounts[slot] = 0
+        market<marketData>._QueueCustomerIDs[slot] = -1 as int
+        market<marketData>._QueueItemIDs[slot] = "" as string
+        market<marketData>._QueueItemAmounts[slot] = 0 as int
     }
 
     func ShiftQueueForward(market entity<Entity>) {
         if market == nil { return }
         if market<marketData> == nil { return }
+        market<marketData>.EnsureInit()
 
         for i = 1, 5, 1 {
             var cid = market<marketData>._QueueCustomerIDs[i] as int
@@ -89,10 +91,11 @@ static graph MarketService {
             var camt = market<marketData>._QueueItemAmounts[i] as int
             var cnpc = market<marketData>._SlotNPCs[i] as entity<Entity>
 
-            market<marketData>._QueueCustomerIDs[i - 1] = cid
-            market<marketData>._QueueItemIDs[i - 1] = citem
-            market<marketData>._QueueItemAmounts[i - 1] = camt
-            market<marketData>._SlotNPCs[i - 1] = cnpc
+            var prevSlot = (i - 1) as int
+            market<marketData>._QueueCustomerIDs[prevSlot] = cid as int
+            market<marketData>._QueueItemIDs[prevSlot] = citem as string
+            market<marketData>._QueueItemAmounts[prevSlot] = camt as int
+            market<marketData>._SlotNPCs[prevSlot] = cnpc
         }
         ClearCustomer(market, 4)
         market<marketData>._SlotNPCs[4] = nil
@@ -103,7 +106,8 @@ static graph MarketService {
         if market == nil { return true }
         if market<marketData> == nil { return true }
         if slot < 0 || slot >= 5 { return true }
-        return market<marketData>._QueueCustomerIDs[slot] as int == -1
+        var slotId = market<marketData>._QueueCustomerIDs[slot] as int
+        return slotId == -1
     }
 
     func GetOccupiedSlotCount(market entity<Entity>) int {
@@ -112,8 +116,9 @@ static graph MarketService {
 
         var count = 0
         for i = 0, 5, 1 {
-            if market<marketData>._QueueCustomerIDs[i] as int != -1 {
-                count = count + 1
+            var slotId = market<marketData>._QueueCustomerIDs[i] as int
+            if slotId != -1 {
+                count = (count + 1) as int
             }
         }
         return count

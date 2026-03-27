@@ -33,10 +33,9 @@ static graph MarketManager {
     func RegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>) {
         if marketEntity == nil { return }
 
-        LogInfo("[MarketManager] RegisterMarket | entityName='" + marketEntity<Entity>.Name + "' hasMarketData=" + convert.ToString(marketEntity<marketData> != nil))
-
         if marketEntity<marketData> == nil {
-            LogError("[MarketManager] RegisterMarket FAILED | entity '" + marketEntity<Entity>.Name + "' has no MarketRuntimeData! Attach MarketRuntimeData.fcg to THIS entity.")
+            LogWarning("[MarketManager] RegisterMarket | MarketRuntimeData not ready on '" + marketEntity<Entity>.Name + "', will retry...")
+            start RetryRegisterMarket(marketEntity, farmZone, 5)
             return
         }
 
@@ -54,6 +53,18 @@ static graph MarketManager {
 
         start DelayedMaintain(marketEntity)
         LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets)))
+    }
+
+    async func RetryRegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>, retries int) {
+        WaitForMillisecond(1000)
+        if marketEntity<marketData> != nil {
+            RegisterMarket(marketEntity, farmZone)
+        } else if retries > 0 {
+            LogWarning("[MarketManager] RetryRegisterMarket | Still not ready, retries=" + convert.ToString(retries))
+            start RetryRegisterMarket(marketEntity, farmZone, (retries - 1) as int)
+        } else {
+            LogError("[MarketManager] RetryRegisterMarket FAILED | MarketRuntimeData never became available. Check that MarketRuntimeData.fcg is attached to entity.")
+        }
     }
 
     async func DelayedMaintain(market entity<Entity>) {
@@ -154,21 +165,22 @@ static graph MarketManager {
 
     func FillSlot(market entity<Entity>, slot int) {
         var items = marketCfg.GetSellableItems()
-        var itemCount = list.Length(items)
+        var itemCount = list.Length(items) as int
         if itemCount <= 0 { return }
 
         if market<marketData> == nil { return }
+        market<marketData>.EnsureInit()
 
-        var customerId = market<marketData>._NextCustomerID
-        market<marketData>._NextCustomerID = market<marketData>._NextCustomerID + 1
+        var customerId = market<marketData>._NextCustomerID as int
+        market<marketData>._NextCustomerID = (customerId + 1) as int
 
-        var itemIndex = customerId % itemCount
+        var itemIndex = (customerId % itemCount) as int
         var itemId = items[itemIndex] as string
 
-        var minAmt = marketCfg.GetCustomerMinAmount()
-        var maxAmt = marketCfg.GetCustomerMaxAmount()
-        var range = maxAmt - minAmt + 1
-        var amount = minAmt + (customerId % range)
+        var minAmt = marketCfg.GetCustomerMinAmount() as int
+        var maxAmt = marketCfg.GetCustomerMaxAmount() as int
+        var range = (maxAmt - minAmt + 1) as int
+        var amount = (minAmt + (customerId % range)) as int
 
         marketService.SetCustomer(market, slot, customerId, itemId, amount)
         customerVisual.SpawnCustomer(market, slot)
@@ -177,9 +189,9 @@ static graph MarketManager {
     // ===== FLOW 3: TRANSACTION =====
 
     async func TransactionLoopAll() {
-        WaitForMillisecond(1500)
+        WaitForMillisecond(2000)
         while true {
-            var count = list.Length(_Markets)
+            var count = list.Length(_Markets) as int
             for i = 0, count, 1 {
                 var market = _Markets[i] as entity<Entity>
                 if market != nil && market<marketData> != nil {
@@ -201,7 +213,7 @@ static graph MarketManager {
         var wantedAmount = market<marketData>._QueueItemAmounts[0] as int
         if wantedAmount <= 0 { return }
 
-        var tableAmount = marketService.GetTableAmount(market, wantedItem)
+        var tableAmount = marketService.GetTableAmount(market, wantedItem) as int
         if tableAmount < wantedAmount { return }
 
         market<marketData>._IsTransacting = true
@@ -209,8 +221,8 @@ static graph MarketManager {
     }
 
     async func ExecuteTransaction(market entity<Entity>, itemId string, amount int) {
-        var timePerUnit = marketCfg.GetTransactionTimeMs(itemId)
-        var totalTimeMs = timePerUnit * amount
+        var timePerUnit = marketCfg.GetTransactionTimeMs(itemId) as int
+        var totalTimeMs = (timePerUnit * amount) as int
 
         marketService.RemoveFromTable(market, itemId, amount)
         marketVisual.UpdateTableDisplay(market)

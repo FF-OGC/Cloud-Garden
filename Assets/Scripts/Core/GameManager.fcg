@@ -60,9 +60,9 @@ static graph GameManager {
             }
         }
 
-        // Register linked market stall
+        // Register linked market stall (delayed to ensure MarketRuntimeData.OnAwake has fired)
         if zoneObj<FarmZoneData> != nil && zoneObj<FarmZoneData>.Market != nil {
-            marketManager.RegisterMarket(zoneObj<FarmZoneData>.Market, zoneObj)
+            start DelayedMarketRegister(zoneObj<FarmZoneData>.Market, zoneObj)
         }
         
         // Start the background growth tick only once when the first zone registers
@@ -72,6 +72,11 @@ static graph GameManager {
         }
         
         if _IsDebug { LogInfo("[GameManager] Successfully registered new Farm Zone dynamically.") }
+    }
+
+    async func DelayedMarketRegister(marketEntity entity<Entity>, farmZone entity<Entity>) {
+        WaitForMillisecond(500)
+        marketManager.RegisterMarket(marketEntity, farmZone)
     }
 
     func GetConnectedPlayers() List<entity<Player>> { return _ConnectedPlayers }

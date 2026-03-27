@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "Cloud Garden",
   "nameLocKey": "",
   "description": "",
   "descriptionLocKey": "",
@@ -12,10 +12,13 @@
   "customShot": null,
   "lang": 1,
   "locCsvPath": "Assets\\Localization\\key.csv",
+  "enableAITranslate": false,
   "defaultShot": 0,
   "customShotSize": 0,
   "enable_static_combine": false,
   "enable_dynamic_combine": true,
-  "enable_loadArea": false
+  "enable_loadArea": false,
+  "enable_customNavmesh": false,
+  "hideMinimap": false
 }
-//"{FE:{"v":"0.0.0","c":{"FF":4701},"s":100}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
