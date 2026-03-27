@@ -14,7 +14,7 @@ import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
     
-    _IsDebug bool = true
+    _IsDebug bool = false
     _GameTime float = 0.0
     _IsTickStarted bool = false
     

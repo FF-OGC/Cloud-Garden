@@ -1,0 +1,33 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Animation.fcc" as anim
+
+graph CustomerAnimation {
+
+    _AnimationController entity<AnimationControllerAttachable> = nil
+    _CurrentAnimation string = ""
+
+    event OnAwake() {
+        _AnimationController = GetChildByName(thisEntity<Entity>, "Model")<AnimationControllerAttachable>
+    }
+
+    func PlayAnimation(animationName string) {
+        if _AnimationController == nil { return }
+        anim.StopAnimation(_AnimationController, _CurrentAnimation)
+        anim.PlayAnimation(_AnimationController, animationName, 1, LoopType.Loop)
+        _CurrentAnimation = animationName
+    }
+
+    func PlayAnimationWithSpeed(animationName string, speed float) {
+        if _AnimationController == nil { return }
+        anim.StopAnimation(_AnimationController, _CurrentAnimation)
+        anim.PlayAnimation(_AnimationController, animationName, speed, LoopType.Loop)
+        _CurrentAnimation = animationName
+    }
+
+    func StopCurrentAnimation() {
+        if _AnimationController == nil { return }
+        anim.StopAnimation(_AnimationController, _CurrentAnimation)
+        _CurrentAnimation = ""
+    }
+}

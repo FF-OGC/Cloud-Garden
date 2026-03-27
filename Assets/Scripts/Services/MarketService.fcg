@@ -123,4 +123,21 @@ static graph MarketService {
         }
         return count
     }
+
+    func GetItemsWithStock(market entity<Entity>) List<string> {
+        var result = list.New(0, 5) as List<string>
+        if market == nil { return result }
+        if market<marketData> == nil { return result }
+        market<marketData>.EnsureInit()
+
+        var count = list.Length(market<marketData>._TableItemIDs) as int
+        for i = 0, count, 1 {
+            var amount = market<marketData>._TableItemAmounts[i] as int
+            if amount > 0 {
+                var itemId = market<marketData>._TableItemIDs[i] as string
+                list.Append(result, itemId)
+            }
+        }
+        return result
+    }
 }

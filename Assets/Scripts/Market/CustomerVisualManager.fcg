@@ -6,6 +6,7 @@ import "Playable.fcc" as playable
 
 import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
+import "./CustomerAnimation.fcg" as npcAnim
 import "../Core/GameManager.fcg" as gameManager
 
 [platform_server]
@@ -40,15 +41,19 @@ static graph CustomerVisualManager {
 
         var marketPos = market<Transform>.Position
         var gateOffset = marketCfg.GetGateOffset()
-        var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y, marketPos.Z + gateOffset.Z}
+        var yOff = marketCfg.GetNPCYOffset()
+        var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y + yOff, marketPos.Z + gateOffset.Z}
 
         npc<Transform>.Position = gatePos
+        npc<Transform>.Rotation = Vector3{0, 0, 0}
         market<marketData>._SlotNPCs[slotIndex] = npc
 
         var slotOffset = marketCfg.GetQueueSlotOffset(slotIndex)
-        var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y, marketPos.Z + slotOffset.Z}
+        var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y + yOff, marketPos.Z + slotOffset.Z}
 
+        PlayNPCAnim(npc, "Walk")
         TweenMoveTo(npc, gatePos, targetPos, marketCfg.GetNPCTweenTimeMs())
+        start DelayedPlayAnimation(npc, "Idle", marketCfg.GetNPCTweenTimeMs())
 
         if gameManager.IsDebug() { LogInfo("[CustomerVisual] SpawnCustomer | slot=" + convert.ToString(slotIndex)) }
     }
@@ -65,13 +70,31 @@ static graph CustomerVisualManager {
 
         var marketPos = market<Transform>.Position
         var gateOffset = marketCfg.GetGateOffset()
-        var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y, marketPos.Z + gateOffset.Z}
+        var yOff = marketCfg.GetNPCYOffset()
         var currentPos = npc<Transform>.Position
 
-        TweenMoveTo(npc, currentPos, gatePos, marketCfg.GetNPCTweenTimeMs())
-        start DelayedReturn(npc, marketCfg.GetNPCTweenTimeMs() + 500)
+        var sideOffset = marketCfg.GetLeaveSideOffset()
+        var sidePos = Vector3{currentPos.X + sideOffset.X, currentPos.Y, currentPos.Z + sideOffset.Z}
+        var exitPos = Vector3{sidePos.X, sidePos.Y, marketPos.Z + gateOffset.Z}
+
+        start AnimateLeavingSequence(npc, currentPos, sidePos, exitPos)
 
         if gameManager.IsDebug() { LogInfo("[CustomerVisual] AnimateLeaving | slot=" + convert.ToString(slotIndex)) }
+    }
+
+    async func AnimateLeavingSequence(npc entity<Entity>, startPos Vector3, sidePos Vector3, exitPos Vector3) {
+        var sideStepMs = marketCfg.GetLeaveSideStepMs()
+
+        npc<Transform>.Rotation = Vector3{0, 90, 0}
+        PlayNPCAnim(npc, "Walk")
+        TweenMoveTo(npc, startPos, sidePos, sideStepMs)
+        WaitForMillisecond(sideStepMs)
+
+        npc<Transform>.Rotation = Vector3{0, 180, 0}
+        TweenMoveTo(npc, sidePos, exitPos, marketCfg.GetNPCTweenTimeMs())
+        WaitForMillisecond(marketCfg.GetNPCTweenTimeMs() + 500)
+
+        ReturnNPCToPool(npc)
     }
 
     func AdvanceQueue(market entity<Entity>) {
@@ -80,14 +103,18 @@ static graph CustomerVisualManager {
         if data == nil { return }
 
         var marketPos = market<Transform>.Position
+        var advanceTweenMs = marketCfg.GetAdvanceTweenMs() as int
+        var yOff = marketCfg.GetNPCYOffset()
 
         for i = 0, 4, 1 {
             var npc = market<marketData>._SlotNPCs[i] as entity<Entity>
             if npc != nil {
                 var slotOffset = marketCfg.GetQueueSlotOffset(i)
-                var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y, marketPos.Z + slotOffset.Z}
+                var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y + yOff, marketPos.Z + slotOffset.Z}
                 var currentPos = npc<Transform>.Position
-                TweenMoveTo(npc, currentPos, targetPos, 1000)
+                PlayNPCAnim(npc, "Walk")
+                TweenMoveTo(npc, currentPos, targetPos, advanceTweenMs)
+                start DelayedPlayAnimation(npc, "Idle", advanceTweenMs)
             }
         }
 
@@ -123,12 +150,21 @@ static graph CustomerVisualManager {
 
     func ReturnNPCToPool(npc entity<Entity>) {
         if npc == nil { return }
+        if npc<npcAnim> != nil { npc<npcAnim>.StopCurrentAnimation() }
         npc<Transform>.Position = Vector3{0, -9999, 0}
+        npc<Transform>.Rotation = Vector3{0, 0, 0}
         list.Append(_NPCPool, npc)
     }
 
-    async func DelayedReturn(npc entity<Entity>, delayMs int) {
+    func PlayNPCAnim(npc entity<Entity>, animName string) {
+        if npc == nil { return }
+        if npc<npcAnim> != nil {
+            npc<npcAnim>.PlayAnimation(animName)
+        }
+    }
+
+    async func DelayedPlayAnimation(npc entity<Entity>, animName string, delayMs int) {
         WaitForMillisecond(delayMs)
-        ReturnNPCToPool(npc)
+        PlayNPCAnim(npc, animName)
     }
 }

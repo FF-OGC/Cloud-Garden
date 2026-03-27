@@ -147,6 +147,7 @@ static graph MarketManager {
         marketVisual.UpdateTableDisplay(market)
 
         if gameManager.IsDebug() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId) }
+        SyncQueueWithTable(market)
         CheckAndStartTransaction(market)
     }
 
@@ -167,13 +168,6 @@ static graph MarketManager {
     }
 
     func FillSlot(market entity<Entity>, slot int) {
-        var items = marketCfg.GetSellableItems()
-        var itemCount = list.Length(items) as int
-        if itemCount <= 0 {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | no sellable items") }
-            return
-        }
-
         if market<marketData> == nil {
             if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | marketData nil") }
             return
@@ -183,17 +177,90 @@ static graph MarketManager {
         var customerId = market<marketData>._NextCustomerID as int
         market<marketData>._NextCustomerID = (customerId + 1) as int
 
-        var itemIndex = (customerId % itemCount) as int
-        var itemId = items[itemIndex] as string
-
         var minAmt = marketCfg.GetCustomerMinAmount() as int
         var maxAmt = marketCfg.GetCustomerMaxAmount() as int
-        var range = (maxAmt - minAmt + 1) as int
-        var amount = (minAmt + (customerId % range)) as int
+
+        var tableItems = marketService.GetItemsWithStock(market)
+        var tableItemCount = list.Length(tableItems) as int
+
+        var itemId = ""
+        var amount = 0
+
+        if tableItemCount > 0 {
+            var itemIndex = (customerId % tableItemCount) as int
+            itemId = tableItems[itemIndex] as string
+            var available = marketService.GetTableAmount(market, itemId) as int
+
+            var effectiveMax = maxAmt as int
+            if available < effectiveMax { effectiveMax = available as int }
+            if effectiveMax < minAmt { effectiveMax = minAmt as int }
+
+            var range = (effectiveMax - minAmt + 1) as int
+            if range <= 0 { range = 1 as int }
+            amount = (minAmt + (customerId % range)) as int
+        } else {
+            var allItems = marketCfg.GetSellableItems()
+            var allCount = list.Length(allItems) as int
+            if allCount <= 0 {
+                if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | no sellable items") }
+                return
+            }
+            var itemIndex = (customerId % allCount) as int
+            itemId = allItems[itemIndex] as string
+            amount = minAmt as int
+        }
 
         if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId) }
         marketService.SetCustomer(market, slot, customerId, itemId, amount)
         customerVisual.SpawnCustomer(market, slot)
+    }
+
+    // ===== FLOW 2B: SYNC QUEUE WITH TABLE =====
+
+    func SyncQueueWithTable(market entity<Entity>) {
+        if market == nil { return }
+        if market<marketData> == nil { return }
+
+        var queueSize = marketCfg.GetQueueSize() as int
+        var tableItems = marketService.GetItemsWithStock(market)
+        var tableItemCount = list.Length(tableItems) as int
+
+        if tableItemCount <= 0 {
+            if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue SKIP | table empty") }
+            return
+        }
+
+        var minAmt = marketCfg.GetCustomerMinAmount() as int
+        var maxAmt = marketCfg.GetCustomerMaxAmount() as int
+
+        for i = 0, queueSize, 1 {
+            if !marketService.IsSlotEmpty(market, i) {
+                var wantedItem = market<marketData>._QueueItemIDs[i] as string
+                var wantedAmount = market<marketData>._QueueItemAmounts[i] as int
+                var tableStock = marketService.GetTableAmount(market, wantedItem) as int
+
+                if tableStock >= wantedAmount {
+                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " OK, " + convert.ToString(wantedAmount) + "x " + wantedItem + " fulfilled") }
+                } else if tableStock > 0 {
+                    market<marketData>._QueueItemAmounts[i] = tableStock as int
+                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " reduced " + convert.ToString(wantedAmount) + " -> " + convert.ToString(tableStock) + " for " + wantedItem) }
+                } else {
+                    var customerId = market<marketData>._QueueCustomerIDs[i] as int
+                    var newIndex = (customerId % tableItemCount) as int
+                    var newItem = tableItems[newIndex] as string
+                    var newStock = marketService.GetTableAmount(market, newItem) as int
+                    var newAmount = newStock as int
+                    if newAmount > maxAmt { newAmount = maxAmt as int }
+                    if newAmount < minAmt { newAmount = minAmt as int }
+
+                    market<marketData>._QueueItemIDs[i] = newItem as string
+                    market<marketData>._QueueItemAmounts[i] = newAmount as int
+                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " switched " + wantedItem + " -> " + convert.ToString(newAmount) + "x " + newItem) }
+                }
+            }
+        }
+
+        if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue DONE") }
     }
 
     // ===== FLOW 3: TRANSACTION =====
@@ -274,13 +341,22 @@ static graph MarketManager {
 
         customerVisual.AnimateLeaving(market, 0)
         marketService.ClearCustomer(market, 0)
+
+        var conveyorDelay = marketCfg.GetConveyorDelayMs() as int
+        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | conveyor delay " + convert.ToString(conveyorDelay) + "ms") }
+        WaitForMillisecond(conveyorDelay)
+
         marketService.ShiftQueueForward(market)
         customerVisual.AdvanceQueue(market)
+
+        var advanceTween = marketCfg.GetAdvanceTweenMs() as int
+        WaitForMillisecond(advanceTween)
 
         market<marketData>._IsTransacting = false
 
         if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction DONE | refilling queue") }
         MaintainQueue(market)
+        SyncQueueWithTable(market)
         CheckAndStartTransaction(market)
     }
 }

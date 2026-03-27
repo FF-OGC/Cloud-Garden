@@ -24,16 +24,16 @@ static graph MarketConfig {
     func GetQueueSize() int { return 5 }
 
     func GetQueueSlotOffset(slotIndex int) Vector3 {
-        if slotIndex == 0 { return Vector3{2, 0, 0} }
-        if slotIndex == 1 { return Vector3{2, 0, -2} }
-        if slotIndex == 2 { return Vector3{2, 0, -4} }
-        if slotIndex == 3 { return Vector3{2, 0, -6} }
-        if slotIndex == 4 { return Vector3{2, 0, -8} }
-        return Vector3{2, 0, -10}
+        if slotIndex == 0 { return Vector3{0, 0, -2} }
+        if slotIndex == 1 { return Vector3{0, 0, -4} }
+        if slotIndex == 2 { return Vector3{0, 0, -6} }
+        if slotIndex == 3 { return Vector3{0, 0, -8} }
+        if slotIndex == 4 { return Vector3{0, 0, -10} }
+        return Vector3{0, 0, -12}
     }
 
     func GetGateOffset() Vector3 {
-        return Vector3{2, 0, -12}
+        return Vector3{0, 0, -14}
     }
 
     func GetTableItemOffset(index int) Vector3 {
@@ -60,4 +60,13 @@ static graph MarketConfig {
     func GetCustomerMaxAmount() int { return 5 }
 
     func GetNPCTweenTimeMs() int { return 2000 }
+
+    func GetConveyorDelayMs() int { return 1500 }
+
+    func GetAdvanceTweenMs() int { return 1000 }
+
+    func GetNPCYOffset() float { return -0.3 }
+
+    func GetLeaveSideOffset() Vector3 { return Vector3{1.5, 0, 0} }
+    func GetLeaveSideStepMs() int { return 600 }
 }
