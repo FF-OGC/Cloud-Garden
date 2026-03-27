@@ -6,7 +6,7 @@
   "_entityId": "qyR9uUGc",
   "children": [
     {
-      "_entityName": "Market (2)",
+      "_entityName": "Market",
       "_tag": {
         "type": "SceneEditEntity",
         "resourceId": "Primitive/Empty"
@@ -150,9 +150,9 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": 20,
+        "x": -20,
         "y": 0,
-        "z": 30
+        "z": -34.573001861572266
       },
       "scale": {
         "x": 1,
@@ -185,7 +185,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 3,
+      "tempIndex": 15,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [

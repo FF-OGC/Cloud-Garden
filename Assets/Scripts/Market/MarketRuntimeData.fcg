@@ -25,6 +25,8 @@ graph MarketRuntimeData {
     _ActiveProduceModels List<entity<Entity>> = nil
     _ActiveProduceItemIDs List<string> = nil
 
+    _InfoBoard entity<Entity> = nil
+
     event OnAwake() {
         EnsureInit()
     }

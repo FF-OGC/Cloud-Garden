@@ -84,8 +84,41 @@ static graph MarketManager {
         var market = GetMarketForZone(zone)
         if market != nil && market<marketData> != nil {
             market<marketData>._Owner = player
+            start SpawnInfoBoard(market, player)
             if gameManager.IsDebug() { LogInfo("[MarketManager] AssignMarketOwner | zone assigned to player") }
         }
+    }
+
+    async func SpawnInfoBoard(market entity<Entity>, owner entity<Player>) {
+        WaitForMillisecond(500)
+        if market == nil || owner == nil { return }
+
+        if market<marketData>._InfoBoard != nil {
+            Destroy(market<marketData>._InfoBoard)
+            market<marketData>._InfoBoard = nil
+        }
+
+        CreateFromPrefab(out var infoBoard, gen.EResPrefab.farm_slot_info)
+        if infoBoard == nil {
+            LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab")
+            return
+        }
+
+        var marketPos = market<Transform>.Position
+        var offset = marketCfg.GetInfoBoardOffset()
+        infoBoard<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
+
+        var textObj = GetChildByName(infoBoard, "Text object")
+        if textObj != nil {
+            var ownerName = owner<Player>.NickName
+            textObj<Text>.Content = ownerName
+            if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
+        } else {
+            LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab")
+        }
+
+        market<marketData>._InfoBoard = infoBoard
+        LogInfo("[MarketManager] SpawnInfoBoard OK | info board placed next to market for owner: " + owner<Player>.NickName)
     }
 
     // ===== TRIGGER EVENTS =====

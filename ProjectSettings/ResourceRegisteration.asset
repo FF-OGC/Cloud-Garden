@@ -208,6 +208,18 @@
           },
           "scriptName": "npc_customer",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "ipc7yy2b7n-mn8nm0tp-c8e48cateq",
+            "filePath": "Assets\\Prefabs\\BaseInfo.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "farm_slot_info",
+          "children": []
         }
       ]
     },

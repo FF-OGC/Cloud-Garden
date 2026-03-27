@@ -64,7 +64,7 @@
               "value": "Hoe",
               "key": "",
               "font": "Default",
-              "fontSize": 24,
+              "fontSize": 40,
               "fontStyle": {
                 "bold": false,
                 "italic": false,
@@ -137,8 +137,8 @@
             "y": -68
           },
           "sizeDelta": {
-            "x": 70,
-            "y": 50
+            "x": 140,
+            "y": 80
           }
         },
         "alpha": 100,

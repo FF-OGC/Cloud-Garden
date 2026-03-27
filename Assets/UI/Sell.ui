@@ -19,7 +19,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "propsData": {
@@ -39,12 +42,12 @@
             "y": 0.5
           },
           "anchoredPosition": {
-            "x": 475,
-            "y": 91
+            "x": 356,
+            "y": 33
           },
           "sizeDelta": {
-            "x": 150,
-            "y": 50
+            "x": 200,
+            "y": 80
           }
         },
         "alpha": 100,
@@ -140,7 +143,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "propsData": {
@@ -160,8 +166,8 @@
             "y": 0.5
           },
           "anchoredPosition": {
-            "x": 475,
-            "y": 91
+            "x": 356,
+            "y": 33
           },
           "sizeDelta": {
             "x": 120,
@@ -174,7 +180,7 @@
           "value": "Sell",
           "key": "",
           "font": "Default",
-          "fontSize": 24,
+          "fontSize": 40,
           "fontStyle": {
             "bold": false,
             "italic": false,
@@ -220,7 +226,10 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": null,
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "propsData": {

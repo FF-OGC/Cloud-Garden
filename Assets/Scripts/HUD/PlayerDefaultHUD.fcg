@@ -1,13 +1,25 @@
 import "StdLibrary.fcc" as StdLib
-import "EditorGenLib.fcc" as EditorLib
+import "EditorGenLib.fcc" as gen
 import "Player.fcc" as Player
-import "Hud.fcc" as Hud 
+import "Hud.fcc" as Hud
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "../Core/GameManager.fcg" as gameMgr
+
 [platform_server]
 graph PlayerDefaultHUD {
+
+    _FarmUI entity<CustomUI> = nil
+    _IsBtnVisible bool = false
     
     event OnAwake() {
         TurnOffDefaultPlayerHUD();
         ShowFarmingUI();
+        start StartBtnUpdateLoop()
     }
 
     func TurnOffDefaultPlayerHUD() {
@@ -51,7 +63,79 @@ graph PlayerDefaultHUD {
     }
 
     func ShowFarmingUI() {
-        Hud.CreateCustomUI(out var farmingUI, thisEntity<Player>, EResUI.hoe_btn);    
+        Hud.CreateCustomUI(out var farmingUI, thisEntity<Player>, EResUI.hoe_btn)
+        _FarmUI = farmingUI
+        if _FarmUI != nil {
+            _FarmUI<CustomUI>.IsVisible = false
+            _IsBtnVisible = false
+        }
     }
 
+    event OnFarmCellStateChanged(floor entity<Entity>, gridPos Vector3, newState int) {
+        UpdateFarmBtnText()
+    }
+
+    async func StartBtnUpdateLoop() {
+        WaitForMillisecond(1000)
+        while true {
+            WaitForMillisecond(500)
+            if _FarmUI == nil { continue }
+            if thisEntity<playerFarmingData> == nil { continue }
+
+            var floor = thisEntity<playerFarmingData>.CurrentFloor
+            if floor == nil {
+                if _IsBtnVisible {
+                    _FarmUI<CustomUI>.IsVisible = false
+                    _IsBtnVisible = false
+                }
+                continue
+            }
+
+            if !_IsBtnVisible {
+                _FarmUI<CustomUI>.IsVisible = true
+                _IsBtnVisible = true
+            }
+
+            UpdateFarmBtnText()
+        }
+    }
+
+    func UpdateFarmBtnText() {
+        if _FarmUI == nil { return }
+        if thisEntity<playerFarmingData> == nil { return }
+
+        var floor = thisEntity<playerFarmingData>.CurrentFloor
+        if floor == nil { return }
+        if floor<floorData> == nil { return }
+
+        var gridPos = thisEntity<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        var cellStates = floor<floorData>.CellStates
+
+        var text = "Hoe"
+        if map.ContainKey(cellStates, key) {
+            var state = cellStates[key] as int
+            if state == gen.EFarmSlotState.Grass {
+                text = "Hoe"
+            } else if state == gen.EFarmSlotState.Tilled {
+                text = "Plant"
+            } else if state == gen.EFarmSlotState.NeedWatering {
+                text = "Water"
+            } else if state == gen.EFarmSlotState.Growing {
+                text = "Growing"
+            } else if state == gen.EFarmSlotState.ReadyToHarvest {
+                text = "Harvest"
+            }
+        }
+
+        var btn = GetWidgetByPath(thisEntity<Player>, _FarmUI, "/Button")
+        LogInfo("[PlayerDefaultHUD] btn=" + btn<Entity>.Name)
+        if btn != nil {
+            var label = GetChildByName(btn, "Text")
+            if label != nil {
+                label<UIWidgetLabel>.Content = text
+            }
+            LogInfo("[PlayerDefaultHUD] label=" + convert.ToString(label != nil))
+        }
+    }
 }

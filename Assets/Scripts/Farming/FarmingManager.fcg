@@ -82,6 +82,7 @@ static graph FarmingManager {
                     cellStates[k] = gen.EFarmSlotState.Tilled 
                     floorObj<floorData>.SoilTiers[k] = 1 
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
+                    DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                 }
             
             // ==========================================
@@ -137,6 +138,7 @@ static graph FarmingManager {
                         floorObj<floorData>.PlantedSeeds[k] = holdItemId
                         
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
+                        DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
                     }
                     if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Planted " + amountToPlant + " seeds successfully") }
                 }
@@ -164,6 +166,7 @@ static graph FarmingManager {
                         }
                     }
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Growing})
+                    DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Growing})
                 }
             
             // ==========================================
@@ -219,6 +222,7 @@ static graph FarmingManager {
 
                         cellStates[k] = gen.EFarmSlotState.Tilled
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
+                        DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                         
                         if map.ContainKey(floorObj<floorData>.HarvestTimes, k) { map.Remove(floorObj<floorData>.HarvestTimes, k) }
                         if map.ContainKey(floorObj<floorData>.CropPositions, k) { map.Remove(floorObj<floorData>.CropPositions, k) }

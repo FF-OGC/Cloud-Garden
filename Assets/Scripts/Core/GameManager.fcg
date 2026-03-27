@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "Player.fcc" as Player
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
 
 import "../Farming/FarmZoneManager.fcg" as zoneManager
 import "../Grid/FloorGridData.fcg" as floorData
@@ -129,11 +130,19 @@ static graph GameManager {
             }
         }
         
-        // 3. Teleport
+        // 3. Teleport facing the market stall
         if assignedZone != nil {
-            var spawnPos = assignedZone<Transform>.Position
-            Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
-            if _IsDebug { LogInfo("[GameManager] Teleported player to new Farm Zone.") }
+            var market = assignedZone<FarmZoneData>.Market
+            if market != nil {
+                var mPos = market<Transform>.Position
+                var spawnPos = Vector3{mPos.X + 1.0, mPos.Y, mPos.Z + 4.0}
+                var facing = GetPlayerOrientation(spawnPos, mPos)
+                Teleport(player, spawnPos, facing)
+            } else {
+                var spawnPos = assignedZone<Transform>.Position
+                Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
+            }
+            if _IsDebug { LogInfo("[GameManager] Teleported player to assigned zone.") }
         }
 
         //4. Add Seed to Backpack
@@ -143,5 +152,10 @@ static graph GameManager {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
         backpackManager.AddItem(player, "crop_apple", 10)
+    }
+
+    func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
+        var orientation Vector3 = math.Normalize(Vector3{centerPoint.X - spawnPoint.X, 0, centerPoint.Z - spawnPoint.Z})
+        return orientation
     }
 }

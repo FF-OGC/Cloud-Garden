@@ -1,11 +1,13 @@
 import "StdLibrary.fcc" as std
 import "Physics.fcc" as physics
 import "Math.fcc" as math
+import "Map.fcc" as map
 import "EditorGenLib.fcc" as gen
 
 import "../Config/FarmGridConfig.fcg" as gridCfg
 import "../Core/GameManager.fcg" as gameMgr
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
+import "../Grid/FloorGridData.fcg" as floorData
 
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 
@@ -31,5 +33,14 @@ graph GridTileTracker {
         player<playerFarmingData>.CurrentGridPos = localGridPos
         thisEntity<Transform>.Position = newWorldPos
         if(gameMgr.IsDebug()) { LogInfo("[GridTileTracker] local=" + localGridPos + " world=" + newWorldPos) }
+
+        if floor<floorData> != nil {
+            var key = gridUtil.GetKeyFromPos(localGridPos)
+            var cellState = gen.EFarmSlotState.Grass as int
+            if map.ContainKey(floor<floorData>.CellStates, key) {
+                cellState = floor<floorData>.CellStates[key] as int
+            }
+            DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floor, localGridPos, cellState})
+        }
     }
 }
