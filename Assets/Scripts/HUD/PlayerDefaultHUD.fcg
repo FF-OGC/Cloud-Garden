@@ -113,6 +113,7 @@ graph PlayerDefaultHUD {
         var cellStates = floor<floorData>.CellStates
 
         var text = "Hoe"
+        var shouldHide = false
         if map.ContainKey(cellStates, key) {
             var state = cellStates[key] as int
             if state == gen.EFarmSlotState.Grass {
@@ -122,20 +123,29 @@ graph PlayerDefaultHUD {
             } else if state == gen.EFarmSlotState.NeedWatering {
                 text = "Water"
             } else if state == gen.EFarmSlotState.Growing {
-                text = "Growing"
+                shouldHide = true
             } else if state == gen.EFarmSlotState.ReadyToHarvest {
                 text = "Harvest"
             }
         }
 
+        if shouldHide {
+            _FarmUI<CustomUI>.IsVisible = false
+            _IsBtnVisible = false
+            return
+        }
+
+        if !_IsBtnVisible {
+            _FarmUI<CustomUI>.IsVisible = true
+            _IsBtnVisible = true
+        }
+
         var btn = GetWidgetByPath(thisEntity<Player>, _FarmUI, "/Button")
-        LogInfo("[PlayerDefaultHUD] btn=" + btn<Entity>.Name)
         if btn != nil {
             var label = GetChildByName(btn, "Text")
             if label != nil {
                 label<UIWidgetLabel>.Content = text
             }
-            LogInfo("[PlayerDefaultHUD] label=" + convert.ToString(label != nil))
         }
     }
 }
