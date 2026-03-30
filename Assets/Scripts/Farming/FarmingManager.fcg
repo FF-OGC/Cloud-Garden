@@ -37,8 +37,8 @@ static graph FarmingManager {
 
         if gameMgr.IsDebug() { LogInfo("[FarmingMgr] gridPos=" + gridPos + " key=" + key) }
 
-        if(floorObj<floorData>.Owner != nil && floorObj<floorData>.Owner != player) {
-            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: floor owner mismatch") }
+        if !floorObj<floorData>.IsOwner(player) {
+            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: floor ownership validation failed (Owner=" + floorObj<floorData>.Owner + " player=" + player + ")") }
             return
         }
 
@@ -79,8 +79,8 @@ static graph FarmingManager {
                     var k = validKeys[i]
                     var p = validPositions[i]
                     
-                    cellStates[k] = gen.EFarmSlotState.Tilled 
-                    floorObj<floorData>.SoilTiers[k] = 1 
+                    if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Tilled, player) { continue }
+                    floorObj<floorData>.TrySetSoilTier(k, 1, player)
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                 }
@@ -132,10 +132,9 @@ static graph FarmingManager {
                         var k = validKeys[i]
                         var p = validPositions[i]
 
-                        cellStates[k] = gen.EFarmSlotState.NeedWatering
-                        floorObj<floorData>.HarvestTimes[k] = gameMgr.GetGameTime() + itemCfg.GetGrowthTime(holdItemId)
-                        floorObj<floorData>.CropPositions[k] = p 
-                        floorObj<floorData>.PlantedSeeds[k] = holdItemId
+                        var harvestTime = gameMgr.GetGameTime() + itemCfg.GetGrowthTime(holdItemId)
+                        if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.NeedWatering, player) { continue }
+                        floorObj<floorData>.TryPlantCrop(k, holdItemId, harvestTime, p, player)
                         
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
@@ -152,7 +151,7 @@ static graph FarmingManager {
                     var k = validKeys[i]
                     var p = validPositions[i]
 
-                    cellStates[k] = gen.EFarmSlotState.Growing 
+                    if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Growing, player) { continue }
                     
                     if map.ContainKey(floorObj<floorData>.HarvestTimes, k) {
                         var oldTargetTime = floorObj<floorData>.HarvestTimes[k] as float
@@ -161,7 +160,7 @@ static graph FarmingManager {
                         
                         if timeLeft > 0.0 {
                             var newTargetTime = currentTime + (timeLeft / 2.0)
-                            floorObj<floorData>.HarvestTimes[k] = newTargetTime
+                            floorObj<floorData>.TryUpdateHarvestTime(k, newTargetTime, player)
                             if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Watered: timeLeft=" + timeLeft + " newTarget=" + newTargetTime) }
                         }
                     }
@@ -220,13 +219,11 @@ static graph FarmingManager {
                         var k = finalHarvestKeys[i]
                         var p = finalHarvestPos[i]
 
-                        cellStates[k] = gen.EFarmSlotState.Tilled
+                        if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Tilled, player) { continue }
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                         
-                        if map.ContainKey(floorObj<floorData>.HarvestTimes, k) { map.Remove(floorObj<floorData>.HarvestTimes, k) }
-                        if map.ContainKey(floorObj<floorData>.CropPositions, k) { map.Remove(floorObj<floorData>.CropPositions, k) }
-                        if map.ContainKey(floorObj<floorData>.PlantedSeeds, k) { map.Remove(floorObj<floorData>.PlantedSeeds, k) }
+                        floorObj<floorData>.TryClearCrop(k, player)
                     }
                     if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvest complete, cleared " + harvestCount + " cells") }
                 }

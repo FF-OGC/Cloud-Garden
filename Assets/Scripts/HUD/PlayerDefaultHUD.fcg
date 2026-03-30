@@ -83,16 +83,7 @@ graph PlayerDefaultHUD {
             if thisEntity<playerFarmingData> == nil { continue }
 
             var floor = thisEntity<playerFarmingData>.CurrentFloor
-            if floor == nil || floor<floorData> == nil {
-                if _IsBtnVisible {
-                    _FarmUI<CustomUI>.IsVisible = false
-                    _IsBtnVisible = false
-                }
-                continue
-            }
-
-            var floorOwner = floor<floorData>.Owner
-            if floorOwner != nil && floorOwner != thisEntity {
+            if floor == nil || floor<floorData> == nil || !floor<floorData>.IsOwner(thisEntity) {
                 if _IsBtnVisible {
                     _FarmUI<CustomUI>.IsVisible = false
                     _IsBtnVisible = false
@@ -116,9 +107,7 @@ graph PlayerDefaultHUD {
         var floor = thisEntity<playerFarmingData>.CurrentFloor
         if floor == nil { return }
         if floor<floorData> == nil { return }
-
-        var floorOwner = floor<floorData>.Owner
-        if floorOwner != nil && floorOwner != thisEntity {
+        if !floor<floorData>.IsOwner(thisEntity) {
             if _IsBtnVisible {
                 _FarmUI<CustomUI>.IsVisible = false
                 _IsBtnVisible = false

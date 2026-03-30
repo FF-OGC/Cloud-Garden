@@ -11,7 +11,7 @@ static graph FloorConfig {
     event OnAwake() {
         // Cấu hình 5 Tầng
         _Heights = list.New(0, 5)
-        list.Append(_Heights, 8.0)
+        list.Append(_Heights, 4.0)
         list.Append(_Heights, 18.0)
         list.Append(_Heights, 28.0)
         list.Append(_Heights, 38.0) // Tầng 4

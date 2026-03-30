@@ -4,7 +4,7 @@ import "Map.fcc" as map
 [platform_server]
 graph FloorGridData {
     // --- OWNERSHIP DATA ---
-    Owner entity<Entity> // Store the player entity who owns this floor
+    Owner entity<Entity>
     
     CellStates Map<string, int> 
     SoilTiers Map<string, int>   
@@ -13,12 +13,11 @@ graph FloorGridData {
     HarvestTimes Map<string, float>   
     CropPositions Map<string, Vector3> 
 
-
     SoilVisuals Map<string, entity<Entity>>  
     PlantVisuals Map<string, entity<Entity>>  
 
     func InitMaps() {
-        Owner = nil // Default: No owner
+        Owner = nil
         
         CellStates = map.New() as Map<string, int>
         SoilTiers = map.New() as Map<string, int>
@@ -29,5 +28,45 @@ graph FloorGridData {
         
         SoilVisuals = map.New() as Map<string, entity<Entity>>
         PlantVisuals = map.New() as Map<string, entity<Entity>>
+    }
+
+    // --- DATA-LEVEL OWNERSHIP VALIDATION ---
+    func IsOwner(player entity<Entity>) bool {
+        if Owner == nil { return false }
+        return Owner == player
+    }
+
+    func TryModifyCell(key string, newState int, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        CellStates[key] = newState
+        return true
+    }
+
+    func TrySetSoilTier(key string, tier int, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        SoilTiers[key] = tier
+        return true
+    }
+
+    func TryPlantCrop(key string, seedId string, harvestTime float, cropPos Vector3, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        PlantedSeeds[key] = seedId
+        HarvestTimes[key] = harvestTime
+        CropPositions[key] = cropPos
+        return true
+    }
+
+    func TryUpdateHarvestTime(key string, newTime float, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        HarvestTimes[key] = newTime
+        return true
+    }
+
+    func TryClearCrop(key string, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        if map.ContainKey(HarvestTimes, key) { map.Remove(HarvestTimes, key) }
+        if map.ContainKey(CropPositions, key) { map.Remove(CropPositions, key) }
+        if map.ContainKey(PlantedSeeds, key) { map.Remove(PlantedSeeds, key) }
+        return true
     }
 }

@@ -2230,7 +2230,7 @@
       "position": {
         "x": -20,
         "y": 0,
-        "z": -50
+        "z": -30
       },
       "scale": {
         "x": 1,
@@ -4457,7 +4457,7 @@
       "position": {
         "x": 30,
         "y": 0,
-        "z": 33
+        "z": 30
       },
       "scale": {
         "x": 1,
@@ -6686,7 +6686,7 @@
       "position": {
         "x": -30,
         "y": 0,
-        "z": 33
+        "z": 30
       },
       "scale": {
         "x": 1,
@@ -8915,7 +8915,7 @@
       "position": {
         "x": 30,
         "y": 0,
-        "z": -50
+        "z": -30
       },
       "scale": {
         "x": 1,
@@ -9691,9 +9691,9 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": -20,
+        "x": -10,
         "y": 0,
-        "z": -34.573001861572266
+        "z": -20
       },
       "scale": {
         "x": 1,
@@ -9702,7 +9702,7 @@
       },
       "rotation": {
         "x": 0,
-        "y": 0,
+        "y": 180,
         "z": 0
       },
       "BTPath": [
@@ -9726,7 +9726,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 27,
+      "tempIndex": 1,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -10083,7 +10083,7 @@
       "position": {
         "x": 20,
         "y": 0,
-        "z": -34.573001861572266
+        "z": -20
       },
       "scale": {
         "x": 1,
@@ -10092,7 +10092,7 @@
       },
       "rotation": {
         "x": 0,
-        "y": 0,
+        "y": 180,
         "z": 0
       },
       "BTPath": [
@@ -10116,7 +10116,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 28,
+      "tempIndex": 2,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -10499,7 +10499,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 29,
+      "tempIndex": 3,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
@@ -10889,7 +10889,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 30,
+      "tempIndex": 4,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [
