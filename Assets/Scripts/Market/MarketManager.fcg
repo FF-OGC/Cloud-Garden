@@ -3,6 +3,7 @@ import "List.fcc" as list
 import "Map.fcc" as map
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
 
 import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
@@ -105,8 +106,13 @@ static graph MarketManager {
         }
 
         var marketPos = market<Transform>.Position
-        var offset = marketCfg.GetInfoBoardOffset()
-        infoBoard<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
+        var rotY = market<Transform>.Rotation.Y
+        var rawOffset = marketCfg.GetInfoBoardOffset()
+        var c = math.Cos(rotY)
+        var s = math.Sin(rotY)
+        var ox = rawOffset.X * c + rawOffset.Z * s
+        var oz = -rawOffset.X * s + rawOffset.Z * c
+        infoBoard<Transform>.Position = Vector3{marketPos.X + ox, marketPos.Y + rawOffset.Y, marketPos.Z + oz}
 
         var textObj = GetChildByName(infoBoard, "Text object")
         if textObj != nil {

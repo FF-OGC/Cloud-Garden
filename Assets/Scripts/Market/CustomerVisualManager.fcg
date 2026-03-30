@@ -4,6 +4,8 @@ import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 import "Playable.fcc" as playable
 
+import "Math.fcc" as math
+
 import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "./CustomerAnimation.fcg" as npcAnim
@@ -29,6 +31,14 @@ static graph CustomerVisualManager {
         if gameManager.IsDebug() { LogInfo("[CustomerVisual] InitNPCPool | Created 40 NPCs") }
     }
 
+    func RotateOffset(offset Vector3, angleDeg float) Vector3 {
+        var c = math.Cos(angleDeg)
+        var s = math.Sin(angleDeg)
+        var rx = offset.X * c + offset.Z * s
+        var rz = -offset.X * s + offset.Z * c
+        return Vector3{rx, offset.Y, rz}
+    }
+
     func SpawnCustomer(market entity<Entity>, slotIndex int) {
         if market == nil || slotIndex < 0 || slotIndex >= 5 { return }
         if market<marketData> == nil { return }
@@ -40,15 +50,16 @@ static graph CustomerVisualManager {
         }
 
         var marketPos = market<Transform>.Position
-        var gateOffset = marketCfg.GetGateOffset()
+        var rotY = market<Transform>.Rotation.Y
+        var gateOffset = RotateOffset(marketCfg.GetGateOffset(), rotY)
         var yOff = marketCfg.GetNPCYOffset()
         var gatePos = Vector3{marketPos.X + gateOffset.X, marketPos.Y + gateOffset.Y + yOff, marketPos.Z + gateOffset.Z}
 
         npc<Transform>.Position = gatePos
-        npc<Transform>.Rotation = Vector3{0, 0, 0}
+        npc<Transform>.Rotation = Vector3{0, rotY, 0}
         market<marketData>._SlotNPCs[slotIndex] = npc
 
-        var slotOffset = marketCfg.GetQueueSlotOffset(slotIndex)
+        var slotOffset = RotateOffset(marketCfg.GetQueueSlotOffset(slotIndex), rotY)
         var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y + yOff, marketPos.Z + slotOffset.Z}
 
         PlayNPCAnim(npc, "Walk")
@@ -69,28 +80,28 @@ static graph CustomerVisualManager {
         market<marketData>._SlotNPCs[slotIndex] = nil
 
         var marketPos = market<Transform>.Position
-        var gateOffset = marketCfg.GetGateOffset()
-        var yOff = marketCfg.GetNPCYOffset()
+        var rotY = market<Transform>.Rotation.Y
+        var gateOffset = RotateOffset(marketCfg.GetGateOffset(), rotY)
+        var sideOffset = RotateOffset(marketCfg.GetLeaveSideOffset(), rotY)
         var currentPos = npc<Transform>.Position
 
-        var sideOffset = marketCfg.GetLeaveSideOffset()
         var sidePos = Vector3{currentPos.X + sideOffset.X, currentPos.Y, currentPos.Z + sideOffset.Z}
-        var exitPos = Vector3{sidePos.X, sidePos.Y, marketPos.Z + gateOffset.Z}
+        var exitPos = Vector3{marketPos.X + gateOffset.X + sideOffset.X, sidePos.Y, marketPos.Z + gateOffset.Z + sideOffset.Z}
 
-        start AnimateLeavingSequence(npc, currentPos, sidePos, exitPos)
+        start AnimateLeavingSequence(npc, currentPos, sidePos, exitPos, rotY)
 
         if gameManager.IsDebug() { LogInfo("[CustomerVisual] AnimateLeaving | slot=" + convert.ToString(slotIndex)) }
     }
 
-    async func AnimateLeavingSequence(npc entity<Entity>, startPos Vector3, sidePos Vector3, exitPos Vector3) {
+    async func AnimateLeavingSequence(npc entity<Entity>, startPos Vector3, sidePos Vector3, exitPos Vector3, marketRotY float) {
         var sideStepMs = marketCfg.GetLeaveSideStepMs()
 
-        npc<Transform>.Rotation = Vector3{0, 90, 0}
+        npc<Transform>.Rotation = Vector3{0, 90 + marketRotY, 0}
         PlayNPCAnim(npc, "Walk")
         TweenMoveTo(npc, startPos, sidePos, sideStepMs)
         WaitForMillisecond(sideStepMs)
 
-        npc<Transform>.Rotation = Vector3{0, 180, 0}
+        npc<Transform>.Rotation = Vector3{0, 180 + marketRotY, 0}
         TweenMoveTo(npc, sidePos, exitPos, marketCfg.GetNPCTweenTimeMs())
         WaitForMillisecond(marketCfg.GetNPCTweenTimeMs() + 500)
 
@@ -103,13 +114,14 @@ static graph CustomerVisualManager {
         if data == nil { return }
 
         var marketPos = market<Transform>.Position
+        var rotY = market<Transform>.Rotation.Y
         var advanceTweenMs = marketCfg.GetAdvanceTweenMs() as int
         var yOff = marketCfg.GetNPCYOffset()
 
         for i = 0, 4, 1 {
             var npc = market<marketData>._SlotNPCs[i] as entity<Entity>
             if npc != nil {
-                var slotOffset = marketCfg.GetQueueSlotOffset(i)
+                var slotOffset = RotateOffset(marketCfg.GetQueueSlotOffset(i), rotY)
                 var targetPos = Vector3{marketPos.X + slotOffset.X, marketPos.Y + slotOffset.Y + yOff, marketPos.Z + slotOffset.Z}
                 var currentPos = npc<Transform>.Position
                 PlayNPCAnim(npc, "Walk")

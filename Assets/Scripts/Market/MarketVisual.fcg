@@ -3,6 +3,7 @@ import "List.fcc" as list
 import "Map.fcc" as map
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
 
 import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
@@ -37,11 +38,20 @@ static graph MarketVisual {
         }
     }
 
+    func RotateOffset(offset Vector3, angleDeg float) Vector3 {
+        var c = math.Cos(angleDeg)
+        var s = math.Sin(angleDeg)
+        var rx = offset.X * c + offset.Z * s
+        var rz = -offset.X * s + offset.Z * c
+        return Vector3{rx, offset.Y, rz}
+    }
+
     func UpdateTableDisplay(market entity<Entity>) {
         if market == nil { return }
         if market<marketData> == nil { return }
 
         var marketPos = market<Transform>.Position
+        var rotY = market<Transform>.Rotation.Y
         var items = marketCfg.GetSellableItems()
         var itemCount = list.Length(items)
 
@@ -61,7 +71,7 @@ static graph MarketVisual {
             if hasStock && !hasActiveModel {
                 var model = GetModelFromPool(itemId)
                 if model != nil {
-                    var offset = marketCfg.GetTableItemOffset(i)
+                    var offset = RotateOffset(marketCfg.GetTableItemOffset(i), rotY)
                     model<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
                     list.Append(market<marketData>._ActiveProduceItemIDs, itemId)
                     list.Append(market<marketData>._ActiveProduceModels, model)
