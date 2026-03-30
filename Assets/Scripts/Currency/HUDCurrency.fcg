@@ -1,0 +1,87 @@
+import "StdLibrary.fcc" as std
+import "Hud.fcc" as hud
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
+
+import "./PlayerCurrencyVisual.fcg" as playerCurrencyVisual
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+graph HUDCurrency {
+
+    _MenuUI entity<CustomUI> = nil
+    _CoinIcon entity<UIWidget> = nil
+    _CoinNum entity<UIWidget> = nil
+
+    _DisplayedBalance int = 0
+    _IsAnimating bool = false
+
+    event OnAwake() {
+        CreateCustomUI(out var uiInstance, thisEntity<Player>, EResUI.menu)
+        if uiInstance != nil {
+            _MenuUI = uiInstance
+            _CoinIcon = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/coin/icon")
+            _CoinNum = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/coin/num")
+
+            if _CoinNum != nil {
+                _CoinNum<UIWidgetLabel>.Content = "0"
+            }
+            if gameManager.IsDebug() { LogInfo("[HUDCurrency] OnAwake | UI created, icon=" + convert.ToString(_CoinIcon != nil) + " num=" + convert.ToString(_CoinNum != nil)) }
+        } else {
+            LogWarning("[HUDCurrency] OnAwake | FAILED to create Menu UI")
+        }
+    }
+
+    event OnCurrencySync(player entity<Player>, balance int) {
+        if player != thisEntity<Player> { return }
+        if gameManager.IsDebug() { LogInfo("[HUDCurrency] OnCurrencySync | newBalance=" + convert.ToString(balance) + " displayed=" + convert.ToString(_DisplayedBalance)) }
+
+        var oldBalance = _DisplayedBalance
+        if oldBalance != balance {
+            start AnimateCount(oldBalance, balance)
+        }
+    }
+
+    async func AnimateCount(fromVal int, toVal int) {
+        if _CoinNum == nil { return }
+        if _IsAnimating {
+            _DisplayedBalance = toVal
+            _CoinNum<UIWidgetLabel>.Content = FormatNumber(toVal)
+            return
+        }
+
+        _IsAnimating = true
+        var diff = toVal - fromVal
+        if diff < 0 { diff = -diff }
+
+        var steps = 10
+        if diff < steps { steps = diff }
+        if steps <= 0 { steps = 1 }
+
+        var stepSize = diff / steps
+        if stepSize <= 0 { stepSize = 1 }
+
+        var current = fromVal
+        for i = 0, steps, 1 {
+            if toVal > fromVal {
+                current = current + stepSize
+                if current > toVal { current = toVal }
+            } else {
+                current = current - stepSize
+                if current < toVal { current = toVal }
+            }
+            _DisplayedBalance = current
+            _CoinNum<UIWidgetLabel>.Content = FormatNumber(current)
+            WaitForMillisecond(50)
+        }
+
+        _DisplayedBalance = toVal
+        _CoinNum<UIWidgetLabel>.Content = FormatNumber(toVal)
+        _IsAnimating = false
+    }
+
+    func FormatNumber(value int) string {
+        return convert.ToString(value)
+    }
+}

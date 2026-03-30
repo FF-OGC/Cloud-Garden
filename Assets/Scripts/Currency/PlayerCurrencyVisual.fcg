@@ -1,0 +1,17 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+graph PlayerCurrencyVisual {
+
+    _CachedBalance int = 0
+
+    event OnCurrencySync(player entity<Player>, balance int) {
+        if player != thisEntity<Player> { return }
+        _CachedBalance = balance
+        if gameManager.IsDebug() { LogInfo("[PlayerCurrencyVisual] OnCurrencySync | balance=" + convert.ToString(balance)) }
+    }
+}

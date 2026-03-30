@@ -1,0 +1,16 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph CurrencyRuntimeData {
+
+    _Balances Map<entity<Player>, int> = nil
+
+    event OnAwake() {
+        _Balances = map.New() as Map<entity<Player>, int>
+        if gameManager.IsDebug() { LogInfo("[CurrencyRuntimeData] Initialized.") }
+    }
+}

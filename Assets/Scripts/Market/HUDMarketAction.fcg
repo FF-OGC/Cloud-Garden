@@ -29,7 +29,7 @@ graph HUDMarketAction {
         LogInfo("[HUDMarketAction] OnPlayerEnterMarket FIRED | player=" + convert.ToString(player != nil) + " market=" + convert.ToString(market != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
         if player != thisEntity<Player> { return }
 
-        if market<marketData> != nil && market<marketData>._Owner != nil && market<marketData>._Owner != player {
+        if market<marketData> == nil || market<marketData>._Owner == nil || market<marketData>._Owner != player {
             LogInfo("[HUDMarketAction] SKIP: player is NOT the owner of this market stall")
             return
         }
@@ -70,7 +70,7 @@ graph HUDMarketAction {
             return
         }
 
-        if _CurrentMarket<marketData> != nil && _CurrentMarket<marketData>._Owner != nil && _CurrentMarket<marketData>._Owner != player {
+        if _CurrentMarket<marketData> == nil || _CurrentMarket<marketData>._Owner == nil || _CurrentMarket<marketData>._Owner != player {
             LogWarning("[HUDMarketAction] ABORT: player is NOT the owner of this market stall")
             return
         }

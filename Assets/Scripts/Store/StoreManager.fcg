@@ -8,6 +8,7 @@ import "../Services/StoreService.fcg" as storeService
 import "./StoreData.fcg" as storeData
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Core/GameManager.fcg" as gameManager
+import "../Currency/CurrencyManager.fcg" as currencyManager
 
 [platform_server]
 static graph StoreManager {
@@ -38,6 +39,12 @@ static graph StoreManager {
             return
         }
 
+        if !currencyManager.CanAffordItem(player, itemId, amount) {
+            if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Not enough gold") }
+            DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Not enough gold!", nil, nil})
+            return
+        }
+
         storeService.ExecuteBuy(itemId, amount)
 
         if !backpackManager.AddItem(player, itemId, amount) {
@@ -45,6 +52,8 @@ static graph StoreManager {
             DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Backpack is full!", nil, nil})
             return
         }
+
+        currencyManager.ProcessItemPurchase(player, itemId, amount)
 
         if gameManager.IsDebug() { LogInfo("[StoreManager] SUCCESS: Bought " + convert.ToString(amount) + "x " + itemId) }
         DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, true, "Purchase successful!", storeData._ItemIDs, storeData._ItemAmounts})

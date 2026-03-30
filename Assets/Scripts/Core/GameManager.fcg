@@ -11,6 +11,7 @@ import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Farming/CropGrowthManager.fcg" as cropManager
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Market/MarketManager.fcg" as marketManager
+import "../Currency/CurrencyManager.fcg" as currencyManager
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
@@ -151,9 +152,11 @@ static graph GameManager {
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
-        // backpackManager.AddItem(player, "crop_apple", 10)
+        backpackManager.AddItem(player, "crop_apple", 10)
 
         player<Player>.DisableFallDamage = true
+
+        currencyManager.InitPlayerCurrency(player, 500)
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {

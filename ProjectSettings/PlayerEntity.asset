@@ -137,6 +137,22 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "ikx45ifi6f-mnd18xvi-xh38jrt66ri",
+      "filePath": "Assets\\Scripts\\Currency\\PlayerCurrencyVisual.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "3z9jhqb31dj-mnd18xvh-9yd2ovyehf",
+      "filePath": "Assets\\Scripts\\Currency\\HUDCurrency.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

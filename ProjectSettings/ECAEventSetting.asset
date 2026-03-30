@@ -338,6 +338,28 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_73265997"
+    },
+    "signal_66421665": {
+      "name": "OnCurrencySync",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100015,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "balance",
+          "value": "Int",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_66421665"
     }
   },
   "customName": {
@@ -355,7 +377,8 @@
     "OnPlayerEnterMarket": "signal_37131010",
     "OnPlayerExitMarket": "signal_36246097",
     "OnRequestRestock": "signal_28748972",
-    "OnMarketSellTapped": "signal_73265997"
+    "OnMarketSellTapped": "signal_73265997",
+    "OnCurrencySync": "signal_66421665"
   },
   "children": []
 }

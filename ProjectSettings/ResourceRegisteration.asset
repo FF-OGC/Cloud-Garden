@@ -66,6 +66,18 @@
           },
           "scriptName": "market_sell_btn",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "6dcivj7wkn5-mncz6y2e-00hsisr8s65dd",
+            "filePath": "Assets\\UI\\Menu.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "menu",
+          "children": []
         }
       ]
     },

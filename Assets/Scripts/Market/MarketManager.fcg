@@ -13,6 +13,7 @@ import "./CustomerVisualManager.fcg" as customerVisual
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Services/BackpackService.fcg" as backpackService
 import "../Core/GameManager.fcg" as gameManager
+import "../Currency/CurrencyManager.fcg" as currencyManager
 
 [platform_server]
 static graph MarketManager {
@@ -154,7 +155,7 @@ static graph MarketManager {
             return
         }
 
-        if market<marketData>._Owner != nil && market<marketData>._Owner != player {
+        if market<marketData>._Owner == nil || market<marketData>._Owner != player {
             LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall")
             return
         }
@@ -386,6 +387,10 @@ static graph MarketManager {
 
         customerVisual.AnimateLeaving(market, 0)
         marketService.ClearCustomer(market, 0)
+
+        if market<marketData>._Owner != nil {
+            currencyManager.ProcessItemSale(market<marketData>._Owner, itemId, amount)
+        }
 
         var conveyorDelay = marketCfg.GetConveyorDelayMs() as int
         if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | conveyor delay " + convert.ToString(conveyorDelay) + "ms") }

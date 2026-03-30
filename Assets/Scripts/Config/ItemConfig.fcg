@@ -47,6 +47,18 @@ static graph ItemConfig {
         return itemId
     }
 
+    func GetBuyPrice(itemId string) int {
+        if itemId == "seed_apple" { return 20 }
+        if itemId == "seed_tomato" { return 15 }
+        return 10
+    }
+
+    func GetSellPrice(itemId string) int {
+        if itemId == "crop_apple" { return 30 }
+        if itemId == "crop_tomato" { return 25 }
+        return 10
+    }
+
     // ==========================================
     // 1. UI DICTIONARY (For Backpack 2D Icons)
     // ==========================================

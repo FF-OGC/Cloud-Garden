@@ -1,0 +1,68 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "./CurrencyService.fcg" as currencyService
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph CurrencyManager {
+
+    func InitPlayerCurrency(player entity<Player>, initialAmount int) {
+        if player == nil { return }
+        currencyService.SetBalance(player, initialAmount)
+        SyncCurrencyToPlayer(player)
+        LogInfo("[CurrencyManager] InitPlayerCurrency | player=" + player<Player>.NickName + " initial=" + convert.ToString(initialAmount))
+    }
+
+    func CanAffordItem(player entity<Player>, itemId string, quantity int) bool {
+        if player == nil || quantity <= 0 { return false }
+        var unitPrice = itemCfg.GetBuyPrice(itemId)
+        var totalCost = (unitPrice * quantity) as int
+        var result = currencyService.HasEnough(player, totalCost)
+        if gameManager.IsDebug() { LogInfo("[CurrencyManager] CanAffordItem | item=" + itemId + " qty=" + convert.ToString(quantity) + " unitPrice=" + convert.ToString(unitPrice) + " total=" + convert.ToString(totalCost) + " result=" + convert.ToString(result)) }
+        return result
+    }
+
+    func ProcessItemPurchase(player entity<Player>, itemId string, quantity int) bool {
+        if player == nil || quantity <= 0 { return false }
+        var unitPrice = itemCfg.GetBuyPrice(itemId)
+        var totalCost = (unitPrice * quantity) as int
+
+        if !currencyService.SubtractBalance(player, totalCost) {
+            if gameManager.IsDebug() { LogInfo("[CurrencyManager] ProcessItemPurchase FAILED | insufficient funds") }
+            return false
+        }
+
+        SyncCurrencyToPlayer(player)
+        LogInfo("[CurrencyManager] ProcessItemPurchase OK | player=" + player<Player>.NickName + " spent " + convert.ToString(totalCost) + " on " + convert.ToString(quantity) + "x " + itemId)
+        return true
+    }
+
+    func ProcessItemSale(player entity<Player>, itemId string, quantity int) {
+        if player == nil || quantity <= 0 { return }
+        var unitPrice = itemCfg.GetSellPrice(itemId)
+        var totalEarnings = (unitPrice * quantity) as int
+
+        currencyService.AddBalance(player, totalEarnings)
+        SyncCurrencyToPlayer(player)
+        LogInfo("[CurrencyManager] ProcessItemSale OK | player=" + player<Player>.NickName + " earned " + convert.ToString(totalEarnings) + " from " + convert.ToString(quantity) + "x " + itemId)
+    }
+
+    func GetBalance(player entity<Player>) int {
+        return currencyService.GetBalance(player)
+    }
+
+    func SyncCurrencyToPlayer(player entity<Player>) {
+        if player == nil { return }
+        var balance = currencyService.GetBalance(player)
+        DispatchEventToEntity(OnCurrencySync, player, PlatformType.Server, List<object>{player, balance})
+        if gameManager.IsDebug() { LogInfo("[CurrencyManager] SyncCurrencyToPlayer | balance=" + convert.ToString(balance)) }
+    }
+
+    func RemovePlayer(player entity<Player>) {
+        currencyService.RemovePlayer(player)
+    }
+}
