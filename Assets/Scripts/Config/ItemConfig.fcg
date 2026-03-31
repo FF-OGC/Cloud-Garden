@@ -9,6 +9,7 @@ static graph ItemConfig {
     func GetType(itemId string) int {
         if itemId == "seed_apple" || itemId == "seed_tomato" { return 1 }
         if itemId == "crop_apple" || itemId == "crop_tomato" { return 2 }
+        if itemId == "crop_apple_gold" || itemId == "crop_tomato_gold" { return 2 }
         return 3
     }
 
@@ -43,6 +44,8 @@ static graph ItemConfig {
         if itemId == "seed_carrot" { return "Carrot Seed" }
         if itemId == "crop_apple" { return "Apple" }
         if itemId == "crop_tomato" { return "Tomato" }
+        if itemId == "crop_apple_gold" { return "Golden Apple" }
+        if itemId == "crop_tomato_gold" { return "Golden Tomato" }
         if itemId == "watering_can" { return "Watering Can" }
         return itemId
     }
@@ -56,6 +59,8 @@ static graph ItemConfig {
     func GetSellPrice(itemId string) int {
         if itemId == "crop_apple" { return 30 }
         if itemId == "crop_tomato" { return 25 }
+        if itemId == "crop_apple_gold" { return 150 }
+        if itemId == "crop_tomato_gold" { return 120 }
         return 10
     }
 
@@ -66,6 +71,8 @@ static graph ItemConfig {
         // Replace these with your actual registered UI Resource Keys from the Editor
         if itemId == "seed_apple" { return EResSprite.seed_apple }
         if itemId == "crop_apple" { return EResSprite.crop_apple }
+        if itemId == "crop_apple_gold" { return EResSprite.crop_goldenapple }
+        if itemId == "crop_tomato_gold" { return EResSprite.crop_apple }
         
         return EResSprite.seed_apple 
     }
@@ -96,5 +103,12 @@ static graph ItemConfig {
         }
 
         return gen.EResPrefab.dirt_tilled // Fallback
+    }
+
+    // Returns the mutant/golden prefab for ReadyToHarvest state
+    func GetMutantPlantPrefab(seedId string) PrefabID {
+        if seedId == "seed_apple" { return gen.EResPrefab.mutation_seed_growed }
+        if seedId == "seed_tomato" { return gen.EResPrefab.mutation_seed_growed }
+        return gen.EResPrefab.mutation_seed_growed
     }
 }

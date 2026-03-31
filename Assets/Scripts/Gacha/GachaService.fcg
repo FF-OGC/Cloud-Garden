@@ -1,0 +1,30 @@
+import "StdLibrary.fcc" as std
+import "Math.fcc" as math
+
+[platform_server]
+static graph GachaService {
+
+    func CalculateRate(baseRate int, softThreshold int, hardThreshold int, stepRate int, killZoneMaxBonus int, pityCount int) int {
+        if pityCount >= hardThreshold { return 100 }
+
+        if pityCount >= softThreshold {
+            var bonus = (pityCount - softThreshold + 1) * stepRate
+            var rate = baseRate + bonus
+            if rate > 100 { return 100 }
+            return rate
+        }
+
+        if softThreshold > 0 && killZoneMaxBonus > 0 {
+            var prdBonus = (pityCount * killZoneMaxBonus) / softThreshold
+            return baseRate + prdBonus
+        }
+
+        return baseRate
+    }
+
+    func Roll(baseRate int, softThreshold int, hardThreshold int, stepRate int, killZoneMaxBonus int, pityCount int) bool {
+        var currentRate = CalculateRate(baseRate, softThreshold, hardThreshold, stepRate, killZoneMaxBonus, pityCount)
+        var roll = math.RandomInt(1, 100)
+        return roll <= currentRate
+    }
+}

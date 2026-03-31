@@ -5,7 +5,7 @@ import "EditorGenLib.fcc" as gen
 static graph MarketConfig {
 
     func GetSellableItems() List<string> {
-        return List<string>{"crop_apple"}
+        return List<string>{"crop_apple", "crop_apple_gold", "crop_tomato_gold"}
     }
 
     func IsSellable(itemId string) bool {
@@ -37,11 +37,11 @@ static graph MarketConfig {
     }
 
     func GetTableItemOffset(index int) Vector3 {
-        if index == 0 { return Vector3{-1, 1, 0} }
-        if index == 1 { return Vector3{-1, 1, -1} }
-        if index == 2 { return Vector3{-1, 1, -2} }
-        if index == 3 { return Vector3{-1, 1, -3} }
-        return Vector3{-1, 1, -4}
+        if index == 0 { return Vector3{-1.0, 1, 0} }
+        if index == 1 { return Vector3{-0.3, 1, 0} }
+        if index == 2 { return Vector3{0.4, 1, 0} }
+        if index == 3 { return Vector3{1.1, 1, 0} }
+        return Vector3{1.8, 1, 0}
     }
 
     func GetMaxTableSlots() int { return 5 }
@@ -49,6 +49,8 @@ static graph MarketConfig {
     func GetProducePrefab(itemId string) PrefabID {
         if itemId == "crop_apple" { return gen.EResPrefab.seed_growed }
         if itemId == "crop_tomato" { return gen.EResPrefab.seed_growed }
+        if itemId == "crop_apple_gold" { return gen.EResPrefab.mutation_seed_growed }
+        if itemId == "crop_tomato_gold" { return gen.EResPrefab.mutation_seed_growed }
         return gen.EResPrefab.seed_growed
     }
 

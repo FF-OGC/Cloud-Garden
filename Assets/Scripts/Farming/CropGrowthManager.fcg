@@ -5,6 +5,8 @@ import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameMgr
 import "../Grid/FloorGridData.fcg" as floorData
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Gacha/GachaManager.fcg" as gachaManager
 
 [platform_server]
 static graph CropGrowthManager {
@@ -40,6 +42,20 @@ static graph CropGrowthManager {
                             
                             // TIMESTAMP CHECK
                             if currentTime >= targetTime {
+                                // Roll gacha before setting ReadyToHarvest
+                                if map.ContainKey(floor<floorData>.PlantedSeeds, key) {
+                                    var seedId = floor<floorData>.PlantedSeeds[key] as string
+                                    var owner = floor<floorData>.Owner
+                                    if owner != nil {
+                                        var resultCropId = gachaManager.RollForHarvest(owner, seedId)
+                                        var normalCropId = itemCfg.GetHarvestYield(seedId)
+                                        if resultCropId != normalCropId {
+                                            floor<floorData>.TrySetGachaResult(key, resultCropId)
+                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Gacha HIT at key=" + key + " reward=" + resultCropId) }
+                                        }
+                                    }
+                                }
+
                                 cellStates[key] = gen.EFarmSlotState.ReadyToHarvest
                                 
                                 // Retrieve GridPos safely from Data layer (CropPositions)

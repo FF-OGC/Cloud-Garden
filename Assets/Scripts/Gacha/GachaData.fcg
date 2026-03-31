@@ -1,0 +1,60 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph GachaData {
+
+    _PityCounters Map<string, int> = nil
+    _FirstRollUsed Map<string, bool> = nil
+
+    event OnAwake() {
+        _PityCounters = map.New() as Map<string, int>
+        _FirstRollUsed = map.New() as Map<string, bool>
+    }
+
+    func _MakeKey(player entity<Entity>, gachaId string) string {
+        var pid = convert.ToString(player<Player>.UserUID)
+        return pid + "_" + gachaId
+    }
+
+    func _MakePlayerKey(player entity<Entity>) string {
+        return convert.ToString(player<Player>.UserUID)
+    }
+
+    func IsFirstEverRoll(player entity<Entity>) bool {
+        var key = _MakePlayerKey(player)
+        return !map.ContainKey(_FirstRollUsed, key)
+    }
+
+    func MarkFirstRollUsed(player entity<Entity>) {
+        var key = _MakePlayerKey(player)
+        _FirstRollUsed[key] = true
+        if gameManager.IsDebug() { LogInfo("[GachaData] First roll used for player key=" + key) }
+    }
+
+    func GetPityCounter(player entity<Entity>, gachaId string) int {
+        var key = _MakeKey(player, gachaId)
+        if map.ContainKey(_PityCounters, key) {
+            return _PityCounters[key] as int
+        }
+        return 0
+    }
+
+    func SetPityCounter(player entity<Entity>, gachaId string, value int) {
+        var key = _MakeKey(player, gachaId)
+        _PityCounters[key] = value
+        if gameManager.IsDebug() { LogInfo("[GachaData] SetPity | key=" + key + " value=" + convert.ToString(value)) }
+    }
+
+    func IncrementPity(player entity<Entity>, gachaId string) {
+        var current = GetPityCounter(player, gachaId)
+        SetPityCounter(player, gachaId, current + 1)
+    }
+
+    func ResetPity(player entity<Entity>, gachaId string) {
+        SetPityCounter(player, gachaId, 0)
+    }
+}

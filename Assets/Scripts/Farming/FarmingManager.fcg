@@ -185,9 +185,9 @@ static graph FarmingManager {
                     return
                 }
                 var anchorSeedId = floorObj<floorData>.PlantedSeeds[key] as string
-                var targetCropId = itemCfg.GetHarvestYield(anchorSeedId)
+                var normalCropId = itemCfg.GetHarvestYield(anchorSeedId)
 
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] anchorSeed=" + anchorSeedId + " cropId=" + targetCropId) }
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] anchorSeed=" + anchorSeedId + " normalCrop=" + normalCropId) }
 
                 var finalHarvestKeys = List<string>{}
                 var finalHarvestPos = List<Vector3>{}
@@ -209,10 +209,32 @@ static graph FarmingManager {
                     return
                 }
 
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvesting " + harvestCount + " crops of " + targetCropId) }
+                var normalCount = 0
+                var mutantCount = 0
+                var mutantCropId = ""
 
-                var isAdded = backpackMgr.AddItem(player, targetCropId, harvestCount)
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddItem result=" + isAdded) }
+                for i = 0, harvestCount, 1 {
+                    var k = finalHarvestKeys[i]
+                    if map.ContainKey(floorObj<floorData>.GachaResults, k) {
+                        mutantCropId = floorObj<floorData>.GachaResults[k] as string
+                        mutantCount = mutantCount + 1
+                    } else {
+                        normalCount = normalCount + 1
+                    }
+                }
+
+                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Harvesting normal=" + normalCount + " mutant=" + mutantCount) }
+
+                var isAdded = true
+                if normalCount > 0 {
+                    isAdded = backpackMgr.AddItem(player, normalCropId, normalCount)
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddItem normal result=" + isAdded) }
+                }
+                if mutantCount > 0 {
+                    var mutantAdded = backpackMgr.AddItem(player, mutantCropId, mutantCount)
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] AddItem mutant result=" + mutantAdded) }
+                    if !isAdded { isAdded = mutantAdded }
+                }
 
                 if isAdded {
                     for i = 0, harvestCount, 1 {

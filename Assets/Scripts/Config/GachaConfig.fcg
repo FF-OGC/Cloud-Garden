@@ -1,0 +1,48 @@
+import "StdLibrary.fcc" as std
+
+static graph GachaConfig {
+
+    func GetBaseRate(gachaId string) int {
+        if gachaId == "gacha_seed_apple" { return 1 }
+        if gachaId == "gacha_seed_tomato" { return 2 }
+        return 1
+    }
+
+    func GetSoftPityThreshold(gachaId string) int {
+        if gachaId == "gacha_seed_apple" { return 50 }
+        if gachaId == "gacha_seed_tomato" { return 35 }
+        return 50
+    }
+
+    func GetHardPityThreshold(gachaId string) int {
+        if gachaId == "gacha_seed_apple" { return 90 }
+        if gachaId == "gacha_seed_tomato" { return 70 }
+        return 90
+    }
+
+    func GetStepRate(gachaId string) int {
+        var baseRate = GetBaseRate(gachaId)
+        var soft = GetSoftPityThreshold(gachaId)
+        var hard = GetHardPityThreshold(gachaId)
+        if hard <= soft { return 100 }
+        return (100 - baseRate) / (hard - soft)
+    }
+
+    func GetRewardId(gachaId string) string {
+        if gachaId == "gacha_seed_apple" { return "crop_apple_gold" }
+        if gachaId == "gacha_seed_tomato" { return "crop_tomato_gold" }
+        return ""
+    }
+
+    func GetKillZoneMaxBonus(gachaId string) int {
+        if gachaId == "gacha_seed_apple" { return 8 }
+        if gachaId == "gacha_seed_tomato" { return 6 }
+        return 8
+    }
+
+    func HasGacha(gachaId string) bool {
+        if gachaId == "gacha_seed_apple" { return true }
+        if gachaId == "gacha_seed_tomato" { return true }
+        return false
+    }
+}

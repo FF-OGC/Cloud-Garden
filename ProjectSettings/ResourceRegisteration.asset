@@ -232,6 +232,18 @@
           },
           "scriptName": "farm_slot_info",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "4yntin8c1cy-mnebui9u-54eo5o8ntzr",
+            "filePath": "Assets\\Prefabs\\growed_mutationseed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "mutation_seed_growed",
+          "children": []
         }
       ]
     },
@@ -280,6 +292,18 @@
             "fileType": "texture"
           },
           "scriptName": "seed_apple",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "ru64hfsg6r9-mnebr4i9-vioa0sq6v7d",
+            "filePath": "Assets\\Resources\\Sprites\\fruit_goldenapple.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_goldenapple",
           "children": []
         }
       ]

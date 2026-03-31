@@ -1,0 +1,54 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+
+import "../Config/GachaConfig.fcg" as gachaCfg
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Gacha/GachaData.fcg" as gachaData
+import "../Gacha/GachaService.fcg" as gachaService
+import "../Core/GameManager.fcg" as gameManager
+
+[platform_server]
+static graph GachaManager {
+
+    func _SeedIdToGachaId(seedId string) string {
+        return "gacha_" + seedId
+    }
+
+    func RollForHarvest(owner entity<Entity>, seedId string) string {
+        var gachaId = _SeedIdToGachaId(seedId)
+        var normalCropId = itemCfg.GetHarvestYield(seedId)
+
+        if !gachaCfg.HasGacha(gachaId) {
+            return normalCropId
+        }
+
+        var playerName = owner<Player>.NickName
+
+        if gachaData.IsFirstEverRoll(owner) {
+            gachaData.MarkFirstRollUsed(owner)
+            gachaData.ResetPity(owner, gachaId)
+            LogInfo("[GACHA] " + playerName + " | FIRST EVER ROLL | seed=" + seedId + " -> GUARANTEED HIT! pity=0")
+            return gachaCfg.GetRewardId(gachaId)
+        }
+
+        var baseRate = gachaCfg.GetBaseRate(gachaId)
+        var soft = gachaCfg.GetSoftPityThreshold(gachaId)
+        var hard = gachaCfg.GetHardPityThreshold(gachaId)
+        var step = gachaCfg.GetStepRate(gachaId)
+        var kzBonus = gachaCfg.GetKillZoneMaxBonus(gachaId)
+        var pityCount = gachaData.GetPityCounter(owner, gachaId)
+        var currentRate = gachaService.CalculateRate(baseRate, soft, hard, step, kzBonus, pityCount)
+
+        var isHit = gachaService.Roll(baseRate, soft, hard, step, kzBonus, pityCount)
+
+        if isHit {
+            gachaData.ResetPity(owner, gachaId)
+            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> HIT! pity reset to 0")
+            return gachaCfg.GetRewardId(gachaId)
+        } else {
+            gachaData.IncrementPity(owner, gachaId)
+            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
+            return normalCropId
+        }
+    }
+}

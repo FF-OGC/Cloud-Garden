@@ -153,6 +153,8 @@ static graph GameManager {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
         backpackManager.AddItem(player, "crop_apple", 10)
+        backpackManager.AddItem(player, "crop_apple_gold", 10)
+
 
         player<Player>.DisableFallDamage = true
 

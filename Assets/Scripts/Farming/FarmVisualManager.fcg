@@ -62,6 +62,14 @@ static graph FarmVisualManager {
 
         if plantedSeedId != "unknown" {
             var prefabToSpawn = itemCfg.GetPlantPrefab(plantedSeedId, newState)
+
+            if newState == gen.EFarmSlotState.ReadyToHarvest {
+                if map.ContainKey(floor<floorData>.GachaResults, key) {
+                    prefabToSpawn = itemCfg.GetMutantPlantPrefab(plantedSeedId)
+                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Using MUTANT prefab for seed=" + plantedSeedId) }
+                }
+            }
+
             if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Spawning plant prefab for seed=" + plantedSeedId + " state=" + newState) }
             
             CreateFromPrefab(out var plantObj, prefabToSpawn)

@@ -14,7 +14,9 @@ graph FloorGridData {
     CropPositions Map<string, Vector3> 
 
     SoilVisuals Map<string, entity<Entity>>  
-    PlantVisuals Map<string, entity<Entity>>  
+    PlantVisuals Map<string, entity<Entity>>
+
+    GachaResults Map<string, string>  
 
     func InitMaps() {
         Owner = nil
@@ -28,6 +30,8 @@ graph FloorGridData {
         
         SoilVisuals = map.New() as Map<string, entity<Entity>>
         PlantVisuals = map.New() as Map<string, entity<Entity>>
+
+        GachaResults = map.New() as Map<string, string>
     }
 
     // --- DATA-LEVEL OWNERSHIP VALIDATION ---
@@ -62,11 +66,16 @@ graph FloorGridData {
         return true
     }
 
+    func TrySetGachaResult(key string, cropId string) {
+        GachaResults[key] = cropId
+    }
+
     func TryClearCrop(key string, player entity<Entity>) bool {
         if !IsOwner(player) { return false }
         if map.ContainKey(HarvestTimes, key) { map.Remove(HarvestTimes, key) }
         if map.ContainKey(CropPositions, key) { map.Remove(CropPositions, key) }
         if map.ContainKey(PlantedSeeds, key) { map.Remove(PlantedSeeds, key) }
+        if map.ContainKey(GachaResults, key) { map.Remove(GachaResults, key) }
         return true
     }
 }

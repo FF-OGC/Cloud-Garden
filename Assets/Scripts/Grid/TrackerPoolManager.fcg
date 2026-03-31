@@ -37,7 +37,7 @@ static graph TrackerPoolManager {
         
         if newTracker != nil {
             newTracker<gridTracker>._Owner = player
-            newTracker<Transform>.Position = player<Transform>.Position
+            newTracker<Transform>.Position = player<Player>.Position
             return newTracker
         }
         return nil
