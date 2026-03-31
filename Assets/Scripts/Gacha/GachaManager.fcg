@@ -4,7 +4,7 @@ import "Convert.fcc" as convert
 import "../Config/GachaConfig.fcg" as gachaCfg
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Gacha/GachaData.fcg" as gachaData
-import "../Gacha/GachaService.fcg" as gachaService
+import "../Services/GachaService.fcg" as gachaService
 import "../Core/GameManager.fcg" as gameManager
 
 [platform_server]

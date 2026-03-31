@@ -69793,7 +69793,7 @@
           "children": [],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": false,
+            "selfValue": true,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -69801,7 +69801,7 @@
             "valueTag": "unlockedValue"
           },
           "propsData": {
-            "activeSelf": false,
+            "activeSelf": true,
             "transform": {
               "rotate": 0,
               "anchorMin": {

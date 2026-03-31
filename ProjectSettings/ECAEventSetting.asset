@@ -151,33 +151,6 @@
       "version": 45,
       "key": "signal_74145831"
     },
-    "signal_13434618": {
-      "name": "OnSyncStoreData",
-      "eventType": 0,
-      "enitityType": "Component",
-      "typeID": 100007,
-      "props": [
-        {
-          "name": "player",
-          "value": "Player",
-          "key": 1
-        },
-        {
-          "name": "ids",
-          "value": "ListT_String",
-          "key": 2
-        },
-        {
-          "name": "amounts",
-          "value": "ListT_Int",
-          "key": 3
-        }
-      ],
-      "propCount": 3,
-      "apiTargetV2": "both",
-      "version": 45,
-      "key": "signal_13434618"
-    },
     "signal_16737112": {
       "name": "OnPlayerEnterStore",
       "eventType": 0,
@@ -360,6 +333,38 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_66421665"
+    },
+    "signal_13434618": {
+      "name": "OnSyncStoreData",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100007,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "ids",
+          "value": "ListT_String",
+          "key": 2
+        },
+        {
+          "name": "amounts",
+          "value": "ListT_Int",
+          "key": 3
+        },
+        {
+          "name": "nextResetTime",
+          "value": "Float",
+          "key": 4
+        }
+      ],
+      "propCount": 4,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_13434618"
     }
   },
   "customName": {
@@ -369,7 +374,6 @@
     "OnBackpackDataChanged": "signal_76789303",
     "OnRequestBuyItem": "signal_53917574",
     "OnBuyItemResponse": "signal_74145831",
-    "OnSyncStoreData": "signal_13434618",
     "OnPlayerEnterStore": "signal_16737112",
     "OnFarmCellStateChanged": "signal_60093422",
     "OnPlayerExitStore": "signal_98373386",
@@ -378,7 +382,8 @@
     "OnPlayerExitMarket": "signal_36246097",
     "OnRequestRestock": "signal_28748972",
     "OnMarketSellTapped": "signal_73265997",
-    "OnCurrencySync": "signal_66421665"
+    "OnCurrencySync": "signal_66421665",
+    "OnSyncStoreData": "signal_13434618"
   },
   "children": []
 }

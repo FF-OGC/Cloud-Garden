@@ -9,9 +9,48 @@ import "./StoreData.fcg" as storeData
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Core/GameManager.fcg" as gameManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
+import "../Config/StoreConfig.fcg" as storeCfg
 
 [platform_server]
 static graph StoreManager {
+
+    _IsRestockStarted bool = false
+
+    func InitRestock() {
+        if _IsRestockStarted { return }
+        _IsRestockStarted = true
+        LogInfo("[StoreManager] InitRestock -> starting RestockLoop")
+        start RestockLoop()
+    }
+
+    async func RestockLoop() {
+        while true {
+            storeData.ClearStore()
+
+            var currentTime = gameManager.GetGameTime()
+            storeService.RefreshStore(currentTime)
+
+            var cycleSec = storeCfg.GetRestockCycleSeconds()
+            storeData._NextResetTime = currentTime + (cycleSec as float)
+
+            LogInfo("[StoreManager] Restock DONE | nextReset=" + convert.ToString(storeData._NextResetTime) + " cycle=" + convert.ToString(cycleSec) + "s")
+
+            BroadcastStoreDataToAllPlayers()
+
+            WaitForMillisecond(cycleSec * 1000)
+        }
+    }
+
+    func BroadcastStoreDataToAllPlayers() {
+        var players = gameManager.GetConnectedPlayers()
+        if players == nil { return }
+        var count = list.Length(players)
+        for i = 0, count, 1 {
+            var p = players[i] as entity<Player>
+            if p != nil { SyncStoreDataToPlayer(p) }
+        }
+        if gameManager.IsDebug() { LogInfo("[StoreManager] BroadcastStoreDataToAllPlayers: synced " + convert.ToString(count) + " players") }
+    }
 
     event OnPlayerEnterStore(player entity<Player>) {
         if gameManager.IsDebug() { LogInfo("[StoreManager] OnPlayerEnterStore") }
@@ -63,8 +102,8 @@ static graph StoreManager {
 
     func SyncStoreDataToPlayer(player entity<Player>) {
         if player == nil { return }
-        if gameManager.IsDebug() { LogInfo("[StoreManager] SyncStoreDataToPlayer") }
-        DispatchEventToEntity(OnSyncStoreData, player, PlatformType.Server, List<object>{player, storeData._ItemIDs, storeData._ItemAmounts})
+        if gameManager.IsDebug() { LogInfo("[StoreManager] SyncStoreDataToPlayer | items=" + convert.ToString(list.Length(storeData._ItemIDs)) + " nextReset=" + convert.ToString(storeData._NextResetTime)) }
+        DispatchEventToEntity(OnSyncStoreData, player, PlatformType.Server, List<object>{player, storeData._ItemIDs, storeData._ItemAmounts, storeData._NextResetTime})
     }
 
     func BroadcastStoreDataToAll(excludePlayer entity<Player>) {
@@ -74,9 +113,8 @@ static graph StoreManager {
         for i = 0, count, 1 {
             var p = players[i] as entity<Player>
             if p != nil && p != excludePlayer {
-                DispatchEventToEntity(OnSyncStoreData, p, PlatformType.Server, List<object>{p, storeData._ItemIDs, storeData._ItemAmounts})
+                SyncStoreDataToPlayer(p)
             }
         }
-        if gameManager.IsDebug() { LogInfo("[StoreManager] BroadcastStoreDataToAll: synced " + convert.ToString(count - 1) + " other players") }
     }
 }

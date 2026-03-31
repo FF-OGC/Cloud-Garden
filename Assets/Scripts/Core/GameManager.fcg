@@ -12,6 +12,7 @@ import "../Farming/CropGrowthManager.fcg" as cropManager
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Market/MarketManager.fcg" as marketManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
+import "../Store/StoreManager.fcg" as storeManager
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
@@ -38,6 +39,7 @@ static graph GameManager {
         
         trackerPool.InitPool()
         start StartGlobalClock()
+        start DelayedStoreInit()
     }
     
     async func StartGlobalClock() {
@@ -45,6 +47,11 @@ static graph GameManager {
             WaitForMillisecond(1000) 
             _GameTime = _GameTime + 1.0
         }
+    }
+
+    async func DelayedStoreInit() {
+        WaitForMillisecond(1000)
+        storeManager.InitRestock()
     }
 
     func RegisterZone(zoneObj entity<Entity>) {

@@ -4,6 +4,7 @@ import "List.fcc" as list
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 import "Player.fcc" as playerLib
+import "Math.fcc" as math
 
 import "./StoreData.fcg" as storeData
 import "../Config/ItemConfig.fcg" as itemCfg
@@ -22,6 +23,7 @@ graph PlayerStoreVisual {
     _IsLoading bool = false
     _SelectedSlotIndex int = -1
     _BuyAmount int = 1
+    _NextResetTime float = 0.0
     
     _CachedItemIDs List<string> = nil
     _CachedItemAmounts List<int> = nil
@@ -60,12 +62,14 @@ graph PlayerStoreVisual {
 
     // --- STORE DATA EVENTS ---
 
-    event OnSyncStoreData(player entity<Player>, ids List<string>, amounts List<int>) {
-        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] OnSyncStoreData received, itemCount=" + convert.ToString(list.Length(ids))) }
+    event OnSyncStoreData(player entity<Player>, ids List<string>, amounts List<int>, nextResetTime float) {
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] OnSyncStoreData received, itemCount=" + convert.ToString(list.Length(ids)) + " nextReset=" + convert.ToString(nextResetTime)) }
+        _NextResetTime = nextResetTime
         _UpdateCache(ids, amounts)
         if _IsOpen {
             RenderShopUI()
             _UpdateBuyAmountUI()
+            _UpdateCountdownUI()
         }
     }
 
@@ -120,6 +124,8 @@ graph PlayerStoreVisual {
             _BuyAmount = 1
             RenderShopUI()
             _UpdateBuyAmountUI()
+            _UpdateCountdownUI()
+            start _RunCountdownTick()
         }
         if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] ToggleStoreUI _IsOpen=" + convert.ToString(_IsOpen) + " _IsInZone=" + convert.ToString(_IsInZone)) }
     }
@@ -171,6 +177,26 @@ graph PlayerStoreVisual {
         
         if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleBuyAction itemId=" + selectedItemId + " amount=" + convert.ToString(_BuyAmount)) }
         DispatchEventToEntity(OnRequestBuyItem, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, selectedItemId, _BuyAmount})
+    }
+
+    // --- COUNTDOWN ---
+
+    func _UpdateCountdownUI() {
+        if _StoreUI == nil { return }
+        var remaining = _NextResetTime - gameManager.GetGameTime()
+        if remaining < 0.0 { remaining = 0.0 }
+        var totalSec = math.Floor(remaining)
+        var countdownLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/refresh_time")
+        if countdownLabel != nil {
+            countdownLabel<UIWidgetLabel>.Content = convert.ToString(totalSec) + "s"
+        }
+    }
+
+    async func _RunCountdownTick() {
+        while _IsOpen {
+            _UpdateCountdownUI()
+            WaitForMillisecond(1000)
+        }
     }
 
     // --- RENDERING ---

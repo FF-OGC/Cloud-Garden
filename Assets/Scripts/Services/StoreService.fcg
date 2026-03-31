@@ -1,9 +1,12 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "Convert.fcc" as convert
+import "Math.fcc" as math
 
 import "../Store/StoreData.fcg" as storeData
+import "../Config/StoreConfig.fcg" as storeCfg
 import "../Core/GameManager.fcg" as gameManager
+import "../Core/ServerEconomyData.fcg" as economyData
 
 [platform_server]
 static graph StoreService {
@@ -22,18 +25,14 @@ static graph StoreService {
         return -1
     }
 
-    // --- CHECK LOGIC ---
     func CanBuy(itemId string, amount int) bool {
         if amount <= 0 { return false }
-
         var slot = FindSlotWithStock(itemId, amount)
         if slot != -1 { return true }
-
         if gameManager.IsDebug() { LogInfo("[StoreService] CanBuy FAILED | itemId=" + itemId + " not enough stock.") }
         return false
     }
 
-    // --- EXECUTE LOGIC ---
     func ExecuteBuy(itemId string, amount int) bool {
         var slot = FindSlotWithStock(itemId, amount)
         if slot != -1 {
@@ -43,5 +42,96 @@ static graph StoreService {
             return true
         }
         return false
+    }
+
+    // --- REFRESH LOGIC (called by StoreManager each cycle) ---
+
+    func RefreshStore(currentGameTime float) {
+        var devOverrideActive = _ApplyDevOverride(currentGameTime)
+        _LoadGuaranteedItems()
+        if !devOverrideActive {
+            _RollPoolWithQuotaCheck()
+        }
+        LogInfo("[StoreService] RefreshStore DONE | totalItems=" + convert.ToString(list.Length(storeData._ItemIDs)))
+    }
+
+    func _ApplyDevOverride(currentGameTime float) bool {
+        var eventCount = storeCfg.GetEventCount()
+        var applied = false
+        for i = 0, eventCount, 1 {
+            var triggerTime = storeCfg.GetEventTriggerTime(i)
+            if triggerTime < 0.0 { continue }
+            var cycleLen = storeCfg.GetRestockCycleSeconds() as float
+            var diff = currentGameTime - triggerTime
+            if diff >= 0.0 && diff < cycleLen {
+                var itemId = storeCfg.GetEventItemId(i)
+                var qty = storeCfg.GetEventItemQty(i)
+                if itemId != "" && qty > 0 {
+                    list.Append(storeData._ItemIDs, itemId)
+                    list.Append(storeData._ItemAmounts, qty)
+                    applied = true
+                    LogInfo("[StoreService] DEV OVERRIDE | " + itemId + " x" + convert.ToString(qty))
+                }
+            }
+        }
+        return applied
+    }
+
+    func _LoadGuaranteedItems() {
+        var items = storeCfg.GetGuaranteedItems()
+        var count = list.Length(items)
+        for i = 0, count, 1 {
+            var id = items[i] as string
+            var stock = storeCfg.GetGuaranteedStock(id)
+            list.Append(storeData._ItemIDs, id)
+            list.Append(storeData._ItemAmounts, stock)
+            if gameManager.IsDebug() { LogInfo("[StoreService] Guaranteed | " + id + " stock=" + convert.ToString(stock)) }
+        }
+    }
+
+    func _RollPoolWithQuotaCheck() {
+        var poolIds = storeCfg.GetPoolItemIDs()
+        var poolRates = storeCfg.GetPoolItemRates()
+        var minQtys = storeCfg.GetPoolItemMinQty()
+        var maxQtys = storeCfg.GetPoolItemMaxQty()
+        var poolCount = list.Length(poolIds)
+
+        var totalEffective = 0
+        var effectiveRates = list.New(0, poolCount) as List<int>
+
+        for i = 0, poolCount, 1 {
+            var itemId = poolIds[i] as string
+            var baseRate = poolRates[i] as int
+            var limit = storeCfg.GetGlobalPoolLimit(itemId)
+
+            if limit > 0 && economyData.IsOverQuota(itemId, limit) {
+                list.Append(effectiveRates, 0)
+                if gameManager.IsDebug() { LogInfo("[StoreService] QUOTA LOCKED | " + itemId + " limit=" + convert.ToString(limit)) }
+            } else {
+                list.Append(effectiveRates, baseRate)
+                totalEffective = (totalEffective + baseRate) as int
+            }
+        }
+
+        if totalEffective <= 0 { return }
+
+        var roll = math.RandomInt(1, totalEffective)
+        var cumulative = 0
+        for i = 0, poolCount, 1 {
+            var rate = effectiveRates[i] as int
+            if rate <= 0 { continue }
+            cumulative = (cumulative + rate) as int
+            if roll <= cumulative {
+                var wonId = poolIds[i] as string
+                var minQ = minQtys[i] as int
+                var maxQ = maxQtys[i] as int
+                var qty = math.RandomInt(minQ, maxQ)
+                list.Append(storeData._ItemIDs, wonId)
+                list.Append(storeData._ItemAmounts, qty)
+                economyData.RecordSold(wonId, qty)
+                LogInfo("[StoreService] GACHA HIT | " + wonId + " x" + convert.ToString(qty) + " roll=" + convert.ToString(roll))
+                break
+            }
+        }
     }
 }

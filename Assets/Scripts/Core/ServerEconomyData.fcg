@@ -1,0 +1,41 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+
+import "./GameManager.fcg" as gameManager
+
+[platform_server]
+static graph ServerEconomyData {
+
+    _SoldCounts Map<string, int> = nil
+
+    event OnAwake() {
+        _SoldCounts = map.New() as Map<string, int>
+    }
+
+    func GetSoldCount(itemId string) int {
+        if map.ContainKey(_SoldCounts, itemId) {
+            return _SoldCounts[itemId] as int
+        }
+        return 0
+    }
+
+    func RecordSold(itemId string, amount int) {
+        var current = GetSoldCount(itemId)
+        _SoldCounts[itemId] = (current + amount) as int
+        if gameManager.IsDebug() {
+            LogInfo("[ServerEconomyData] RecordSold | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(current + amount))
+        }
+    }
+
+    func IsOverQuota(itemId string, maxAllowed int) bool {
+        return GetSoldCount(itemId) >= maxAllowed
+    }
+
+    func ResetAll() {
+        _SoldCounts = map.New() as Map<string, int>
+        if gameManager.IsDebug() {
+            LogInfo("[ServerEconomyData] ResetAll")
+        }
+    }
+}

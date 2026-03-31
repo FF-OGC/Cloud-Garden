@@ -1,19 +1,38 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 
-// Static configuration for shop initial states. No runtime data here.
 static graph StoreConfig {
-    
-    // Returns all items available in the store
-    func GetStoreItems() List<string> {
-        return List<string>{"seed_apple", "seed_apple", "seed_apple", "seed_apple"}
+
+    // --- Restock cycle (seconds) ---
+    func GetRestockCycleSeconds() int { return 10 }
+
+    // --- Event Schedule (Dev Override) ---
+    func GetEventCount() int { return 0 }
+    func GetEventTriggerTime(index int) float { return -1.0 }
+    func GetEventItemId(index int) string { return "" }
+    func GetEventItemQty(index int) int { return 0 }
+
+    // --- Guaranteed items (always appear after refresh) ---
+    func GetGuaranteedItems() List<string> {
+        return List<string>{"seed_apple"}
+    }
+    func GetGuaranteedStock(itemId string) int {
+        if itemId == "seed_apple" { return 10 }
+        return 0
     }
 
-    // Returns the default max stock for an item
-    func GetDefaultStock(itemId string) int {
-        if itemId == "seed_apple" { return 50 }
-        if itemId == "seed_carrot" { return 30 }
-        if itemId == "watering_can" { return 5 }
+    // --- Random pool (gacha roll each refresh) ---
+    func GetPoolItemIDs() List<string> {
+        return List<string>{"seed_apple"}
+    }
+    func GetPoolItemRates() List<int> {
+        return List<int>{100}
+    }
+    func GetPoolItemMinQty() List<int> { return List<int>{1} }
+    func GetPoolItemMaxQty() List<int> { return List<int>{10} }
+
+    // --- Global pool limit (0 = unlimited) ---
+    func GetGlobalPoolLimit(itemId string) int {
         return 0
     }
 

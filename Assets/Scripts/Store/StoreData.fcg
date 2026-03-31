@@ -2,7 +2,6 @@ import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "Convert.fcc" as convert
 
-import "../Config/StoreConfig.fcg" as storeConfig
 import "../Core/GameManager.fcg" as gameManager
 
 [platform_server]
@@ -10,30 +9,17 @@ static graph StoreData {
     
     _ItemIDs List<string> = nil
     _ItemAmounts List<int> = nil
+    _NextResetTime float = 0.0
 
     event OnAwake() {
         _ItemIDs = list.New(0, 10) as List<string>
         _ItemAmounts = list.New(0, 10) as List<int>
-        
-        ResetRestock()
+        if gameManager.IsDebug() { LogInfo("[StoreData] Initialized (empty, waiting for StoreManager refresh)") }
     }
 
-    func ResetRestock() {
+    func ClearStore() {
         list.Clear(_ItemIDs)
         list.Clear(_ItemAmounts)
-
-        var items = storeConfig.GetStoreItems()
-        var count = list.Length(items)
-        
-        for i = 0, count, 1 {
-            var itemId = items[i] as string
-            var stock = storeConfig.GetDefaultStock(itemId)
-            list.Append(_ItemIDs, itemId)
-            list.Append(_ItemAmounts, stock)
-
-
-            if gameManager.IsDebug() { LogInfo("[StoreData] ResetRestock: added " + itemId + " stock=" + convert.ToString(stock)) }
-        }
-        if gameManager.IsDebug() { LogInfo("[StoreData] ResetRestock: total " + convert.ToString(count) + " items loaded") }
+        if gameManager.IsDebug() { LogInfo("[StoreData] ClearStore: kho da xoa sach") }
     }
 }
