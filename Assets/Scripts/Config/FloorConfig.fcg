@@ -4,28 +4,17 @@ import "List.fcc" as list
 [platform_server]
 static graph FloorConfig {
     
-    _Heights List<float> = nil
-    _Offsets List<float> = nil
-    _Scale Vector3 = Vector3{18.0, 18.0, 18.0}
+    _BaseX float = 3.0
+    _BaseY float = -0.48
+    _BaseZ float = -7.0
+    _BaseRotY float = 0.0
+    _HeightStep float = 5.0
+    _AngleStep float = 60.0
 
-    event OnAwake() {
-        // Cấu hình 5 Tầng
-        _Heights = list.New(0, 5)
-        list.Append(_Heights, 4.0)
-        list.Append(_Heights, 18.0)
-        list.Append(_Heights, 28.0)
-        list.Append(_Heights, 38.0) // Tầng 4
-        list.Append(_Heights, 48.0) // Tầng 5
-
-        _Offsets = list.New(0, 5)
-        list.Append(_Offsets, 2.0)
-        list.Append(_Offsets, 2.0)
-        list.Append(_Offsets, 2.0)
-        list.Append(_Offsets, 2.0)
-        list.Append(_Offsets, 2.0)
-    }
-
-    func GetHeights() List<float> { return _Heights }
-    func GetOffsets() List<float> { return _Offsets }
-    func GetScale() Vector3 { return _Scale }
+    func GetBaseX() float { return _BaseX }
+    func GetBaseY() float { return _BaseY }
+    func GetBaseZ() float { return _BaseZ }
+    func GetBaseRotY() float { return _BaseRotY }
+    func GetHeightStep() float { return _HeightStep }
+    func GetAngleStep() float { return _AngleStep }
 }

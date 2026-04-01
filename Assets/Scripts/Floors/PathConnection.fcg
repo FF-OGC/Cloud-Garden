@@ -1,0 +1,20 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+
+[platform_server]
+static graph PathConnection {
+    
+    // TODO: Path connection system between floating floors
+    // Each connection links two floors with a traversable path
+    //
+    // Planned data structure:
+    //   _FromFloor entity<Entity>
+    //   _ToFloor entity<Entity>  
+    //   _PathType string           // "bridge", "vine", "stairs", etc.
+    //   _Waypoints List<Vector3>   // Optional path geometry
+    //
+    // Planned functions:
+    //   func CreateConnection(from entity<Entity>, to entity<Entity>, pathType string)
+    //   func GetConnectionsForFloor(floor entity<Entity>) List<entity<Entity>>
+    //   func GetPath(from entity<Entity>, to entity<Entity>) List<Vector3>
+}

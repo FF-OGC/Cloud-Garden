@@ -115,18 +115,6 @@
         },
         {
           "refer": {
-            "fileId": "9saor6cebip-mmkbcdk1-2yoj5ffl2i1",
-            "filePath": "Assets\\Prefabs\\BeanPath.prefab",
-            "_tag": {
-              "type": "GFileRefer"
-            },
-            "fileType": "prefab"
-          },
-          "scriptName": "bean_path",
-          "children": []
-        },
-        {
-          "refer": {
             "fileId": "0wdc2rpzq6x-mmkgl5iq-r77v1u4qqtj",
             "filePath": "Assets\\Prefabs\\Floor.prefab",
             "_tag": {
@@ -243,6 +231,18 @@
             "fileType": "prefab"
           },
           "scriptName": "mutation_seed_growed",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "i1nv4bs0elq-mnfpg0t0-xchkfgna3wh",
+            "filePath": "Assets\\Prefabs\\Dirt_lucky.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "lucky_dirt_tilled",
           "children": []
         }
       ]

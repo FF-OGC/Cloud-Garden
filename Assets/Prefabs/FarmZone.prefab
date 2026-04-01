@@ -39,12 +39,12 @@
               },
               "position": {
                 "x": 0,
-                "y": 0.022999955341219902,
+                "y": 0.5,
                 "z": 0
               },
               "scale": {
                 "x": 1,
-                "y": 0.04899999871850014,
+                "y": 1,
                 "z": 1
               },
               "rotation": {
@@ -158,14 +158,14 @@
             "valueTag": "unlockedValue"
           },
           "position": {
-            "x": 16.752944946289062,
-            "y": 20,
-            "z": 9.252998352050781
+            "x": 3,
+            "y": -0.48,
+            "z": -7
           },
           "scale": {
-            "x": 20,
-            "y": 20,
-            "z": 20
+            "x": 5,
+            "y": 1,
+            "z": 5
           },
           "rotation": {
             "x": 0,
@@ -282,8 +282,8 @@
           "propsData": {},
           "entityVersion": 3,
           "mesh": {
-            "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-            "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+            "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+            "filePath": "wehss29x://Meshes/cube.fbx/Box001",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -312,9 +312,9 @@
                   "valueTag": "unlockedValue"
                 },
                 "scale": {
-                  "x": 20,
-                  "y": 20,
-                  "z": 20
+                  "x": 10,
+                  "y": 1,
+                  "z": 10
                 },
                 "BTPath": [
                   null
@@ -417,8 +417,8 @@
                 "propsData": {},
                 "entityVersion": 3,
                 "mesh": {
-                  "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-                  "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+                  "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+                  "filePath": "wehss29x://Meshes/cube.fbx/Box001",
                   "fileType": "mesh"
                 },
                 "editorLockValue": false,
@@ -435,16 +435,14 @@
                   "selfValue": true,
                   "valueTag": "unlockedValue"
                 },
-                "editorLockValue": false,
-                "editorVisibleValue": true,
                 "position": {
                   "x": 0,
-                  "y": 0.023447586223483086,
+                  "y": 0.022999955341219902,
                   "z": 0
                 },
                 "scale": {
                   "x": 1,
-                  "y": 0.04899999871850014,
+                  "y": 1,
                   "z": 1
                 },
                 "rotation": {
@@ -540,7 +538,9 @@
                   "MeshRender": {}
                 },
                 "propsData": {},
-                "entityVersion": 3
+                "entityVersion": 3,
+                "editorLockValue": false,
+                "editorVisibleValue": true
               }
             }
           }
@@ -562,7 +562,7 @@
                 "resourceId": ""
               },
               "activeValue": {
-                "selfValue": true,
+                "selfValue": false,
                 "valueTag": "activeValue"
               },
               "unlockedValue": {
@@ -576,7 +576,7 @@
               },
               "scale": {
                 "x": 1,
-                "y": 0.04899999871850014,
+                "y": 1,
                 "z": 1
               },
               "rotation": {
@@ -682,7 +682,7 @@
             }
           ],
           "activeValue": {
-            "selfValue": true,
+            "selfValue": false,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -695,9 +695,9 @@
             "z": -9.416290283203125
           },
           "scale": {
-            "x": 20,
-            "y": 20,
-            "z": 20
+            "x": 5,
+            "y": 1,
+            "z": 5
           },
           "rotation": {
             "x": 0,
@@ -814,8 +814,8 @@
           "propsData": {},
           "entityVersion": 3,
           "mesh": {
-            "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-            "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+            "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+            "filePath": "wehss29x://Meshes/cube.fbx/Box001",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -844,9 +844,9 @@
                   "valueTag": "unlockedValue"
                 },
                 "scale": {
-                  "x": 20,
-                  "y": 20,
-                  "z": 20
+                  "x": 10,
+                  "y": 1,
+                  "z": 10
                 },
                 "BTPath": [
                   null
@@ -949,8 +949,8 @@
                 "propsData": {},
                 "entityVersion": 3,
                 "mesh": {
-                  "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-                  "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+                  "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+                  "filePath": "wehss29x://Meshes/cube.fbx/Box001",
                   "fileType": "mesh"
                 },
                 "editorLockValue": false,
@@ -976,7 +976,7 @@
                 },
                 "scale": {
                   "x": 1,
-                  "y": 0.04899999871850014,
+                  "y": 1,
                   "z": 1
                 },
                 "rotation": {
@@ -1108,7 +1108,7 @@
               },
               "scale": {
                 "x": 1,
-                "y": 0.04899999871850014,
+                "y": 1,
                 "z": 1
               },
               "rotation": {
@@ -1214,7 +1214,7 @@
             }
           ],
           "activeValue": {
-            "selfValue": true,
+            "selfValue": false,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -1227,9 +1227,9 @@
             "z": 23.107894897460938
           },
           "scale": {
-            "x": 20,
-            "y": 20,
-            "z": 20
+            "x": 5,
+            "y": 1,
+            "z": 5
           },
           "rotation": {
             "x": 0,
@@ -1346,8 +1346,8 @@
           "propsData": {},
           "entityVersion": 3,
           "mesh": {
-            "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-            "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+            "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+            "filePath": "wehss29x://Meshes/cube.fbx/Box001",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -1376,9 +1376,9 @@
                   "valueTag": "unlockedValue"
                 },
                 "scale": {
-                  "x": 20,
-                  "y": 20,
-                  "z": 20
+                  "x": 10,
+                  "y": 1,
+                  "z": 10
                 },
                 "BTPath": [
                   null
@@ -1481,8 +1481,8 @@
                 "propsData": {},
                 "entityVersion": 3,
                 "mesh": {
-                  "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-                  "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+                  "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+                  "filePath": "wehss29x://Meshes/cube.fbx/Box001",
                   "fileType": "mesh"
                 },
                 "editorLockValue": false,
@@ -1508,7 +1508,7 @@
                 },
                 "scale": {
                   "x": 1,
-                  "y": 0.04899999871850014,
+                  "y": 1,
                   "z": 1
                 },
                 "rotation": {
@@ -1610,12 +1610,139 @@
           }
         },
         {
-          "_entityId": "B7UH9Zu1",
-          "children": [],
-          "_entityName": "Magic Bean",
+          "_entityId": "E0gbz4t5",
+          "children": [
+            {
+              "_entityId": "TizRHch5",
+              "children": [],
+              "_entityName": "Market Trigger",
+              "_tag": {
+                "type": "UGCSceneEntity",
+                "resourceId": ""
+              },
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 2.5940001010894775,
+                "y": 1,
+                "z": 1
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "BTPath": [
+                null
+              ],
+              "visible": true,
+              "VisibilityLayer": 0,
+              "modelOptimization": 0,
+              "streamingLayer": "",
+              "attributes": [
+                2,
+                4
+              ],
+              "isTrigger": true,
+              "collidable": true,
+              "physicalLayer": 0,
+              "physicalMaterial": null,
+              "aoiSetting": 0,
+              "initialTypes": {},
+              "componentList": [
+                "ColliderShape",
+                "Collider"
+              ],
+              "entityTagData": {
+                "tagPointers": []
+              },
+              "materials": [],
+              "colliders": [
+                {
+                  "enable": true,
+                  "colliderType": "Box",
+                  "meshUUID": null,
+                  "position": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "size": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                  },
+                  "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "radius": 0.5,
+                  "height": 1,
+                  "isConvexIfMesh": false
+                }
+              ],
+              "IsNPC": false,
+              "isCreateAsEmpty": false,
+              "Rigidbody": {
+                "Type": 1,
+                "Mass": 1,
+                "CenterOfMass": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "UseGravity": true,
+                "Drag": 0.05,
+                "AngularDrag": 0.05,
+                "FreezePosX": false,
+                "FreezeRotX": false,
+                "FreezePosY": false,
+                "FreezeRotY": false,
+                "FreezePosZ": false,
+                "FreezeRotZ": false
+              },
+              "ecaScripts": [
+                {
+                  "fileId": "4svktyn2les-mn7938a5-dypm0f02i0l",
+                  "filePath": "Assets\\Scripts\\Market\\MarketTrigger.fcg",
+                  "_tag": {
+                    "type": "GFileRefer"
+                  },
+                  "fileType": "ugcscript"
+                }
+              ],
+              "ecaProps": {
+                "CustomLevelObject": {},
+                "LevelObject": {},
+                "Transform": {},
+                "Entity": {},
+                "Visibility": {},
+                "ColliderShape": {},
+                "Collider": {},
+                "MeshRender": {}
+              },
+              "propsData": {},
+              "entityVersion": 3,
+              "editorLockValue": false,
+              "editorVisibleValue": true
+            }
+          ],
+          "_entityName": "Market",
           "_tag": {
-            "type": "UGCSceneEntity",
-            "resourceId": ""
+            "type": "SceneEditEntity",
+            "resourceId": "Primitive/Empty"
           },
           "activeValue": {
             "selfValue": true,
@@ -1627,17 +1754,17 @@
           },
           "position": {
             "x": 0,
-            "y": 10,
-            "z": 8.910537719726562
+            "y": 0,
+            "z": -20
           },
           "scale": {
-            "x": 5,
-            "y": 48.320220947265625,
-            "z": 5
+            "x": 1,
+            "y": 1,
+            "z": 1
           },
           "rotation": {
             "x": 0,
-            "y": 0,
+            "y": 180,
             "z": 0
           },
           "BTPath": [
@@ -1657,98 +1784,30 @@
           "physicalMaterial": null,
           "aoiSetting": 0,
           "initialTypes": {},
-          "componentList": [
-            "MeshRender",
-            "ColliderShape",
-            "Collider",
-            "CustomComponent14001625"
-          ],
+          "componentList": [],
           "entityTagData": {
             "tagPointers": []
           },
-          "materials": [
-            null
-          ],
-          "colliders": [
+          "tempIndex": 114,
+          "itemID": 160,
+          "seParent": null,
+          "ecaScripts": [
             {
-              "enable": true,
-              "colliderType": "MeshCollider",
-              "meshUUID": {
-                "fileId": "wehss29x://bd350b6d-6306-4bc9-834b-1246ecda5e40-Cylinder001.~@FFFUB",
-                "filePath": "wehss29x://Meshes/cylinder.fbx/Cylinder001",
-                "_tag": {
-                  "type": "GFileRefer"
-                },
-                "fileType": "mesh"
+              "fileId": "4o1whl7uuv2-mn7938a4-o1br0qqag0j",
+              "filePath": "Assets\\Scripts\\Market\\MarketRuntimeData.fcg",
+              "_tag": {
+                "type": "GFileRefer"
               },
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "size": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              },
-              "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "radius": 0.5,
-              "height": 1,
-              "isConvexIfMesh": false
+              "fileType": "ugcscript"
             }
           ],
-          "IsNPC": false,
-          "isCreateAsEmpty": false,
-          "Rigidbody": {
-            "Type": 1,
-            "Mass": 1,
-            "CenterOfMass": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            },
-            "UseGravity": true,
-            "Drag": 0.05,
-            "AngularDrag": 0.05,
-            "FreezePosX": false,
-            "FreezeRotX": false,
-            "FreezePosY": false,
-            "FreezeRotY": false,
-            "FreezePosZ": false,
-            "FreezeRotZ": false
-          },
-          "ecaScripts": [],
           "ecaProps": {
-            "CustomLevelObject": {},
+            "DummyLevelObject": {},
             "LevelObject": {},
             "Transform": {},
             "Entity": {},
             "Visibility": {},
-            "MeshRender": {},
-            "ColliderShape": {},
-            "Collider": {},
-            "CustomComponent14001625": {
-              "PROP_80561665": 50,
-              "PROP_67996918": 2,
-              "PROP_85713563": 3.5,
-              "PROP_77175174": 15,
-              "PROP_23887333": "",
-              "PROP_92352101": 0.5
-            }
-          },
-          "propsData": {},
-          "entityVersion": 3,
-          "mesh": {
-            "fileId": "wehss29x://bd350b6d-6306-4bc9-834b-1246ecda5e40-Cylinder001.~@FFFUB",
-            "filePath": "wehss29x://Meshes/cylinder.fbx/Cylinder001",
-            "_tag": {
-              "type": "GFileRefer"
-            },
-            "fileType": "mesh"
+            "Collider": {}
           },
           "editorLockValue": false,
           "editorVisibleValue": true
@@ -1763,9 +1822,9 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": -40,
-        "y": 0,
-        "z": -50
+        "x": 20,
+        "y": 200.5,
+        "z": 40
       },
       "scale": {
         "x": 1,
@@ -1850,6 +1909,13 @@
           },
           "PROP_71663763": [
             {
+              "entityId": "MFfhZTq8",
+              "fileId": "u2wba97znrg-mmufqzri-sw5cfagc0n",
+              "_tag": {
+                "type": "EntityRefer"
+              }
+            },
+            {
               "entityId": "SIWeSBH4",
               "fileId": "u2wba97znrg-mmufqzri-sw5cfagc0n",
               "_tag": {
@@ -1862,18 +1928,11 @@
               "_tag": {
                 "type": "EntityRefer"
               }
-            },
-            {
-              "entityId": "MFfhZTq8",
-              "fileId": "u2wba97znrg-mmufqzri-sw5cfagc0n",
-              "_tag": {
-                "type": "EntityRefer"
-              }
             }
           ],
           "PROP_46699519": {
-            "entityId": "mvdJWY36",
-            "fileId": "ew30utg8hd7-lw7lj2ed-m7knbltuzlg",
+            "entityId": "E0gbz4t5",
+            "fileId": "u2wba97znrg-mmufqzri-sw5cfagc0n",
             "_tag": {
               "type": "EntityRefer"
             }

@@ -68,12 +68,12 @@ static graph StoreManager {
         DispatchEventToEntity(OnPlayerToggleStore, player, PlatformType.Server, List<object>{player})
     }
 
-    event OnRequestBuyItem(player entity<Player>, itemId string, amount int) {
-        if gameManager.IsDebug() { LogInfo("[StoreManager] OnRequestBuyItem | player=" + player<Entity>.Name + " itemId=" + itemId + " amount=" + convert.ToString(amount)) }
+    event OnRequestBuyItem(player entity<Player>, itemId string, amount int, slotIndex int) {
+        if gameManager.IsDebug() { LogInfo("[StoreManager] OnRequestBuyItem | player=" + player<Entity>.Name + " itemId=" + itemId + " amount=" + convert.ToString(amount) + " slot=" + convert.ToString(slotIndex)) }
         if player == nil || amount <= 0 { return }
 
-        if !storeService.CanBuy(itemId, amount) {
-            if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Not enough stock") }
+        if !storeService.CanBuyFromSlot(slotIndex, itemId, amount) {
+            if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Not enough stock in slot " + convert.ToString(slotIndex)) }
             DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Not enough stock!", nil, nil})
             return
         }
@@ -84,7 +84,7 @@ static graph StoreManager {
             return
         }
 
-        storeService.ExecuteBuy(itemId, amount)
+        storeService.ExecuteBuyFromSlot(slotIndex, itemId, amount)
 
         if !backpackManager.AddItem(player, itemId, amount) {
             if gameManager.IsDebug() { LogInfo("[StoreManager] FAILED: Backpack full") }

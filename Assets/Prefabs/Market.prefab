@@ -31,7 +31,7 @@
           },
           "position": {
             "x": 0,
-            "y": 0.33699995279312134,
+            "y": 0.3370000123977661,
             "z": 0
           },
           "scale": {
@@ -185,7 +185,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 15,
+      "tempIndex": 58,
       "itemID": 160,
       "seParent": null,
       "ecaScripts": [

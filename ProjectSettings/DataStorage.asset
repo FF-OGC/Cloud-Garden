@@ -1,0 +1,24 @@
+{
+  "_entityName": "T_43_YU_WS_MODULE_DATABASE",
+  "_tag": {
+    "type": "ff.DataStorage"
+  },
+  "_entityId": "jkgS2ZL2",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "modId": 31,
+  "storageOpen": true,
+  "rankSheets": [],
+  "dataSheets": [],
+  "dataSheetsClient": [],
+  "statisticalSheets": [],
+  "multicolumnSheets": [],
+  "multicolumnSheetsClient": [],
+  "craftlandLeadboard": null,
+  "showSwitch": true
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

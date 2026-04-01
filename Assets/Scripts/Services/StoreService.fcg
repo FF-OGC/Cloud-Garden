@@ -44,6 +44,26 @@ static graph StoreService {
         return false
     }
 
+    func CanBuyFromSlot(slotIndex int, itemId string, amount int) bool {
+        if amount <= 0 || slotIndex < 0 { return false }
+        var count = list.Length(storeData._ItemIDs)
+        if slotIndex >= count { return false }
+        var id = storeData._ItemIDs[slotIndex] as string
+        if id != itemId { return false }
+        var stock = storeData._ItemAmounts[slotIndex] as int
+        if stock >= amount { return true }
+        if gameManager.IsDebug() { LogInfo("[StoreService] CanBuyFromSlot FAILED | slot=" + convert.ToString(slotIndex) + " itemId=" + itemId + " stock=" + convert.ToString(stock) + " requested=" + convert.ToString(amount)) }
+        return false
+    }
+
+    func ExecuteBuyFromSlot(slotIndex int, itemId string, amount int) bool {
+        if !CanBuyFromSlot(slotIndex, itemId, amount) { return false }
+        var currentStock = storeData._ItemAmounts[slotIndex] as int
+        storeData._ItemAmounts[slotIndex] = currentStock - amount
+        if gameManager.IsDebug() { LogInfo("[StoreService] ExecuteBuyFromSlot | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slotIndex)) }
+        return true
+    }
+
     // --- REFRESH LOGIC (called by StoreManager each cycle) ---
 
     func RefreshStore(currentGameTime float) {

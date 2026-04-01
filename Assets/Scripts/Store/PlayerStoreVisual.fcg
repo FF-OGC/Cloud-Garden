@@ -79,6 +79,15 @@ graph PlayerStoreVisual {
             _BuyAmount = 1
             _UpdateCache(newIds, newAmounts)
             if _IsOpen {
+                if _SelectedSlotIndex >= 0 && _SelectedSlotIndex < list.Length(_CachedItemAmounts) {
+                    var remainingStock = _CachedItemAmounts[_SelectedSlotIndex] as int
+                    if remainingStock <= 0 {
+                        _SetSlotHighlight(_SelectedSlotIndex, false)
+                        _SelectedSlotIndex = -1
+                        _BuyAmount = 1
+                        _ClearSelectionUI()
+                    }
+                }
                 RenderShopUI()
                 _UpdateBuyAmountUI()
             }
@@ -143,6 +152,11 @@ graph PlayerStoreVisual {
         var amount = _CachedItemAmounts[slotIndex] as int
         LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot[" + convert.ToString(slotIndex) + "] itemId=" + itemId + " amount=" + convert.ToString(amount))
         
+        if amount <= 0 {
+            LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot has no stock, ignoring")
+            return
+        }
+        
         var prevIndex = _SelectedSlotIndex
         _SelectedSlotIndex = slotIndex
         _BuyAmount = 1
@@ -173,10 +187,13 @@ graph PlayerStoreVisual {
         if _IsLoading || _SelectedSlotIndex < 0 || _SelectedSlotIndex >= list.Length(_CachedItemIDs) { return }
         
         var selectedItemId = _CachedItemIDs[_SelectedSlotIndex] as string
+        var currentStock = _CachedItemAmounts[_SelectedSlotIndex] as int
+        if currentStock <= 0 || _BuyAmount > currentStock { return }
+        
         _IsLoading = true
         
-        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleBuyAction itemId=" + selectedItemId + " amount=" + convert.ToString(_BuyAmount)) }
-        DispatchEventToEntity(OnRequestBuyItem, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, selectedItemId, _BuyAmount})
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleBuyAction itemId=" + selectedItemId + " amount=" + convert.ToString(_BuyAmount) + " slot=" + convert.ToString(_SelectedSlotIndex)) }
+        DispatchEventToEntity(OnRequestBuyItem, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, selectedItemId, _BuyAmount, _SelectedSlotIndex})
     }
 
     // --- COUNTDOWN ---
@@ -244,6 +261,18 @@ graph PlayerStoreVisual {
             iconObj<UIWidgetImage>.Alpha = 1.0
             iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
         }
+    }
+
+    func _ClearSelectionUI() {
+        if _StoreUI == nil { return }
+        var nameLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/name")
+        if nameLabel != nil { nameLabel<UIWidgetLabel>.Content = "" }
+
+        var rarityObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity")
+        if rarityObj != nil { rarityObj<UIWidgetImage>.Alpha = 0.0 }
+
+        var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity/icon")
+        if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
     }
 
     func _UpdateBuyAmountUI() {

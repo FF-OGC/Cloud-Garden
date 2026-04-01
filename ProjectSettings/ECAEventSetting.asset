@@ -87,33 +87,6 @@
       "version": 45,
       "key": "signal_76789303"
     },
-    "signal_53917574": {
-      "name": "OnRequestBuyItem",
-      "eventType": 0,
-      "enitityType": "Component",
-      "typeID": 100005,
-      "props": [
-        {
-          "name": "player",
-          "value": "Player",
-          "key": 1
-        },
-        {
-          "name": "itemId",
-          "value": "String",
-          "key": 2
-        },
-        {
-          "name": "amount",
-          "value": "Int",
-          "key": 3
-        }
-      ],
-      "propCount": 3,
-      "apiTargetV2": "both",
-      "version": 45,
-      "key": "signal_53917574"
-    },
     "signal_74145831": {
       "name": "OnBuyItemResponse",
       "eventType": 0,
@@ -365,6 +338,38 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_13434618"
+    },
+    "signal_53917574": {
+      "name": "OnRequestBuyItem",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100005,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "itemId",
+          "value": "String",
+          "key": 2
+        },
+        {
+          "name": "amount",
+          "value": "Int",
+          "key": 3
+        },
+        {
+          "name": "slotIndex",
+          "value": "Int",
+          "key": 4
+        }
+      ],
+      "propCount": 4,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_53917574"
     }
   },
   "customName": {
@@ -372,7 +377,6 @@
     "OnPlayerTapButton": "signal_20131491",
     "OnRequestAddItem": "signal_22656937",
     "OnBackpackDataChanged": "signal_76789303",
-    "OnRequestBuyItem": "signal_53917574",
     "OnBuyItemResponse": "signal_74145831",
     "OnPlayerEnterStore": "signal_16737112",
     "OnFarmCellStateChanged": "signal_60093422",
@@ -383,7 +387,8 @@
     "OnRequestRestock": "signal_28748972",
     "OnMarketSellTapped": "signal_73265997",
     "OnCurrencySync": "signal_66421665",
-    "OnSyncStoreData": "signal_13434618"
+    "OnSyncStoreData": "signal_13434618",
+    "OnRequestBuyItem": "signal_53917574"
   },
   "children": []
 }

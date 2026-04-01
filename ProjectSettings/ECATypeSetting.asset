@@ -49,19 +49,6 @@
           }
         },
         {
-          "propID": 100005,
-          "name": "PROP_16404591",
-          "label": "Beanstalk",
-          "type": "Entity",
-          "value": null,
-          "observable": false,
-          "disabledType": true,
-          "param": {
-            "type": "SceneEditEntity",
-            "disabled": true
-          }
-        },
-        {
           "propID": 100006,
           "name": "PROP_71663763",
           "label": "Floors",
@@ -83,7 +70,7 @@
           "observable": false,
           "disabledType": true,
           "param": {
-            "compType": "InputEditor",
+            "type": "SceneEditEntity",
             "disabled": true
           }
         }

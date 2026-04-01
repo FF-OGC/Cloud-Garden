@@ -34,6 +34,30 @@
   {
     "id": 34,
     "name": "MiniMap"
+  },
+  {
+    "id": 17,
+    "name": "Collection"
+  },
+  {
+    "id": 25,
+    "name": "Economy"
+  },
+  {
+    "id": 31,
+    "name": "Database"
+  },
+  {
+    "id": 7,
+    "name": "Football"
+  },
+  {
+    "id": 27,
+    "name": "Morph"
+  },
+  {
+    "id": 32,
+    "name": "Dyeing"
   }
 ]
 //"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
