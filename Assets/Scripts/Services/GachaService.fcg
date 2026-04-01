@@ -27,4 +27,12 @@ static graph GachaService {
         var roll = math.RandomInt(1, 100)
         return roll <= currentRate
     }
+
+    func RollWithBonus(baseRate int, softThreshold int, hardThreshold int, stepRate int, killZoneMaxBonus int, pityCount int, flatBonus int) bool {
+        var currentRate = CalculateRate(baseRate, softThreshold, hardThreshold, stepRate, killZoneMaxBonus, pityCount)
+        currentRate = currentRate + flatBonus
+        if currentRate > 100 { currentRate = 100 }
+        var roll = math.RandomInt(1, 100)
+        return roll <= currentRate
+    }
 }

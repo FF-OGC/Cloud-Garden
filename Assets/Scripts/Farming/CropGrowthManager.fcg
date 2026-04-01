@@ -6,6 +6,7 @@ import "EditorGenLib.fcc" as gen
 import "../Core/GameManager.fcg" as gameMgr
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Config/ItemConfig.fcg" as itemCfg
+import "../Config/GachaConfig.fcg" as gachaCfg
 import "../Gacha/GachaManager.fcg" as gachaManager
 
 [platform_server]
@@ -47,7 +48,12 @@ static graph CropGrowthManager {
                                     var seedId = floor<floorData>.PlantedSeeds[key] as string
                                     var owner = floor<floorData>.Owner
                                     if owner != nil {
-                                        var resultCropId = gachaManager.RollForHarvest(owner, seedId)
+                                        var bonusRate = 0
+                                        if floor<floorData>.IsLuckyDirt(key) {
+                                            bonusRate = gachaCfg.GetLuckyDirtMutationBonus()
+                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Lucky dirt bonus +" + bonusRate + "% at key=" + key) }
+                                        }
+                                        var resultCropId = gachaManager.RollForHarvest(owner, seedId, bonusRate)
                                         var normalCropId = itemCfg.GetHarvestYield(seedId)
                                         if resultCropId != normalCropId {
                                             floor<floorData>.TrySetGachaResult(key, resultCropId)

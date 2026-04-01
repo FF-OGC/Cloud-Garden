@@ -15,6 +15,9 @@ import "../Backpack/BackpackManager.fcg" as backpackMgr
 //Configs
 import "../Config/ItemConfig.fcg" as itemCfg
 
+//Gacha
+import "../Gacha/GachaManager.fcg" as gachaManager
+
 //Services
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 
@@ -81,6 +84,13 @@ static graph FarmingManager {
                     
                     if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Tilled, player) { continue }
                     floorObj<floorData>.TrySetSoilTier(k, 1, player)
+
+                    var isLucky = gachaManager.RollForLuckyDirt(player)
+                    if isLucky {
+                        floorObj<floorData>.TrySetLuckyDirt(k, true)
+                        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] LUCKY DIRT at key=" + k) }
+                    }
+
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                     DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                 }

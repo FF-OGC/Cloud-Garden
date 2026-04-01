@@ -30,13 +30,19 @@ static graph FarmVisualManager {
             }
 
             if !map.ContainKey(floor<floorData>.SoilVisuals, key) {
-                CreateFromPrefab(out var soilObj, gen.EResPrefab.dirt_tilled)
+                var soilPrefab = gen.EResPrefab.dirt_tilled
+                if floor<floorData>.IsLuckyDirt(key) {
+                    soilPrefab = gen.EResPrefab.lucky_dirt_tilled
+                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Using LUCKY DIRT prefab for key=" + key) }
+                }
+
+                CreateFromPrefab(out var soilObj, soilPrefab)
                 if soilObj != nil {
                     soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, surfaceY + 0.01, floorPos.Z + gridPos.Z}
                     floor<floorData>.SoilVisuals[key] = soilObj
                     if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Spawned soil visual at key=" + key) }
                 } else {
-                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn dirt_tilled prefab") }
+                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn soil prefab") }
                 }
             } else {
                 if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Soil visual already exists for key=" + key) }

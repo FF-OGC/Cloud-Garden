@@ -14,7 +14,7 @@ static graph GachaManager {
         return "gacha_" + seedId
     }
 
-    func RollForHarvest(owner entity<Entity>, seedId string) string {
+    func RollForHarvest(owner entity<Entity>, seedId string, bonusRate int) string {
         var gachaId = _SeedIdToGachaId(seedId)
         var normalCropId = itemCfg.GetHarvestYield(seedId)
 
@@ -39,16 +39,51 @@ static graph GachaManager {
         var pityCount = gachaData.GetPityCounter(owner, gachaId)
         var currentRate = gachaService.CalculateRate(baseRate, soft, hard, step, kzBonus, pityCount)
 
-        var isHit = gachaService.Roll(baseRate, soft, hard, step, kzBonus, pityCount)
+        var isHit = false
+        if bonusRate > 0 {
+            isHit = gachaService.RollWithBonus(baseRate, soft, hard, step, kzBonus, pityCount, bonusRate)
+        } else {
+            isHit = gachaService.Roll(baseRate, soft, hard, step, kzBonus, pityCount)
+        }
 
         if isHit {
             gachaData.ResetPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> HIT! pity reset to 0")
+            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> HIT! pity reset to 0")
             return gachaCfg.GetRewardId(gachaId)
         } else {
             gachaData.IncrementPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
+            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
             return normalCropId
+        }
+    }
+
+    func RollForLuckyDirt(owner entity<Entity>) bool {
+        var gachaId = "gacha_lucky_dirt"
+
+        if !gachaCfg.HasGacha(gachaId) {
+            return false
+        }
+
+        var baseRate = gachaCfg.GetBaseRate(gachaId)
+        var soft = gachaCfg.GetSoftPityThreshold(gachaId)
+        var hard = gachaCfg.GetHardPityThreshold(gachaId)
+        var step = gachaCfg.GetStepRate(gachaId)
+        var kzBonus = gachaCfg.GetKillZoneMaxBonus(gachaId)
+        var pityCount = gachaData.GetPityCounter(owner, gachaId)
+        var currentRate = gachaService.CalculateRate(baseRate, soft, hard, step, kzBonus, pityCount)
+
+        var isHit = gachaService.Roll(baseRate, soft, hard, step, kzBonus, pityCount)
+
+        var playerName = owner<Player>.NickName
+
+        if isHit {
+            gachaData.ResetPity(owner, gachaId)
+            LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> HIT! pity reset to 0")
+            return true
+        } else {
+            gachaData.IncrementPity(owner, gachaId)
+            LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
+            return false
         }
     }
 }
