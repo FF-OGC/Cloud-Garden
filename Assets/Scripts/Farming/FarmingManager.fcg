@@ -99,57 +99,65 @@ static graph FarmingManager {
             // STEP 2: TILLED DIRT -> NEED WATERING (Planting)
             // ==========================================
             } else if intentState == gen.EFarmSlotState.Tilled {
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2: Tilled->NeedWatering (Planting)") }
-                
-                if player<backpackData> == nil {
-                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: backpackData is nil") }
-                    return
-                }
-                
-                var activeSlot = player<backpackData>._ActiveQuickbarSlot
-                var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+                var hasSeed = false
+                var holdItemId = ""
 
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] activeSlot=" + activeSlot + " handle=" + handle) }
-
-                if handle == -1 {
-                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: handle is -1 (empty slot)") }
-                    return
-                }
-                if !map.ContainKey(player<backpackData>._ItemIDs, handle) {
-                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: no ItemID for handle=" + handle) }
-                    return
+                if player<backpackData> != nil {
+                    var activeSlot = player<backpackData>._ActiveQuickbarSlot
+                    var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+                    if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
+                        holdItemId = player<backpackData>._ItemIDs[handle] as string
+                        if itemCfg.GetType(holdItemId) == 1 { hasSeed = true }
+                    }
                 }
 
-                var holdItemId = player<backpackData>._ItemIDs[handle] as string
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] holdItemId=" + holdItemId + " type=" + itemCfg.GetType(holdItemId)) }
+                if hasSeed {
+                    // ---- PLANT SEED (existing behavior) ----
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2: Tilled->NeedWatering (Planting)") }
 
-                if itemCfg.GetType(holdItemId) != 1 {
-                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: item is not Seed (type!=1)") }
-                    return
-                }
+                    var activeSlot = player<backpackData>._ActiveQuickbarSlot
+                    var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+                    var availableAmt = player<backpackData>._ItemAmounts[handle] as int
+                    var amountToPlant = validCount
+                    if availableAmt < validCount { amountToPlant = availableAmt }
 
-                var availableAmt = player<backpackData>._ItemAmounts[handle] as int
-                var amountToPlant = validCount
-                if availableAmt < validCount { amountToPlant = availableAmt }
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] availableAmt=" + availableAmt + " amountToPlant=" + amountToPlant) }
 
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] availableAmt=" + availableAmt + " amountToPlant=" + amountToPlant) }
+                    var isRemoved = backpackMgr.ConsumeActiveItem(player, amountToPlant)
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ConsumeActiveItem result=" + isRemoved) }
+                    
+                    if isRemoved {
+                        for i = 0, amountToPlant, 1 {
+                            var k = validKeys[i]
+                            var p = validPositions[i]
 
-                var isRemoved = backpackMgr.ConsumeActiveItem(player, amountToPlant)
-                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ConsumeActiveItem result=" + isRemoved) }
-                
-                if isRemoved {
-                    for i = 0, amountToPlant, 1 {
+                            var harvestTime = gameMgr.GetGameTime() + itemCfg.GetGrowthTime(holdItemId)
+                            if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.NeedWatering, player) { continue }
+                            floorObj<floorData>.TryPlantCrop(k, holdItemId, harvestTime, p, player)
+                            
+                            DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
+                            DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
+                        }
+                        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Planted " + amountToPlant + " seeds successfully") }
+                    }
+                } else {
+                    // ---- RE-HOE: no seed -> re-roll lucky dirt ----
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2-REHOE: No seed, re-rolling lucky dirt, count=" + validCount) }
+                    for i = 0, validCount, 1 {
                         var k = validKeys[i]
                         var p = validPositions[i]
 
-                        var harvestTime = gameMgr.GetGameTime() + itemCfg.GetGrowthTime(holdItemId)
-                        if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.NeedWatering, player) { continue }
-                        floorObj<floorData>.TryPlantCrop(k, holdItemId, harvestTime, p, player)
-                        
-                        DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
-                        DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.NeedWatering})
+                        floorObj<floorData>.TryClearSoilVisual(k)
+
+                        var isLucky = gachaManager.RollForLuckyDirt(player)
+                        if isLucky {
+                            floorObj<floorData>.TrySetLuckyDirt(k, true)
+                            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] RE-HOE LUCKY DIRT at key=" + k) }
+                        }
+
+                        DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
+                        DispatchEventToEntity(gen.OnFarmCellStateChanged, player, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})
                     }
-                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Planted " + amountToPlant + " seeds successfully") }
                 }
 
             // ==========================================

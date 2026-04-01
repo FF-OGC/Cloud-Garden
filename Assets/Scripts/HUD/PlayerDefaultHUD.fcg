@@ -7,6 +7,8 @@ import "Convert.fcc" as convert
 
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/FloorGridData.fcg" as floorData
+import "../Backpack/BackpackData.fcg" as backpackData
+import "../Config/ItemConfig.fcg" as itemCfg
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 import "../Core/GameManager.fcg" as gameMgr
 
@@ -126,7 +128,16 @@ graph PlayerDefaultHUD {
             if state == gen.EFarmSlotState.Grass {
                 text = "Hoe"
             } else if state == gen.EFarmSlotState.Tilled {
-                text = "Plant"
+                var hasSeed = false
+                if thisEntity<backpackData> != nil {
+                    var qs = thisEntity<backpackData>._ActiveQuickbarSlot
+                    var qh = thisEntity<backpackData>._QuickSlotRefs[qs]
+                    if qh != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, qh) {
+                        var heldId = thisEntity<backpackData>._ItemIDs[qh] as string
+                        if itemCfg.GetType(heldId) == 1 { hasSeed = true }
+                    }
+                }
+                if hasSeed { text = "Plant" } else { text = "Hoe" }
             } else if state == gen.EFarmSlotState.NeedWatering {
                 text = "Water"
             } else if state == gen.EFarmSlotState.Growing {

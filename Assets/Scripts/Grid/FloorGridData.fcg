@@ -83,6 +83,15 @@ graph FloorGridData {
         return false
     }
 
+    func TryClearSoilVisual(key string) {
+        if map.ContainKey(SoilVisuals, key) {
+            var oldSoil = SoilVisuals[key] as entity
+            if oldSoil != nil { Destroy(oldSoil) }
+            map.Remove(SoilVisuals, key)
+        }
+        if map.ContainKey(LuckyDirtCells, key) { map.Remove(LuckyDirtCells, key) }
+    }
+
     func TryClearCrop(key string, player entity<Entity>) bool {
         if !IsOwner(player) { return false }
         if map.ContainKey(HarvestTimes, key) { map.Remove(HarvestTimes, key) }

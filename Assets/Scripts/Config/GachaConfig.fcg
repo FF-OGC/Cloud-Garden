@@ -5,7 +5,7 @@ static graph GachaConfig {
     func GetBaseRate(gachaId string) int {
         if gachaId == "gacha_seed_apple" { return 1 }
         if gachaId == "gacha_seed_tomato" { return 2 }
-        if gachaId == "gacha_lucky_dirt" { return 60 }
+        if gachaId == "gacha_lucky_dirt" { return 5 }
         return 1
     }
 
