@@ -26,7 +26,7 @@ static graph ItemConfig {
 
     // Returns Growth Time (in seconds) for seeds
     func GetGrowthTime(itemId string) float {
-        if itemId == "seed_apple" { return 120.0 }
+        if itemId == "seed_apple" { return 30.0 }
         if itemId == "seed_tomato" { return 90.0 }
         return 60.0 // Default fallback time
     }
@@ -97,7 +97,7 @@ static graph ItemConfig {
         
         // STAGE 3: READY TO HARVEST (Differentiate by plant type)
         if state == gen.EFarmSlotState.ReadyToHarvest {
-            if seedId == "seed_apple" { return gen.EResPrefab.seed_growed } 
+            if seedId == "seed_apple" { return gen.EResPrefab.crop_apple } 
             if seedId == "seed_tomato" { return gen.EResPrefab.seed_growed }   
             return gen.EResPrefab.seed_growed // Default mature model
         }
@@ -107,8 +107,28 @@ static graph ItemConfig {
 
     // Returns the mutant/golden prefab for ReadyToHarvest state
     func GetMutantPlantPrefab(seedId string) PrefabID {
-        if seedId == "seed_apple" { return gen.EResPrefab.mutation_seed_growed }
+        if seedId == "seed_apple" { return gen.EResPrefab.crop_mutation_apple }
         if seedId == "seed_tomato" { return gen.EResPrefab.mutation_seed_growed }
         return gen.EResPrefab.mutation_seed_growed
+    }
+
+    // Pool key mirrors for CropVisualPool lookups
+    func GetPlantPrefabKey(seedId string, state int) string {
+        if state == gen.EFarmSlotState.NeedWatering {
+            return "seed_needwatering"
+        }
+        if state == gen.EFarmSlotState.Growing {
+            return "seed_model"
+        }
+        if state == gen.EFarmSlotState.ReadyToHarvest {
+            if seedId == "seed_apple" { return "crop_apple" }
+            return "seed_growed"
+        }
+        return "seed_model"
+    }
+
+    func GetMutantPlantPrefabKey(seedId string) string {
+        if seedId == "seed_apple" { return "crop_mutation_apple" }
+        return "mutation_seed_growed"
     }
 }

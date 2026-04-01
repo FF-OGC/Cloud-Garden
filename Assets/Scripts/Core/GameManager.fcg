@@ -9,6 +9,7 @@ import "../Grid/FloorGridData.fcg" as floorData
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Grid/TrackerPoolManager.fcg" as trackerPool
 import "../Farming/CropGrowthManager.fcg" as cropManager
+import "../Farming/CropVisualPool.fcg" as cropPool
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Market/MarketManager.fcg" as marketManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
@@ -38,6 +39,7 @@ static graph GameManager {
         _ConnectedPlayers = list.New(0, 10) as List<entity<Player>>
         
         trackerPool.InitPool()
+        cropPool.InitPool()
         start StartGlobalClock()
         start DelayedStoreInit()
     }

@@ -1,0 +1,62 @@
+{
+  "fileId": "45dphoewivi-mnfu0go4-d4q6afsbopt",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [
+      {
+        "Name": "Apple_03_LOD0.~@FFFUB",
+        "MeshName": "Apple_03_LOD0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      }
+    ],
+    "BoneInfos": [],
+    "Anims": [],
+    "ManifestJSON": {
+      "FBXName": "Apple_03_LOD0",
+      "ImportSucceeded": true,
+      "MaterialCount": 1,
+      "MaterialDetail": [
+        {
+          "Index": 0,
+          "MaterialName": "Mat_Garden.141"
+        }
+      ],
+      "MeshCount": 1,
+      "MeshDetail": [
+        {
+          "MeshName": "Apple_03_LOD0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              5,
+              1.89601,
+              -162.054
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "subColliderLOD": {
+    "45dphoewivi-mnfu0go4-d4q6afsbopt-Apple_03_LOD0.~@FFFUB": 0
+  }
+}

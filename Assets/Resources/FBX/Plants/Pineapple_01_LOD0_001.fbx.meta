@@ -1,0 +1,62 @@
+{
+  "fileId": "wv1lb1jwlel-mnfu35gb-j3pk21mbbta",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [
+      {
+        "Name": "Pineapple_01_LOD0.001.~@FFFUB",
+        "MeshName": "Pineapple_01_LOD0.001",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      }
+    ],
+    "BoneInfos": [],
+    "Anims": [],
+    "ManifestJSON": {
+      "FBXName": "Pineapple_01_LOD0_001",
+      "ImportSucceeded": true,
+      "MaterialCount": 1,
+      "MaterialDetail": [
+        {
+          "Index": 0,
+          "MaterialName": "Mat_Garden.141"
+        }
+      ],
+      "MeshCount": 1,
+      "MeshDetail": [
+        {
+          "MeshName": "Pineapple_01_LOD0.001",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -55,
+              2.60077,
+              -162.054
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "subColliderLOD": {
+    "wv1lb1jwlel-mnfu35gb-j3pk21mbbta-Pineapple_01_LOD0.001.~@FFFUB": 0
+  }
+}

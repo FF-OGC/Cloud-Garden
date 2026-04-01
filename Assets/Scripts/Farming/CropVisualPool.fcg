@@ -1,0 +1,74 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Map.fcc" as map
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameMgr
+
+[platform_server]
+static graph CropVisualPool {
+
+    _Pool Map<string, List<entity<Entity>>>
+
+    func InitPool() {
+        _Pool = map.New() as Map<string, List<entity<Entity>>>
+
+        _CreateBucket("seed_needwatering", gen.EResPrefab.seed_needwatering, 25)
+        _CreateBucket("seed_model", gen.EResPrefab.seed_model, 25)
+        _CreateBucket("seed_growed", gen.EResPrefab.seed_growed, 25)
+        _CreateBucket("crop_apple", gen.EResPrefab.crop_apple, 25)
+        _CreateBucket("mutation_seed_growed", gen.EResPrefab.mutation_seed_growed, 10)
+        _CreateBucket("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 10)
+
+        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] All plant pools initialized") }
+    }
+
+    func _CreateBucket(key string, prefabId PrefabID, count int) {
+        var poolList = list.New(0, count) as List<entity<Entity>>
+        for i = 0, count, 1 {
+            CreateFromPrefab(out var obj, prefabId)
+            if obj != nil {
+                obj<Transform>.Position = Vector3{0, -9999, 0}
+                list.Append(poolList, obj as entity<Entity>)
+            }
+        }
+        _Pool[key] = poolList
+        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] Bucket '" + key + "' size=" + count) }
+    }
+
+    func Get(prefabKey string) entity<Entity> {
+        if map.ContainKey(_Pool, prefabKey) {
+            var poolList = _Pool[prefabKey] as List<entity<Entity>>
+            var count = list.Length(poolList)
+            if count > 0 {
+                var obj = poolList[count - 1] as entity<Entity>
+                list.RemoveAt(poolList, count - 1)
+                return obj
+            }
+        }
+
+        var prefabId = _ResolvePrefabId(prefabKey)
+        CreateFromPrefab(out var newObj, prefabId)
+        return newObj
+    }
+
+    func Return(prefabKey string, obj entity<Entity>) {
+        if obj == nil { return }
+        obj<Transform>.Position = Vector3{0, -9999, 0}
+
+        if map.ContainKey(_Pool, prefabKey) {
+            var poolList = _Pool[prefabKey] as List<entity<Entity>>
+            list.Append(poolList, obj)
+        }
+    }
+
+    func _ResolvePrefabId(key string) PrefabID {
+        if key == "seed_needwatering" { return gen.EResPrefab.seed_needwatering }
+        if key == "seed_model" { return gen.EResPrefab.seed_model }
+        if key == "seed_growed" { return gen.EResPrefab.seed_growed }
+        if key == "crop_apple" { return gen.EResPrefab.crop_apple }
+        if key == "mutation_seed_growed" { return gen.EResPrefab.mutation_seed_growed }
+        if key == "crop_mutation_apple" { return gen.EResPrefab.crop_mutation_apple }
+        return gen.EResPrefab.seed_model
+    }
+}

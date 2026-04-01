@@ -1,17 +1,17 @@
 {
-  "_entityName": "Grid Tracker",
+  "_entityName": "growed_mutation_apple",
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "UOjERkZ3",
+  "_entityId": "fQxBO6f3",
   "children": [
     {
-      "_entityName": "Tracker",
+      "_entityName": "growed_seed",
       "_tag": {
         "type": "UGCSceneEntity",
         "resourceId": ""
       },
-      "_entityId": "u94kPW0L",
+      "_entityId": "uWmkVczs",
       "children": [],
       "activeValue": {
         "selfValue": true,
@@ -27,12 +27,12 @@
         "z": 0
       },
       "scale": {
-        "x": 1,
-        "y": 1,
-        "z": 1
+        "x": 0.1,
+        "y": 0.1,
+        "z": 0.1
       },
       "rotation": {
-        "x": 0,
+        "x": 270,
         "y": 0,
         "z": 0
       },
@@ -47,24 +47,24 @@
         2,
         4
       ],
-      "isTrigger": true,
-      "collidable": true,
+      "isTrigger": false,
+      "collidable": false,
       "physicalLayer": 0,
       "physicalMaterial": null,
       "aoiSetting": 0,
       "initialTypes": {},
       "componentList": [
+        "MeshRender",
         "ColliderShape",
-        "Collider",
-        "MeshRender"
+        "Collider"
       ],
       "entityTagData": {
         "tagPointers": []
       },
       "materials": [
         {
-          "fileId": "4o1ewtuf3kd-mn7a3w8j-93fw7xo1z9n",
-          "filePath": "Assets\\Materials\\ClearGlass.mat",
+          "fileId": "m1pky0r2flj-mnebswk6-awqskaugy4",
+          "filePath": "Assets\\Materials\\Yellow.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -74,8 +74,15 @@
       "colliders": [
         {
           "enable": true,
-          "colliderType": "Box",
-          "meshUUID": null,
+          "colliderType": "MeshCollider",
+          "meshUUID": {
+            "fileId": "wehss29x://bd350b6d-6306-4bc9-834b-1246ecda5e40-Cylinder001.~@FFFUB",
+            "filePath": "wehss29x://Meshes/cylinder.fbx/Cylinder001",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
+          },
           "position": {
             "x": 0,
             "y": 0,
@@ -116,39 +123,30 @@
         "FreezePosZ": false,
         "FreezeRotZ": false
       },
-      "ecaScripts": [
-        {
-          "fileId": "09a216mflr8-mmof1pfr-mj75m56h5um",
-          "filePath": "Assets\\Scripts\\Grid\\GridTileTracker.fcg",
-          "_tag": {
-            "type": "GFileRefer"
-          },
-          "fileType": "ugcscript"
-        }
-      ],
+      "ecaScripts": [],
       "ecaProps": {
         "CustomLevelObject": {},
         "LevelObject": {},
         "Transform": {},
         "Entity": {},
         "Visibility": {},
+        "MeshRender": {},
         "ColliderShape": {},
-        "Collider": {},
-        "MeshRender": {}
+        "Collider": {}
       },
       "propsData": {},
       "entityVersion": 3,
-      "editorLockValue": false,
-      "editorVisibleValue": true,
-      "prefabVariant": null,
       "mesh": {
-        "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
-        "filePath": "wehss29x://Meshes/cube.fbx/Box001",
+        "fileId": "45dphoewivi-mnfu0go4-d4q6afsbopt-Apple_03_LOD0.~@FFFUB",
+        "filePath": "fab://Assets\\Resources\\FBX\\Plants\\Apple_03_LOD0.fbx\\Apple_03_LOD0.mesh",
         "_tag": {
           "type": "GFileRefer"
         },
         "fileType": "mesh"
-      }
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "prefabVariant": null
     }
   ],
   "prefabVariant": null,

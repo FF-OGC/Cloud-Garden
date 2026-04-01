@@ -1,5 +1,6 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
+import "List.fcc" as list
 
 [platform_server]
 graph FloorGridData {
@@ -15,9 +16,12 @@ graph FloorGridData {
 
     SoilVisuals Map<string, entity<Entity>>  
     PlantVisuals Map<string, entity<Entity>>
+    PlantPrefabKeys Map<string, string>
 
     GachaResults Map<string, string>  
     LuckyDirtCells Map<string, bool>
+
+    GrowingKeys List<string>
 
     func InitMaps() {
         Owner = nil
@@ -31,9 +35,12 @@ graph FloorGridData {
         
         SoilVisuals = map.New() as Map<string, entity<Entity>>
         PlantVisuals = map.New() as Map<string, entity<Entity>>
+        PlantPrefabKeys = map.New() as Map<string, string>
 
         GachaResults = map.New() as Map<string, string>
         LuckyDirtCells = map.New() as Map<string, bool>
+
+        GrowingKeys = list.New(0, 100) as List<string>
     }
 
     // --- DATA-LEVEL OWNERSHIP VALIDATION ---
@@ -59,6 +66,7 @@ graph FloorGridData {
         PlantedSeeds[key] = seedId
         HarvestTimes[key] = harvestTime
         CropPositions[key] = cropPos
+        list.Append(GrowingKeys, key)
         return true
     }
 
@@ -99,6 +107,9 @@ graph FloorGridData {
         if map.ContainKey(PlantedSeeds, key) { map.Remove(PlantedSeeds, key) }
         if map.ContainKey(GachaResults, key) { map.Remove(GachaResults, key) }
         if map.ContainKey(LuckyDirtCells, key) { map.Remove(LuckyDirtCells, key) }
+        if map.ContainKey(PlantPrefabKeys, key) { map.Remove(PlantPrefabKeys, key) }
+        var gkIdx = list.IndexOf(GrowingKeys, key)
+        if gkIdx != -1 { list.RemoveAt(GrowingKeys, gkIdx) }
         return true
     }
 }

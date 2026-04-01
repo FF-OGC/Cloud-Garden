@@ -244,6 +244,30 @@
           },
           "scriptName": "lucky_dirt_tilled",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "biybci49m2c-mnfv5twq-wa3ce69jq7",
+            "filePath": "Assets\\Prefabs\\growed_mutation_apple.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_mutation_apple",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "b3nfl2f0soe-mnfuyjek-hajdj234ex5",
+            "filePath": "Assets\\Prefabs\\growed_apple.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_apple",
+          "children": []
         }
       ]
     },

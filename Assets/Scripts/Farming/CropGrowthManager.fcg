@@ -12,12 +12,11 @@ import "../Gacha/GachaManager.fcg" as gachaManager
 [platform_server]
 static graph CropGrowthManager {
     
-    // Background async loop to check harvest timestamps
     async func StartBackgroundTick(floors List<entity<Entity>>) {
         if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Background Tick Started...") }
         
         while true {
-            WaitForMillisecond(3000) // Tick rate: 3 seconds to optimize performance
+            WaitForMillisecond(3000)
             var currentTime = gameMgr.GetGameTime()
 
             var floorCount = list.Length(floors)
@@ -29,11 +28,11 @@ static graph CropGrowthManager {
                 var harvestTimes = floor<floorData>.HarvestTimes
                 var cropPositions = floor<floorData>.CropPositions
                 
-                var keys = map.GetAllKeys(harvestTimes)
-                var keyCount = list.Length(keys)
-                
-                for k = 0, keyCount, 1 {
-                    var key = keys[k] as string
+                var k = 0
+                var keyCount = list.Length(floor<floorData>.GrowingKeys)
+                while k < keyCount {
+                    var key = floor<floorData>.GrowingKeys[k] as string
+                    var shouldRemove = false
                     
                     if map.ContainKey(cellStates, key) {
                         var state = cellStates[key] as int
@@ -41,9 +40,7 @@ static graph CropGrowthManager {
                         if state == gen.EFarmSlotState.NeedWatering || state == gen.EFarmSlotState.Growing {
                             var targetTime = harvestTimes[key] as float
                             
-                            // TIMESTAMP CHECK
                             if currentTime >= targetTime {
-                                // Roll gacha before setting ReadyToHarvest
                                 if map.ContainKey(floor<floorData>.PlantedSeeds, key) {
                                     var seedId = floor<floorData>.PlantedSeeds[key] as string
                                     var owner = floor<floorData>.Owner
@@ -64,21 +61,29 @@ static graph CropGrowthManager {
 
                                 cellStates[key] = gen.EFarmSlotState.ReadyToHarvest
                                 
-                                // Retrieve GridPos safely from Data layer (CropPositions)
                                 if map.ContainKey(cropPositions, key) {
                                     var gridPos = cropPositions[key] as Vector3
-                                    
-                                    // Broadcast visual update
-                                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server,List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
+                                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
                                 }
                                 
-                                // Clear data to skip checking in future ticks
                                 map.Remove(harvestTimes, key)
                                 map.Remove(cropPositions, key)
+                                shouldRemove = true
                                 
                                 if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at grid key: " + key) }
                             }
+                        } else {
+                            shouldRemove = true
                         }
+                    } else {
+                        shouldRemove = true
+                    }
+
+                    if shouldRemove {
+                        list.RemoveAt(floor<floorData>.GrowingKeys, k)
+                        keyCount = keyCount - 1
+                    } else {
+                        k = k + 1
                     }
                 }
             }
