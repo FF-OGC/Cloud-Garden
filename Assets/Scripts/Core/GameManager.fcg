@@ -3,6 +3,7 @@ import "Player.fcc" as Player
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 import "Math.fcc" as math
+import "Convert.fcc" as convert
 
 import "../Farming/FarmZoneManager.fcg" as zoneManager
 import "../Grid/FloorGridData.fcg" as floorData
@@ -14,6 +15,8 @@ import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Market/MarketManager.fcg" as marketManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
 import "../Store/StoreManager.fcg" as storeManager
+import "../Config/FarmGridConfig.fcg" as gridCfg
+import "../Services/Utils/GridUtil.fcg" as gridUtil
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
@@ -157,21 +160,68 @@ static graph GameManager {
 
         //4. Add Seed to Backpack
         var seedId = "seed_apple"
-        var amount = 50
+        var amount = 99
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
-        backpackManager.AddItem(player, "crop_apple", 10)
-        backpackManager.AddItem(player, "crop_apple_gold", 10)
-
+        // backpackManager.AddItem(player, "crop_apple", 10)
+        // backpackManager.AddItem(player, "crop_apple_gold", 10)
+        backpackManager.AddItem(player, seedId, amount)
 
         player<Player>.DisableFallDamage = true
 
         currencyManager.InitPlayerCurrency(player, 500)
+        TestPerformance()
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
         var orientation Vector3 = math.Normalize(Vector3{centerPoint.X - spawnPoint.X, 0, centerPoint.Z - spawnPoint.Z})
         return orientation
+    }
+
+    async func TestPerformance() {
+        LogInfo("[GameManager] === PERFORMANCE TEST START ===")
+
+        var floorCount = list.Length(_AllFloorsInWorld)
+        var tileSize = gridCfg.GetTileSize()
+        var totalCells = 0
+        var batchCount = 0
+
+        for i = 0, floorCount, 1 {
+            var floor = _AllFloorsInWorld[i]
+            if floor == nil || floor<floorData> == nil { continue }
+
+            var scale = floor<Transform>.Scale.X
+            var halfGridCount = math.Floor((scale / tileSize) / 2.0)
+
+            for x = -halfGridCount, halfGridCount + 1, 1 {
+                for z = -halfGridCount, halfGridCount + 1, 1 {
+                    var worldX = convert.IntToFloat(x) * tileSize
+                    var worldZ = convert.IntToFloat(z) * tileSize
+                    var pos = Vector3{worldX, 0.0, worldZ}
+                    var key = gridUtil.GetKeyFromPos(pos)
+
+                    floor<floorData>.CellStates[key] = gen.EFarmSlotState.ReadyToHarvest
+                    floor<floorData>.PlantedSeeds[key] = "seed_apple"
+                    floor<floorData>.SoilTiers[key] = 1
+
+                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, pos, gen.EFarmSlotState.Tilled})
+                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, pos, gen.EFarmSlotState.ReadyToHarvest})
+
+                    totalCells = totalCells + 1
+                    batchCount = batchCount + 1
+
+                    if batchCount >= 10 {
+                        WaitForMillisecond(100)
+                        batchCount = 0
+                    }
+                }
+            }
+
+            LogInfo("[GameManager] Floor " + i + " filled. Running total: " + totalCells)
+            WaitForMillisecond(50)
+        }
+
+        LogInfo("[GameManager] === PERFORMANCE TEST DONE === Floors=" + floorCount + " TotalCells=" + totalCells)
     }
 }
