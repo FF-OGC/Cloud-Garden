@@ -61,7 +61,9 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "materials": [],
+      "materials": [
+        null
+      ],
       "colliders": [
         {
           "enable": true,

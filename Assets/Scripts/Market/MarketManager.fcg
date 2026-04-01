@@ -53,6 +53,7 @@ static graph MarketManager {
             }
         }
 
+        start SpawnInfoBoard(marketEntity, marketEntity<marketData>._Owner)
         start DelayedMaintain(marketEntity)
         LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets)))
     }
@@ -93,7 +94,7 @@ static graph MarketManager {
 
     async func SpawnInfoBoard(market entity<Entity>, owner entity<Player>) {
         WaitForMillisecond(500)
-        if market == nil || owner == nil { return }
+        if market == nil { return }
 
         if market<marketData>._InfoBoard != nil {
             Destroy(market<marketData>._InfoBoard)
@@ -117,15 +118,24 @@ static graph MarketManager {
 
         var textObj = GetChildByName(infoBoard, "Text object")
         if textObj != nil {
-            var ownerName = owner<Player>.NickName
-            textObj<Text>.Content = ownerName
-            if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
+            if owner != nil {
+                var ownerName = owner<Player>.NickName
+                textObj<Text>.Content = ownerName
+                if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
+            } else {
+                textObj<Text>.Content = "X"
+                if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | no owner, set text to 'X'") }
+            }
         } else {
             LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab")
         }
 
         market<marketData>._InfoBoard = infoBoard
-        LogInfo("[MarketManager] SpawnInfoBoard OK | info board placed next to market for owner: " + owner<Player>.NickName)
+        if owner != nil {
+            LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + owner<Player>.NickName)
+        } else {
+            LogInfo("[MarketManager] SpawnInfoBoard OK | unclaimed (showing 'X')")
+        }
     }
 
     // ===== TRIGGER EVENTS =====

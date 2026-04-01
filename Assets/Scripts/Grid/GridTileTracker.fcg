@@ -30,8 +30,12 @@ graph GridTileTracker {
         var newWorldPos = gridUtil.SnapToGrid(playerPos, floorPos, tileSize)
         var localGridPos = Vector3{newWorldPos.X - floorPos.X, 0.0, newWorldPos.Z - floorPos.Z}
 
+        var floorScale = floor<Transform>.Scale.X
+        localGridPos = gridUtil.ClampToGridBounds(localGridPos, floorScale, tileSize)
+
         player<playerFarmingData>.CurrentGridPos = localGridPos
-        thisEntity<Transform>.Position = newWorldPos
+        var clampedWorldPos = Vector3{floorPos.X + localGridPos.X, newWorldPos.Y, floorPos.Z + localGridPos.Z}
+        thisEntity<Transform>.Position = clampedWorldPos
         if(gameMgr.IsDebug()) { LogInfo("[GridTileTracker] local=" + localGridPos + " world=" + newWorldPos) }
 
         if floor<floorData> != nil {

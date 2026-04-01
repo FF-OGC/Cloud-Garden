@@ -22,4 +22,16 @@ static graph GridUtil {
         
         return Vector3{originPos.X + gridX, targetPos.Y, originPos.Z + gridZ}
     }
+
+    // Clamps a local grid position to stay within valid grid boundaries
+    func ClampToGridBounds(localPos Vector3, floorScale float, tileSize float) Vector3 {
+        var halfGrid = math.Floor((floorScale / tileSize) / 2.0) * tileSize
+        var x = localPos.X
+        var z = localPos.Z
+        if x > halfGrid { x = halfGrid }
+        if x < -halfGrid { x = -halfGrid }
+        if z > halfGrid { z = halfGrid }
+        if z < -halfGrid { z = -halfGrid }
+        return Vector3{x, localPos.Y, z}
+    }
 }

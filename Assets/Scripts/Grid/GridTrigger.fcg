@@ -2,11 +2,11 @@ import "StdLibrary.fcc" as std
 import "Physics.fcc" as physics
 import "EditorGenLib.fcc" as gen
 
-
 import "../Core/GameManager.fcg" as gameMgr
 import "./TrackerPoolManager.fcg" as poolManager
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
-
+import "../Config/FarmGridConfig.fcg" as gridCfg
+import "../Services/Utils/GridUtil.fcg" as gridUtil
 
 [platform_server]
 graph GridTrigger {
@@ -22,7 +22,7 @@ graph GridTrigger {
         
         if player == nil || _Floor == nil { return }
         
-        if  player<playerFarmingData> == nil { LogInfo("[GridTrigger] Player  is not have component PlayerFarmingData."); return }
+        if player<playerFarmingData> == nil { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData."); return }
 
         player<playerFarmingData>.CurrentFloor = _Floor
         if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
@@ -31,6 +31,16 @@ graph GridTrigger {
             player<playerFarmingData>.ActiveTracker = poolManager.GetTracker(player)
             if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker assigned from pool.") }
         }
+
+        var floorPos = _Floor<Transform>.Position
+        var playerPos = player<Player>.Position
+        var tileSize = gridCfg.GetTileSize()
+        var snapped = gridUtil.SnapToGrid(playerPos, floorPos, tileSize)
+        var localPos = Vector3{snapped.X - floorPos.X, 0.0, snapped.Z - floorPos.Z}
+        var floorScale = _Floor<Transform>.Scale.X
+        localPos = gridUtil.ClampToGridBounds(localPos, floorScale, tileSize)
+        player<playerFarmingData>.CurrentGridPos = localPos
+        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Initial grid pos set to: " + localPos) }
     }
 
     event OnTriggerLeave(target entity<Entity>) {
