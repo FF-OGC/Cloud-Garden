@@ -789,13 +789,13 @@
       },
       "position": {
         "x": 10,
-        "y": 202,
+        "y": 201,
         "z": 0
       },
       "scale": {
-        "x": 5,
-        "y": 5,
-        "z": 5
+        "x": 3,
+        "y": 3,
+        "z": 3
       },
       "rotation": {
         "x": 0,
@@ -2187,7 +2187,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 5,
+          "tempIndex": 23,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -4430,7 +4430,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 6,
+          "tempIndex": 24,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -6655,7 +6655,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 7,
+          "tempIndex": 25,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -8880,7 +8880,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 8,
+          "tempIndex": 26,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [

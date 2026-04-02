@@ -5,11 +5,12 @@ import "EditorGenLib.fcc" as gen
 [platform_server]
 static graph ItemConfig {
     
-    // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool
+    // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool, 4 = Special Item
     func GetType(itemId string) int {
         if itemId == "seed_apple" || itemId == "seed_tomato" { return 1 }
         if itemId == "crop_apple" || itemId == "crop_tomato" { return 2 }
         if itemId == "crop_apple_gold" || itemId == "crop_tomato_gold" { return 2 }
+        if itemId == "potion" { return 4 }
         return 3
     }
 
@@ -19,9 +20,10 @@ static graph ItemConfig {
 
     // Returns Maximum Stack Size for a specific item
     func GetMaxStack(itemId string) int {
-        if GetType(itemId) == 1 { return 99 } // Seeds can stack up to 99
-        if GetType(itemId) == 2 { return 50 } // Crops can stack up to 50
-        return 1 // Tools or default items do not stack
+        if GetType(itemId) == 1 { return 99 }
+        if GetType(itemId) == 2 { return 50 }
+        if GetType(itemId) == 4 { return 99 }
+        return 1
     }
 
     // Returns Growth Time (in seconds) for seeds
@@ -47,12 +49,14 @@ static graph ItemConfig {
         if itemId == "crop_apple_gold" { return "Golden Apple" }
         if itemId == "crop_tomato_gold" { return "Golden Tomato" }
         if itemId == "watering_can" { return "Watering Can" }
+        if itemId == "potion" { return "Growth Potion" }
         return itemId
     }
 
     func GetBuyPrice(itemId string) int {
         if itemId == "seed_apple" { return 20 }
         if itemId == "seed_tomato" { return 15 }
+        if itemId == "potion" { return 50 }
         return 10
     }
 
@@ -73,6 +77,7 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return EResSprite.crop_apple }
         if itemId == "crop_apple_gold" { return EResSprite.crop_goldenapple }
         if itemId == "crop_tomato_gold" { return EResSprite.crop_apple }
+        if itemId == "potion" { return EResSprite.item_buff_dirt }
         
         return EResSprite.seed_apple 
     }
@@ -131,4 +136,10 @@ static graph ItemConfig {
         if seedId == "seed_apple" { return "crop_mutation_apple" }
         return "mutation_seed_growed"
     }
+
+    // ==========================================
+    // 3. POTION / SPECIAL ITEM CONFIG
+    // ==========================================
+    func GetPotionLuckBonus() int { return 20 }
+    func GetPotionGrowthReduction() float { return 0.3 }
 }

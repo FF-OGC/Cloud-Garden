@@ -51,6 +51,10 @@ graph HUDStore {
             if player<playerStoreVisual>._IsOpen {
                 player<playerStoreVisual>.ToggleStoreUI()
             }
+        } else if btnType == "store_tab_seed" {
+            player<playerStoreVisual>.SwitchTab(1)
+        } else if btnType == "store_tab_specialItem" {
+            player<playerStoreVisual>.SwitchTab(4)
         } else {
             LogWarning("[HUDStore] Unknown btnType: " + btnType)
         }

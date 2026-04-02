@@ -129,15 +129,23 @@ graph PlayerDefaultHUD {
                 text = "Hoe"
             } else if state == gen.EFarmSlotState.Tilled {
                 var hasSeed = false
+                var hasPotion = false
                 if thisEntity<backpackData> != nil {
                     var qs = thisEntity<backpackData>._ActiveQuickbarSlot
                     var qh = thisEntity<backpackData>._QuickSlotRefs[qs]
                     if qh != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, qh) {
                         var heldId = thisEntity<backpackData>._ItemIDs[qh] as string
                         if itemCfg.GetType(heldId) == 1 { hasSeed = true }
+                        if itemCfg.GetType(heldId) == 4 { hasPotion = true }
                     }
+                } 
+                if hasPotion { 
+                    text = "Use" 
+                } else if hasSeed { 
+                    text = "Plant"
+                } else { 
+                    text = "Hoe"
                 }
-                if hasSeed { text = "Plant" } else { text = "Hoe" }
             } else if state == gen.EFarmSlotState.NeedWatering {
                 text = "Water"
             } else if state == gen.EFarmSlotState.Growing {

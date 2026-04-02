@@ -47,9 +47,9 @@ static graph MarketConfig {
     func GetMaxTableSlots() int { return 5 }
 
     func GetProducePrefab(itemId string) PrefabID {
-        if itemId == "crop_apple" { return gen.EResPrefab.seed_growed }
+        if itemId == "crop_apple" { return gen.EResPrefab.crop_apple }
         if itemId == "crop_tomato" { return gen.EResPrefab.seed_growed }
-        if itemId == "crop_apple_gold" { return gen.EResPrefab.mutation_seed_growed }
+        if itemId == "crop_apple_gold" { return gen.EResPrefab.crop_mutation_apple }
         if itemId == "crop_tomato_gold" { return gen.EResPrefab.mutation_seed_growed }
         return gen.EResPrefab.seed_growed
     }

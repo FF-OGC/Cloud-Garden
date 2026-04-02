@@ -24,13 +24,16 @@ graph PlayerStoreVisual {
     _SelectedSlotIndex int = -1
     _BuyAmount int = 1
     _NextResetTime float = 0.0
+    _ActiveTab int = 1
     
     _CachedItemIDs List<string> = nil
     _CachedItemAmounts List<int> = nil
+    _FilteredIndices List<int> = nil
 
     event OnAwake() {
         _CachedItemIDs = list.New(0, 10) as List<string>
         _CachedItemAmounts = list.New(0, 10) as List<int>
+        _FilteredIndices = list.New(0, 40) as List<int>
 
         _InitStoreUI()
     }
@@ -79,8 +82,10 @@ graph PlayerStoreVisual {
             _BuyAmount = 1
             _UpdateCache(newIds, newAmounts)
             if _IsOpen {
-                if _SelectedSlotIndex >= 0 && _SelectedSlotIndex < list.Length(_CachedItemAmounts) {
-                    var remainingStock = _CachedItemAmounts[_SelectedSlotIndex] as int
+                RenderShopUI()
+                var realBuyIdx = _GetRealIndex(_SelectedSlotIndex)
+                if realBuyIdx >= 0 {
+                    var remainingStock = _CachedItemAmounts[realBuyIdx] as int
                     if remainingStock <= 0 {
                         _SetSlotHighlight(_SelectedSlotIndex, false)
                         _SelectedSlotIndex = -1
@@ -88,7 +93,6 @@ graph PlayerStoreVisual {
                         _ClearSelectionUI()
                     }
                 }
-                RenderShopUI()
                 _UpdateBuyAmountUI()
             }
             if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] Buy OK: " + message) }
@@ -129,28 +133,69 @@ graph PlayerStoreVisual {
         }
 
         if _IsOpen {
+            _ActiveTab = 1
             _SelectedSlotIndex = -1
             _BuyAmount = 1
             RenderShopUI()
             _UpdateBuyAmountUI()
             _UpdateCountdownUI()
+            _UpdateTabHighlight()
             start _RunCountdownTick()
         }
         if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] ToggleStoreUI _IsOpen=" + convert.ToString(_IsOpen) + " _IsInZone=" + convert.ToString(_IsInZone)) }
     }
 
+    func SwitchTab(tabType int) {
+        _ActiveTab = tabType
+        _SelectedSlotIndex = -1
+        _BuyAmount = 1
+        _ClearSelectionUI()
+        _UpdateTabHighlight()
+        RenderShopUI()
+        _UpdateBuyAmountUI()
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] SwitchTab to type=" + convert.ToString(tabType)) }
+    }
+
+    func _UpdateTabHighlight() {
+        if _StoreUI == nil { return }
+        var buyStateN = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/tab/Seed/state_n")
+        var buyStateH = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/tab/Seed/state_h")
+        var sellStateN = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/tab/Special Item/state_n")
+        var sellStateH = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/tab/Special Item/state_h")
+
+        if _ActiveTab == 1 {
+            if buyStateN != nil { buyStateN<UIWidget>.IsVisible = false }
+            if buyStateH != nil { buyStateH<UIWidget>.IsVisible = true }
+            if sellStateN != nil { sellStateN<UIWidget>.IsVisible = true }
+            if sellStateH != nil { sellStateH<UIWidget>.IsVisible = false }
+        } else {
+            if buyStateN != nil { buyStateN<UIWidget>.IsVisible = true }
+            if buyStateH != nil { buyStateH<UIWidget>.IsVisible = false }
+            if sellStateN != nil { sellStateN<UIWidget>.IsVisible = false }
+            if sellStateH != nil { sellStateH<UIWidget>.IsVisible = true }
+        }
+    }
+
+    func _GetRealIndex(displayIndex int) int {
+        if displayIndex < 0 || displayIndex >= list.Length(_FilteredIndices) { return -1 }
+        return _FilteredIndices[displayIndex] as int
+    }
+
     func HandleSlotPressed(slotIndex int) {
-        var cachedCount = list.Length(_CachedItemIDs)
-        LogInfo("[PlayerStoreVisual] HandleSlotPressed slotIndex=" + convert.ToString(slotIndex) + " cachedCount=" + convert.ToString(cachedCount))
+        var filteredCount = list.Length(_FilteredIndices)
+        LogInfo("[PlayerStoreVisual] HandleSlotPressed slotIndex=" + convert.ToString(slotIndex) + " filteredCount=" + convert.ToString(filteredCount))
         
-        if slotIndex < 0 || slotIndex >= cachedCount {
-            LogWarning("[PlayerStoreVisual] HandleSlotPressed: slotIndex OUT OF RANGE! slotIndex=" + convert.ToString(slotIndex) + " cachedCount=" + convert.ToString(cachedCount))
+        if slotIndex < 0 || slotIndex >= filteredCount {
+            LogWarning("[PlayerStoreVisual] HandleSlotPressed: slotIndex OUT OF RANGE!")
             return
         }
         
-        var itemId = _CachedItemIDs[slotIndex] as string
-        var amount = _CachedItemAmounts[slotIndex] as int
-        LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot[" + convert.ToString(slotIndex) + "] itemId=" + itemId + " amount=" + convert.ToString(amount))
+        var realIdx = _GetRealIndex(slotIndex)
+        if realIdx < 0 { return }
+        
+        var itemId = _CachedItemIDs[realIdx] as string
+        var amount = _CachedItemAmounts[realIdx] as int
+        LogInfo("[PlayerStoreVisual] HandleSlotPressed: display[" + convert.ToString(slotIndex) + "] -> real[" + convert.ToString(realIdx) + "] itemId=" + itemId + " amount=" + convert.ToString(amount))
         
         if amount <= 0 {
             LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot has no stock, ignoring")
@@ -168,8 +213,9 @@ graph PlayerStoreVisual {
     }
 
     func HandleIncrease() {
-        if _SelectedSlotIndex < 0 || _SelectedSlotIndex >= list.Length(_CachedItemAmounts) { return }
-        var maxStock = _CachedItemAmounts[_SelectedSlotIndex] as int
+        var realIdx = _GetRealIndex(_SelectedSlotIndex)
+        if realIdx < 0 { return }
+        var maxStock = _CachedItemAmounts[realIdx] as int
         if _BuyAmount < maxStock {
             _BuyAmount = _BuyAmount + 1
             _UpdateBuyAmountUI()
@@ -184,16 +230,17 @@ graph PlayerStoreVisual {
     }
 
     func HandleBuyAction() {
-        if _IsLoading || _SelectedSlotIndex < 0 || _SelectedSlotIndex >= list.Length(_CachedItemIDs) { return }
+        var realIdx = _GetRealIndex(_SelectedSlotIndex)
+        if _IsLoading || realIdx < 0 { return }
         
-        var selectedItemId = _CachedItemIDs[_SelectedSlotIndex] as string
-        var currentStock = _CachedItemAmounts[_SelectedSlotIndex] as int
+        var selectedItemId = _CachedItemIDs[realIdx] as string
+        var currentStock = _CachedItemAmounts[realIdx] as int
         if currentStock <= 0 || _BuyAmount > currentStock { return }
         
         _IsLoading = true
         
-        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleBuyAction itemId=" + selectedItemId + " amount=" + convert.ToString(_BuyAmount) + " slot=" + convert.ToString(_SelectedSlotIndex)) }
-        DispatchEventToEntity(OnRequestBuyItem, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, selectedItemId, _BuyAmount, _SelectedSlotIndex})
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleBuyAction itemId=" + selectedItemId + " amount=" + convert.ToString(_BuyAmount) + " realSlot=" + convert.ToString(realIdx)) }
+        DispatchEventToEntity(OnRequestBuyItem, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, selectedItemId, _BuyAmount, realIdx})
     }
 
     // --- COUNTDOWN ---
@@ -219,20 +266,30 @@ graph PlayerStoreVisual {
     // --- RENDERING ---
 
     func RenderShopUI() {
-        LogInfo("[PlayerStoreVisual] RenderShopUI CALLED | _StoreUI=" + convert.ToString(_StoreUI != nil) + " _IsOpen=" + convert.ToString(_IsOpen))
+        LogInfo("[PlayerStoreVisual] RenderShopUI CALLED | _StoreUI=" + convert.ToString(_StoreUI != nil) + " _IsOpen=" + convert.ToString(_IsOpen) + " tab=" + convert.ToString(_ActiveTab))
         if _StoreUI == nil { return }
         
+        list.Clear(_FilteredIndices)
         var itemCount = list.Length(_CachedItemIDs)
+        for i = 0, itemCount, 1 {
+            var itemId = _CachedItemIDs[i] as string
+            if itemCfg.GetType(itemId) == _ActiveTab {
+                list.Append(_FilteredIndices, i)
+            }
+        }
+
+        var filteredCount = list.Length(_FilteredIndices)
         var slotCount = storeCfg.GetSlotCount()
         
-        LogInfo("[PlayerStoreVisual] RenderShopUI itemCount=" + convert.ToString(itemCount) + " slotCount=" + convert.ToString(slotCount))
+        LogInfo("[PlayerStoreVisual] RenderShopUI filteredCount=" + convert.ToString(filteredCount) + " slotCount=" + convert.ToString(slotCount))
 
         for i = 0, slotCount, 1 {
             var slotPath = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
             
-            if i < itemCount {
-                var itemId = _CachedItemIDs[i] as string
-                var amount = _CachedItemAmounts[i] as int
+            if i < filteredCount {
+                var realIdx = _FilteredIndices[i] as int
+                var itemId = _CachedItemIDs[realIdx] as string
+                var amount = _CachedItemAmounts[realIdx] as int
                 _SetSlotVisual(slotPath, itemId, amount)
             } else {
                 _ClearSlotVisual(slotPath)
@@ -240,11 +297,14 @@ graph PlayerStoreVisual {
             
             _SetSlotHighlight(i, i == _SelectedSlotIndex)
         }
+
+        _UpdateTabHighlight()
     }
 
     func _UpdateSelectionInfo() {
-        if _StoreUI == nil || _SelectedSlotIndex < 0 || _SelectedSlotIndex >= list.Length(_CachedItemIDs) { return }
-        var itemId = _CachedItemIDs[_SelectedSlotIndex] as string
+        var realIdx = _GetRealIndex(_SelectedSlotIndex)
+        if _StoreUI == nil || realIdx < 0 { return }
+        var itemId = _CachedItemIDs[realIdx] as string
         
         var nameLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/name")
         if nameLabel != nil {
@@ -285,8 +345,9 @@ graph PlayerStoreVisual {
             currentLabel<UIWidgetLabel>.Content = convert.ToString(_BuyAmount)
         }
         if maxLabel != nil {
-            if _SelectedSlotIndex >= 0 && _SelectedSlotIndex < list.Length(_CachedItemAmounts) {
-                maxLabel<UIWidgetLabel>.Content = convert.ToString(_CachedItemAmounts[_SelectedSlotIndex] as int)
+            var realMaxIdx = _GetRealIndex(_SelectedSlotIndex)
+            if realMaxIdx >= 0 {
+                maxLabel<UIWidgetLabel>.Content = convert.ToString(_CachedItemAmounts[realMaxIdx] as int)
             } else {
                 maxLabel<UIWidgetLabel>.Content = "0"
             }

@@ -129,6 +129,106 @@
           },
           "propsData": {},
           "entityVersion": 3
+        },
+        {
+          "_entityName": "Visual effects",
+          "_tag": {
+            "type": "SceneEditEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "_entityId": "d5zyJW7X",
+          "children": [],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": false,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "tempIndex": 21,
+          "itemID": 224,
+          "seParent": null,
+          "ecaScripts": [
+            null
+          ],
+          "ecaProps": {
+            "EffectEntityGenerator": {},
+            "ItemContainerGenerator": {},
+            "Entity": {},
+            "EffectEntity": {},
+            "Playable": {},
+            "Loopable": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Visibility": {}
+          },
+          "propsData": {
+            "effectColor": {
+              "r": 255,
+              "g": 255,
+              "b": 255,
+              "a": 1
+            },
+            "playSpeed": 100,
+            "autoPlay": true,
+            "effectTypeResId": "",
+            "effectTexture": "VFX_Bubble001",
+            "effectTextureRef": {
+              "fileId": "08b018870a36cc693a2aa7efd660d903",
+              "filePath": "lib://fftextures/EffectTextures/Bubble.png",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "texture"
+            },
+            "effectTypeRef": {
+              "fileId": "EffectType_UGC_T_34_LY_WS_VFX1",
+              "filePath": "lib://ffEffects/T_34_LY_WS_VFX1",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "effecttype"
+            },
+            "effectType": "UGC_T_34_LY_WS_VFX1",
+            "isLoop": 1
+          }
         }
       ],
       "activeValue": {
@@ -250,9 +350,16 @@
         "Visibility": {},
         "MeshRender": {},
         "ColliderShape": {},
-        "Collider": {}
+        "Collider": {},
+        "Particles": {
+          "ResRef": null
+        },
+        "Playable": {},
+        "Loopable": {}
       },
-      "propsData": {},
+      "propsData": {
+        "isLoop": 1
+      },
       "entityVersion": 3,
       "mesh": {
         "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",

@@ -329,6 +329,18 @@
           },
           "scriptName": "crop_goldenapple",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "frf2c2sqn8o-mngwq1bq-9ggljlgp34q",
+            "filePath": "Assets\\Resources\\Sprites\\item_buff_plant.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "item_buff_dirt",
+          "children": []
         }
       ]
     },

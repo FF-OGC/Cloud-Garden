@@ -100,6 +100,7 @@ static graph FarmingManager {
             // ==========================================
             } else if intentState == gen.EFarmSlotState.Tilled {
                 var hasSeed = false
+                var hasPotion = false
                 var holdItemId = ""
 
                 if player<backpackData> != nil {
@@ -108,11 +109,42 @@ static graph FarmingManager {
                     if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
                         holdItemId = player<backpackData>._ItemIDs[handle] as string
                         if itemCfg.GetType(holdItemId) == 1 { hasSeed = true }
+                        if itemCfg.GetType(holdItemId) == 4 { hasPotion = true }
                     }
                 }
 
-                if hasSeed {
-                    // ---- PLANT SEED (existing behavior) ----
+                if hasPotion {
+                    // ---- FERTILIZE: apply potion to tilled dirt ----
+                    if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2-FERTILIZE: Applying potion, count=" + validCount) }
+                    
+                    var activeSlot = player<backpackData>._ActiveQuickbarSlot
+                    var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+                    var availableAmt = player<backpackData>._ItemAmounts[handle] as int
+                    var amountToUse = validCount
+                    if availableAmt < validCount { amountToUse = availableAmt }
+
+                    var isConsumed = backpackMgr.ConsumeActiveItem(player, amountToUse)
+                    if isConsumed {
+                        var luckBonus = itemCfg.GetPotionLuckBonus()
+                        var growthReduction = itemCfg.GetPotionGrowthReduction()
+
+                        for i = 0, amountToUse, 1 {
+                            var k = validKeys[i]
+                            floorObj<floorData>.TrySetFertilized(k, luckBonus, growthReduction, player)
+
+                            if map.ContainKey(floorObj<floorData>.SoilVisuals, k) {
+                                var soilEntity = floorObj<floorData>.SoilVisuals[k] as entity
+                                if soilEntity != nil {
+                                    var vfx = GetChildByName(soilEntity, "Visual effects")
+                                    if vfx != nil { vfx<Entity>.ActiveSelf = true }
+                                }
+                            }
+                            LogInfo("[FarmingMgr] Potion applied at key=" + k + " | Growth speed +" + convert.ToString(growthReduction * 100.0) + "% faster | Luck +" + convert.ToString(luckBonus) + "%")
+                        }
+                    }
+
+                } else if hasSeed {
+                    // ---- PLANT SEED ----
                     if gameMgr.IsDebug() { LogInfo("[FarmingMgr] STEP2: Tilled->NeedWatering (Planting)") }
 
                     var activeSlot = player<backpackData>._ActiveQuickbarSlot
@@ -131,7 +163,14 @@ static graph FarmingManager {
                             var k = validKeys[i]
                             var p = validPositions[i]
 
-                            var harvestTime = gameMgr.GetGameTime() + itemCfg.GetGrowthTime(holdItemId)
+                            var growthTime = itemCfg.GetGrowthTime(holdItemId)
+                            if floorObj<floorData>.IsFertilized(k) {
+                                var reduction = floorObj<floorData>.FertilizerGrowthReduction[k] as float
+                                growthTime = growthTime * (1.0 - reduction)
+                                if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Fertilized cell reduction applied, growthTime=" + growthTime) }
+                            }
+                            var harvestTime = gameMgr.GetGameTime() + growthTime
+
                             if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.NeedWatering, player) { continue }
                             floorObj<floorData>.TryPlantCrop(k, holdItemId, harvestTime, p, player)
                             
@@ -258,6 +297,14 @@ static graph FarmingManager {
                     for i = 0, harvestCount, 1 {
                         var k = finalHarvestKeys[i]
                         var p = finalHarvestPos[i]
+
+                        if map.ContainKey(floorObj<floorData>.SoilVisuals, k) {
+                            var soilEntity = floorObj<floorData>.SoilVisuals[k]
+                            if soilEntity != nil {
+                                var vfx = GetChildByName(soilEntity, "Visual effects")
+                                if vfx != nil { vfx<Entity>.ActiveSelf = false }
+                            }
+                        }
 
                         if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Tilled, player) { continue }
                         DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorObj, p, gen.EFarmSlotState.Tilled})

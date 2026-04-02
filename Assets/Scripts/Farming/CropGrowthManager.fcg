@@ -50,6 +50,11 @@ static graph CropGrowthManager {
                                             bonusRate = gachaCfg.GetLuckyDirtMutationBonus()
                                             if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Lucky dirt bonus +" + bonusRate + "% at key=" + key) }
                                         }
+                                        if floor<floorData>.IsFertilized(key) {
+                                            var fertBonus = floor<floorData>.FertilizerLuckBonus[key] as int
+                                            bonusRate = bonusRate + fertBonus
+                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Fertilizer bonus +" + fertBonus + "% at key=" + key + " total=" + bonusRate) }
+                                        }
                                         var resultCropId = gachaManager.RollForHarvest(owner, seedId, bonusRate)
                                         var normalCropId = itemCfg.GetHarvestYield(seedId)
                                         if resultCropId != normalCropId {

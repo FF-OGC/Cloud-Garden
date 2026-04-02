@@ -700,7 +700,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "BUY",
+                          "value": "SEED",
                           "key": "K_BUY",
                           "font": "Default",
                           "fontSize": 24,
@@ -1002,7 +1002,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "BUY",
+                          "value": "SEED",
                           "key": "K_BUY",
                           "font": "Default",
                           "fontSize": 24,
@@ -1052,7 +1052,7 @@
                   ],
                   "prefabVariant": null,
                   "activeValue": {
-                    "selfValue": false,
+                    "selfValue": true,
                     "valueTag": "activeValue"
                   },
                   "unlockedValue": {
@@ -1060,7 +1060,7 @@
                     "valueTag": "unlockedValue"
                   },
                   "propsData": {
-                    "activeSelf": false,
+                    "activeSelf": true,
                     "transform": {
                       "rotate": 0,
                       "anchorMin": {
@@ -1151,7 +1151,7 @@
               ],
               "prefabVariant": null,
               "activeValue": {
-                "selfValue": false,
+                "selfValue": true,
                 "valueTag": "activeValue"
               },
               "unlockedValue": {
@@ -1159,7 +1159,7 @@
                 "valueTag": "unlockedValue"
               },
               "propsData": {
-                "activeSelf": false,
+                "activeSelf": true,
                 "transform": {
                   "rotate": 0,
                   "anchorMin": {
@@ -1239,7 +1239,16 @@
                   }
                 }
               },
-              "ecaScripts": [],
+              "ecaScripts": [
+                {
+                  "fileId": "8kdp531fy4-mmytmjv6-zzpc3obeso",
+                  "filePath": "Assets\\Scripts\\Services\\Utils\\Button.fcg",
+                  "_tag": {
+                    "type": "GFileRefer"
+                  },
+                  "fileType": "ugcscript"
+                }
+              ],
               "ecaProps": {
                 "HudButtonWidget": {},
                 "HudWidget": {},
@@ -1248,13 +1257,17 @@
                   "PROP_87099051": "store_tab_buy",
                   "PROP_97884365": 0,
                   "PROP_79902060": 0
+                },
+                "CustomComponent62548545": {
+                  "PROP_41899047": "store_tab_seed",
+                  "PROP_24899680": 0
                 }
               },
               "componentList": [
-                "CustomComponent36856112"
+                "CustomComponent62548545"
               ],
               "_filters": [],
-              "_entityName": "buy",
+              "_entityName": "Seed",
               "entityTagData": {
                 "tagPointers": []
               },
@@ -1319,7 +1332,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "SELL",
+                          "value": "SPECIAL ITEM",
                           "key": "K_SELL",
                           "font": "Default",
                           "fontSize": 24,
@@ -1621,7 +1634,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "SELL",
+                          "value": "SPECIAL ITEM",
                           "key": "K_SELL",
                           "font": "Default",
                           "fontSize": 24,
@@ -1770,7 +1783,7 @@
               ],
               "prefabVariant": null,
               "activeValue": {
-                "selfValue": false,
+                "selfValue": true,
                 "valueTag": "activeValue"
               },
               "unlockedValue": {
@@ -1778,7 +1791,7 @@
                 "valueTag": "unlockedValue"
               },
               "propsData": {
-                "activeSelf": false,
+                "activeSelf": true,
                 "transform": {
                   "rotate": 0,
                   "anchorMin": {
@@ -1858,7 +1871,16 @@
                   }
                 }
               },
-              "ecaScripts": [],
+              "ecaScripts": [
+                {
+                  "fileId": "8kdp531fy4-mmytmjv6-zzpc3obeso",
+                  "filePath": "Assets\\Scripts\\Services\\Utils\\Button.fcg",
+                  "_tag": {
+                    "type": "GFileRefer"
+                  },
+                  "fileType": "ugcscript"
+                }
+              ],
               "ecaProps": {
                 "HudButtonWidget": {},
                 "HudWidget": {},
@@ -1867,13 +1889,17 @@
                   "PROP_87099051": "store_tab_sell",
                   "PROP_97884365": 0,
                   "PROP_79902060": 0
+                },
+                "CustomComponent62548545": {
+                  "PROP_41899047": "store_tab_specialItem",
+                  "PROP_24899680": 0
                 }
               },
               "componentList": [
-                "CustomComponent36856112"
+                "CustomComponent62548545"
               ],
               "_filters": [],
-              "_entityName": "sell",
+              "_entityName": "Special Item",
               "entityTagData": {
                 "tagPointers": []
               },
@@ -1883,7 +1909,7 @@
           ],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": false,
+            "selfValue": true,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -1891,7 +1917,7 @@
             "valueTag": "unlockedValue"
           },
           "propsData": {
-            "activeSelf": false,
+            "activeSelf": true,
             "transform": {
               "rotate": 0,
               "anchorMin": {

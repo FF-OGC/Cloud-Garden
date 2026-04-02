@@ -1,0 +1,119 @@
+{
+  "_tag": {
+    "type": "ParticleSystem"
+  },
+  "_entityId": "shtrEmKL",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "Duration": 10000,
+  "Loop": true,
+  "Lifetime": 0.25,
+  "LifetimeRandomness": 0,
+  "SimulationSpace": 0,
+  "SimulationSpeed": 0.25,
+  "MaxParticles": 50,
+  "RateOverTime": 15,
+  "StartSpeed": 0,
+  "StartSpeedRandomness": 0,
+  "Velocity": {
+    "x": 0,
+    "y": 0.5,
+    "z": 0
+  },
+  "VelocityRandomness": {
+    "x": 0,
+    "y": 0.8,
+    "z": 0
+  },
+  "Size": 0.5,
+  "SizeRandomness": 0.25,
+  "Angle": 0,
+  "AngleRandomness": 0,
+  "AngularVelocity": 0,
+  "AngularVelocityRandomness": 0,
+  "Acceleration": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "AccelerationRandomness": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "Damping": 0,
+  "DampingRandomness": 0,
+  "Color": {
+    "r": 0,
+    "g": 96,
+    "b": 24,
+    "a": 1
+  },
+  "GradientStart": {
+    "r": 255,
+    "g": 255,
+    "b": 255,
+    "a": 1
+  },
+  "GradientEnd": {
+    "r": 255,
+    "g": 255,
+    "b": 255,
+    "a": 1
+  },
+  "Shape": 5,
+  "Radius": 1,
+  "ConeAngle": 25,
+  "ShapePosition": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "ShapeRotation": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "ShapeScale": {
+    "x": 0.15,
+    "y": 0,
+    "z": 0.15
+  },
+  "Mode": 0,
+  "Texture": null,
+  "ShapeMesh": null,
+  "RenderMode": 3,
+  "RenderMesh": null,
+  "Material": {
+    "fileId": "0wrb5clkfajo-mngwtynh-2vkh0twkkg5",
+    "filePath": "Assets\\Resources\\Effects\\glow.mat",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "material"
+  },
+  "RenderSortMode": 0,
+  "StartSizeCurve": "0, 0, 0.1, 0, 0.9, 0, 1, 0",
+  "AngleCurve": "0, 0, 0.1, 0, 0.9, 0, 1, 0",
+  "VelocityCurve": {
+    "x": "0,0,0.1,0,0.9,0,1,0",
+    "y": "0,0,0.1,0,0.9,0,1,0",
+    "z": "0, 0, 0.1, 0, 0.9, 0, 1, 0"
+  },
+  "AccelerationCurve": {
+    "x": "0, 0, 0.1, 0, 0.9, 0, 1, 0",
+    "y": "0, 0, 0.1, 0, 0.9, 0, 1, 0",
+    "z": "0, 0, 0.1, 0, 0.9, 0, 1, 0"
+  }
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
