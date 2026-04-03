@@ -2028,7 +2028,7 @@
               },
               "position": {
                 "x": 0,
-                "y": 0,
+                "y": 0.5,
                 "z": 0
               },
               "scale": {
@@ -2187,7 +2187,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 44,
+          "tempIndex": 1,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -2224,7 +2224,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 3,
             "y": 0.2,
@@ -3399,7 +3402,7 @@
             },
             "position": {
               "x": 0,
-              "y": 0,
+              "y": 0.5,
               "z": 0
             },
             "scale": {
@@ -4562,7 +4565,7 @@
               },
               "position": {
                 "x": 0,
-                "y": 0,
+                "y": 0.5,
                 "z": 0
               },
               "scale": {
@@ -4721,7 +4724,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 45,
+          "tempIndex": 2,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -4758,7 +4761,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 3,
             "y": 0.2,
@@ -5915,7 +5921,7 @@
             },
             "position": {
               "x": 0,
-              "y": 0,
+              "y": 0.5,
               "z": 0
             },
             "scale": {
@@ -7078,7 +7084,7 @@
               },
               "position": {
                 "x": 0,
-                "y": 0,
+                "y": 0.5,
                 "z": 0
               },
               "scale": {
@@ -7237,7 +7243,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 46,
+          "tempIndex": 3,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -7274,7 +7280,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 3,
             "y": 0.2,
@@ -8431,7 +8440,7 @@
             },
             "position": {
               "x": 0,
-              "y": 0,
+              "y": 0.5,
               "z": 0
             },
             "scale": {
@@ -9594,7 +9603,7 @@
               },
               "position": {
                 "x": 0,
-                "y": 0,
+                "y": 0.5,
                 "z": 0
               },
               "scale": {
@@ -9753,7 +9762,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 47,
+          "tempIndex": 4,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -9790,7 +9799,10 @@
             "selfValue": true,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "position": {
             "x": 3,
             "y": 0.2,
@@ -10947,7 +10959,7 @@
             },
             "position": {
               "x": 0,
-              "y": 0,
+              "y": 0.5,
               "z": 0
             },
             "scale": {

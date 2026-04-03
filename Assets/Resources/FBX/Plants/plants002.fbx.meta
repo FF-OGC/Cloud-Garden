@@ -1,0 +1,962 @@
+{
+  "fileId": "13rs8yuyoxug-mnimcca1-0le7l3v1l81d",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [
+      {
+        "Name": "apple_fruit0.~@FFFUB",
+        "MeshName": "apple_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_fruit1.~@FFFUB",
+        "MeshName": "apple_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_fruit2.~@FFFUB",
+        "MeshName": "apple_fruit2",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_fruit3.~@FFFUB",
+        "MeshName": "apple_fruit3",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_fruit4.~@FFFUB",
+        "MeshName": "apple_fruit4",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_fruit65.~@FFFUB",
+        "MeshName": "apple_fruit65",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_seed.~@FFFUB",
+        "MeshName": "apple_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_seedling.~@FFFUB",
+        "MeshName": "apple_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "apple_stem.~@FFFUB",
+        "MeshName": "apple_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "bamboo_seed.~@FFFUB",
+        "MeshName": "bamboo_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "bamboo_seedling.~@FFFUB",
+        "MeshName": "bamboo_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "bamboo_stem.~@FFFUB",
+        "MeshName": "bamboo_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_fruit0.~@FFFUB",
+        "MeshName": "chili_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_fruit1.~@FFFUB",
+        "MeshName": "chili_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_fruit2.~@FFFUB",
+        "MeshName": "chili_fruit2",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_seed.~@FFFUB",
+        "MeshName": "chili_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_seedling.~@FFFUB",
+        "MeshName": "chili_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "chili_stem.~@FFFUB",
+        "MeshName": "chili_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "Cylinder.001.~@FFFUB",
+        "MeshName": "Cylinder.001",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "Cylinder.015.~@FFFUB",
+        "MeshName": "Cylinder.015",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "rose_fruit.~@FFFUB",
+        "MeshName": "rose_fruit",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "rose_seed.~@FFFUB",
+        "MeshName": "rose_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "rose_seedilng.~@FFFUB",
+        "MeshName": "rose_seedilng",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "rose_stem.~@FFFUB",
+        "MeshName": "rose_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_fruit0.~@FFFUB",
+        "MeshName": "strawberry_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_fruit1.~@FFFUB",
+        "MeshName": "strawberry_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_fruit2.~@FFFUB",
+        "MeshName": "strawberry_fruit2",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_seed.~@FFFUB",
+        "MeshName": "strawberry_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_seedling.~@FFFUB",
+        "MeshName": "strawberry_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "strawberry_stem.~@FFFUB",
+        "MeshName": "strawberry_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "贴图1不透明.001.~@FFFUB",
+        "MeshName": "贴图1不透明.001",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      }
+    ],
+    "BoneInfos": [],
+    "Anims": [],
+    "ManifestJSON": {
+      "FBXName": "plants002",
+      "ImportSucceeded": true,
+      "MaterialCount": 1,
+      "MaterialDetail": [
+        {
+          "Index": 0,
+          "MaterialName": "Plants.005"
+        }
+      ],
+      "MeshCount": 31,
+      "MeshDetail": [
+        {
+          "MeshName": "chili_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.4867,
+              0.0190659,
+              -2.92435
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "chili_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.55294,
+              0.0246659,
+              -2.9459
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              0.799576,
+              0.799576,
+              0.799576
+            ]
+          }
+        },
+        {
+          "MeshName": "bamboo_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.5521,
+              0.0192261,
+              -1.99828
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.77229,
+              0.0179053,
+              -0.414331
+            ],
+            "Rotation": [
+              1.88462,
+              -73.489,
+              0.428249
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.50181,
+              0.0188561,
+              -0.407094
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "贴图1不透明.001",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -0.0740415,
+              0.0179053,
+              -0.414331
+            ],
+            "Rotation": [
+              1.88462,
+              -73.489,
+              0.428249
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.71352,
+              0.0195685,
+              0.953114
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.79784,
+              0.172195,
+              1.02888
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.72444,
+              0.162276,
+              0.848267
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_fruit2",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.59123,
+              0.15078,
+              0.911185
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "Cylinder.001",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -0.0808202,
+              0.0195685,
+              0.953114
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.484,
+              0.00915439,
+              0.953114
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "Cylinder.015",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -0.0174619,
+              0.00749214,
+              2.52838
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "rose_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.55994,
+              0.0261501,
+              2.49287
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "strawberry_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.56377,
+              0.0231097,
+              0.935216
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.55682,
+              0.0238695,
+              -0.422994
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "chili_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.62885,
+              0.0201855,
+              -2.94582
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "chili_fruit2",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.55124,
+              0.59421,
+              -2.84302
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "chili_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.69684,
+              0.415938,
+              -2.8602
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "chili_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.57915,
+              0.530127,
+              -2.90385
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "bamboo_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.4916,
+              0.013938,
+              -1.98321
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "bamboo_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.77322,
+              0.00086315,
+              -1.9683
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit2",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.80277,
+              0.87274,
+              -0.688248
+            ],
+            "Rotation": [
+              0.0000318311,
+              -106.715,
+              0.682965
+            ],
+            "Scale": [
+              0.0720359,
+              0.0720359,
+              0.0720359
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit3",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.606,
+              0.945974,
+              0.0246429
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.38062,
+              0.682194,
+              -0.357125
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -2.14854,
+              0.745556,
+              -0.210052
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit4",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.86202,
+              1.26122,
+              -0.218049
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "apple_fruit65",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.51074,
+              1.49738,
+              -0.389037
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "rose_seedilng",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.44969,
+              0.0163489,
+              2.53646
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "rose_fruit",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.72199,
+              0.47534,
+              2.53387
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "rose_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.72294,
+              0.00749214,
+              2.52838
+            ],
+            "Rotation": [
+              -0.00000933467,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "subColliderLOD": {
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit0.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit1.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit2.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit3.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit4.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_fruit65.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_seed.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_seedling.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-apple_stem.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-bamboo_seed.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-bamboo_seedling.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-bamboo_stem.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_fruit0.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_fruit1.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_fruit2.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_seed.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_seedling.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-chili_stem.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-Cylinder.001.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-Cylinder.015.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-rose_fruit.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-rose_seed.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-rose_seedilng.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-rose_stem.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_fruit0.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_fruit1.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_fruit2.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_seed.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_seedling.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-strawberry_stem.~@FFFUB": 0,
+    "13rs8yuyoxug-mnimcca1-0le7l3v1l81d-贴图1不透明.001.~@FFFUB": 0
+  }
+}

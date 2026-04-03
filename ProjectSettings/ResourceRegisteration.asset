@@ -164,7 +164,7 @@
         {
           "refer": {
             "fileId": "ijtx4xqb7q-mmt1v2np-aeetgw25cc4",
-            "filePath": "Assets\\Prefabs\\seed_1.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\seed_1.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -176,7 +176,7 @@
         {
           "refer": {
             "fileId": "9pep8hh99oc-mmt1ymtv-kpm3xaryn48",
-            "filePath": "Assets\\Prefabs\\seed_needtowatering.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\seed_needtowatering.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -188,7 +188,7 @@
         {
           "refer": {
             "fileId": "8m3oibzu5t-mmt29m4k-1x0hnig3uec",
-            "filePath": "Assets\\Prefabs\\growed_seed.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\growed_seed.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -224,7 +224,7 @@
         {
           "refer": {
             "fileId": "4yntin8c1cy-mnebui9u-54eo5o8ntzr",
-            "filePath": "Assets\\Prefabs\\growed_mutationseed.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\growed_mutationseed.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -248,7 +248,7 @@
         {
           "refer": {
             "fileId": "biybci49m2c-mnfv5twq-wa3ce69jq7",
-            "filePath": "Assets\\Prefabs\\growed_mutation_apple.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\growed_mutation_apple.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -260,13 +260,73 @@
         {
           "refer": {
             "fileId": "b3nfl2f0soe-mnfuyjek-hajdj234ex5",
-            "filePath": "Assets\\Prefabs\\growed_apple.prefab",
+            "filePath": "Assets\\Prefabs\\Plants\\growed_apple.prefab",
             "_tag": {
               "type": "GFileRefer"
             },
             "fileType": "prefab"
           },
           "scriptName": "crop_apple",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "htlwelbrhqu-mnirpfom-vty9j29unke",
+            "filePath": "Assets\\Prefabs\\Plants\\apple_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_apple",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "wpaokuflmmo-mnirpfon-xdu34zgsrof",
+            "filePath": "Assets\\Prefabs\\Plants\\carrot_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_carrot",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "f1kd5pdr0t-mnirpfot-9h1lhl0j9js",
+            "filePath": "Assets\\Prefabs\\Plants\\tomato_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "seed_tomato",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "76q7opuy4-mnirpfos-ys8dpvkk42",
+            "filePath": "Assets\\Prefabs\\Plants\\tomato_fruit.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_tomato",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "ygobx3jjr6r-mnirpfoo-qm7wdvrch5j",
+            "filePath": "Assets\\Prefabs\\Plants\\carrot_stem.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_carrot",
           "children": []
         }
       ]
@@ -340,6 +400,54 @@
             "fileType": "texture"
           },
           "scriptName": "item_buff_dirt",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "sk54bhhhbp-mnim9ztp-grekxleulqr",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\seed_carrot.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_carrot",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "w7lthxfwlt-mnim9zwv-rtgtgfim52i",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\seed_tomato.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_tomato",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "nrb0jjv8p79-mnim9111-1sfs6k7h4lc",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\fruit_tomato.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_tomato",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "ngmjc7zz3n-mnim9zqh-gw1lv9koz9b",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\fruit_carrot.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_carrot",
           "children": []
         }
       ]

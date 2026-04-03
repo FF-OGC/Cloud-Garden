@@ -1,0 +1,812 @@
+{
+  "fileId": "lcm86439cx-mnimc877-8zw8oa8zrxk",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [
+      {
+        "Name": "carrot_seed.~@FFFUB",
+        "MeshName": "carrot_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "carrot_seedling.~@FFFUB",
+        "MeshName": "carrot_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "carrot_stem.~@FFFUB",
+        "MeshName": "carrot_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_fruit0.~@FFFUB",
+        "MeshName": "coconut_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_fruit1.~@FFFUB",
+        "MeshName": "coconut_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_fruit2.~@FFFUB",
+        "MeshName": "coconut_fruit2",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_seed.~@FFFUB",
+        "MeshName": "coconut_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_seedling.~@FFFUB",
+        "MeshName": "coconut_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "coconut_stem.~@FFFUB",
+        "MeshName": "coconut_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "corn_fruit0.~@FFFUB",
+        "MeshName": "corn_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "corn_fruit1.~@FFFUB",
+        "MeshName": "corn_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "corn_seed.~@FFFUB",
+        "MeshName": "corn_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "corn_seedling.~@FFFUB",
+        "MeshName": "corn_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "corn_stem.~@FFFUB",
+        "MeshName": "corn_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "onion_seed1.~@FFFUB",
+        "MeshName": "onion_seed1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "onion_seedling.~@FFFUB",
+        "MeshName": "onion_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "onion_stem.~@FFFUB",
+        "MeshName": "onion_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "tomato_fruit1.~@FFFUB",
+        "MeshName": "tomato_fruit1",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "tomato_seed.~@FFFUB",
+        "MeshName": "tomato_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "tomato_seedling.~@FFFUB",
+        "MeshName": "tomato_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "tomato_stem.~@FFFUB",
+        "MeshName": "tomato_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "tomtato_fruit0.~@FFFUB",
+        "MeshName": "tomtato_fruit0",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "watermelon_fruit.~@FFFUB",
+        "MeshName": "watermelon_fruit",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "watermelon_seed.~@FFFUB",
+        "MeshName": "watermelon_seed",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "watermelon_seedling.~@FFFUB",
+        "MeshName": "watermelon_seedling",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "watermelon_stem.~@FFFUB",
+        "MeshName": "watermelon_stem",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      }
+    ],
+    "BoneInfos": [],
+    "Anims": [],
+    "ManifestJSON": {
+      "FBXName": "plants001",
+      "ImportSucceeded": true,
+      "MaterialCount": 1,
+      "MaterialDetail": [
+        {
+          "Index": 0,
+          "MaterialName": "Plants.001"
+        }
+      ],
+      "MeshCount": 26,
+      "MeshDetail": [
+        {
+          "MeshName": "watermelon_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.00791,
+              1.75349,
+              0.151842
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "carrot_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.04691,
+              -1.66792,
+              -0.0118793
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "corn_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.08245,
+              3.08927,
+              0.15381
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "corn_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.990139,
+              3.08352,
+              0.151129
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "corn_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.06357,
+              3.09456,
+              -0.206764
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "corn_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.09144,
+              3.09749,
+              -0.534569
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "carrot_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              2.00074,
+              -1.70738,
+              0.128347
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "corn_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.92996,
+              3.03503,
+              0.137659
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "onion_seed1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.94948,
+              0.673268,
+              0.134853
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -2.56198,
+              -2.89518,
+              0.147925
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_fruit2",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -2.66965,
+              -2.67462,
+              -1.71511
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.92869,
+              -2.76253,
+              0.0414551
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -2.5188,
+              -2.98435,
+              -1.6678
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -2.99581,
+              -2.99175,
+              -1.61878
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "watermelon_fruit",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.0734,
+              1.96661,
+              0.164303
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "watermelon_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.92994,
+              1.89326,
+              0.136648
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "tomato_seed",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              1.99354,
+              -0.515849,
+              0.141631
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "tomato_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.0306,
+              -0.618988,
+              0.153946
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "tomato_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.917385,
+              -0.513078,
+              0.148925
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "carrot_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.914667,
+              -1.66789,
+              0.147646
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "watermelon_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.997849,
+              1.90179,
+              0.152358
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "coconut_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.810612,
+              -2.76253,
+              0.0597725
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "onion_seedling",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              0.937526,
+              0.700735,
+              0.166456
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "onion_stem",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.05986,
+              0.699903,
+              0.100408
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "tomtato_fruit0",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.08898,
+              -0.469255,
+              -0.138105
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "MeshName": "tomato_fruit1",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -0.950755,
+              -0.628332,
+              -0.320449
+            ],
+            "Rotation": [
+              -90,
+              0,
+              0
+            ],
+            "Scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "subColliderLOD": {
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_seed.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_stem.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_fruit0.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_fruit1.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_fruit2.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_seed.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-coconut_stem.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-corn_fruit0.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-corn_fruit1.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-corn_seed.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-corn_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-corn_stem.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-onion_seed1.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-onion_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-onion_stem.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-tomato_fruit1.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-tomato_seed.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-tomato_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-tomato_stem.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-tomtato_fruit0.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-watermelon_fruit.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-watermelon_seed.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-watermelon_seedling.~@FFFUB": 0,
+    "lcm86439cx-mnimc877-8zw8oa8zrxk-watermelon_stem.~@FFFUB": 0
+  }
+}

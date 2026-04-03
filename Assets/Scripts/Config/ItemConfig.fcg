@@ -7,9 +7,9 @@ static graph ItemConfig {
     
     // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool, 4 = Special Item
     func GetType(itemId string) int {
-        if itemId == "seed_apple" || itemId == "seed_tomato" { return 1 }
-        if itemId == "crop_apple" || itemId == "crop_tomato" { return 2 }
-        if itemId == "crop_apple_gold" || itemId == "crop_tomato_gold" { return 2 }
+        if itemId == "seed_apple" || itemId == "seed_tomato" || itemId == "seed_carrot" { return 1 }
+        if itemId == "crop_apple" || itemId == "crop_tomato" || itemId == "crop_carrot" { return 2 }
+        if itemId == "crop_apple_gold" || itemId == "crop_tomato_gold" || itemId == "crop_carrot_gold" { return 2 }
         if itemId == "potion" { return 4 }
         return 3
     }
@@ -29,24 +29,28 @@ static graph ItemConfig {
     // Returns Growth Time (in seconds) for seeds
     func GetGrowthTime(itemId string) float {
         if itemId == "seed_apple" { return 30.0 }
+        if itemId == "seed_carrot" { return 45.0 }
         if itemId == "seed_tomato" { return 90.0 }
-        return 60.0 // Default fallback time
+        return 60.0
     }
 
     // Maps the Seed ID to its corresponding Crop ID yield
     func GetHarvestYield(seedId string) string {
         if seedId == "seed_apple" { return "crop_apple" }
+        if seedId == "seed_carrot" { return "crop_carrot" }
         if seedId == "seed_tomato" { return "crop_tomato" }
         return "crop_default"
     }
 
     func GetItemName(itemId string) string {
         if itemId == "seed_apple" { return "Apple Seed" }
-        if itemId == "seed_tomato" { return "Tomato Seed" }
         if itemId == "seed_carrot" { return "Carrot Seed" }
+        if itemId == "seed_tomato" { return "Tomato Seed" }
         if itemId == "crop_apple" { return "Apple" }
+        if itemId == "crop_carrot" { return "Carrot" }
         if itemId == "crop_tomato" { return "Tomato" }
         if itemId == "crop_apple_gold" { return "Golden Apple" }
+        if itemId == "crop_carrot_gold" { return "Golden Carrot" }
         if itemId == "crop_tomato_gold" { return "Golden Tomato" }
         if itemId == "watering_can" { return "Watering Can" }
         if itemId == "potion" { return "Growth Potion" }
@@ -55,16 +59,19 @@ static graph ItemConfig {
 
     func GetBuyPrice(itemId string) int {
         if itemId == "seed_apple" { return 20 }
-        if itemId == "seed_tomato" { return 15 }
+        if itemId == "seed_carrot" { return 25 }
+        if itemId == "seed_tomato" { return 35 }
         if itemId == "potion" { return 50 }
         return 10
     }
 
     func GetSellPrice(itemId string) int {
         if itemId == "crop_apple" { return 30 }
-        if itemId == "crop_tomato" { return 25 }
+        if itemId == "crop_carrot" { return 40 }
+        if itemId == "crop_tomato" { return 55 }
         if itemId == "crop_apple_gold" { return 150 }
-        if itemId == "crop_tomato_gold" { return 120 }
+        if itemId == "crop_carrot_gold" { return 200 }
+        if itemId == "crop_tomato_gold" { return 275 }
         return 10
     }
 
@@ -72,13 +79,16 @@ static graph ItemConfig {
     // 1. UI DICTIONARY (For Backpack 2D Icons)
     // ==========================================
     func GetIconKey(itemId string) SpriteID {
-        // Replace these with your actual registered UI Resource Keys from the Editor
         if itemId == "seed_apple" { return EResSprite.seed_apple }
+        if itemId == "seed_carrot" { return EResSprite.seed_carrot }
+        if itemId == "seed_tomato" { return EResSprite.seed_tomato }
         if itemId == "crop_apple" { return EResSprite.crop_apple }
+        if itemId == "crop_carrot" { return EResSprite.crop_carrot }
+        if itemId == "crop_tomato" { return EResSprite.crop_tomato }
         if itemId == "crop_apple_gold" { return EResSprite.crop_goldenapple }
-        if itemId == "crop_tomato_gold" { return EResSprite.crop_apple }
+        if itemId == "crop_carrot_gold" { return EResSprite.crop_carrot }
+        if itemId == "crop_tomato_gold" { return EResSprite.crop_tomato }
         if itemId == "potion" { return EResSprite.item_buff_dirt }
-        
         return EResSprite.seed_apple 
     }
 
@@ -95,16 +105,18 @@ static graph ItemConfig {
         
         // STAGE 2: GROWING (Differentiate by plant type)
         if state == gen.EFarmSlotState.Growing {
-            if seedId == "seed_apple" { return gen.EResPrefab.seed_model } 
-            if seedId == "seed_tomato" { return gen.EResPrefab.seed_model }   
-            return gen.EResPrefab.seed_model // Default growing model
+            if seedId == "seed_apple" { return gen.EResPrefab.seed_apple }
+            if seedId == "seed_carrot" { return gen.EResPrefab.seed_carrot }
+            if seedId == "seed_tomato" { return gen.EResPrefab.seed_tomato }
+            return gen.EResPrefab.seed_model
         }
         
         // STAGE 3: READY TO HARVEST (Differentiate by plant type)
         if state == gen.EFarmSlotState.ReadyToHarvest {
-            if seedId == "seed_apple" { return gen.EResPrefab.crop_apple } 
-            if seedId == "seed_tomato" { return gen.EResPrefab.seed_growed }   
-            return gen.EResPrefab.seed_growed // Default mature model
+            if seedId == "seed_apple" { return gen.EResPrefab.crop_apple }
+            if seedId == "seed_carrot" { return gen.EResPrefab.crop_carrot }
+            if seedId == "seed_tomato" { return gen.EResPrefab.crop_tomato }
+            return gen.EResPrefab.seed_growed
         }
 
         return gen.EResPrefab.dirt_tilled // Fallback
@@ -113,6 +125,7 @@ static graph ItemConfig {
     // Returns the mutant/golden prefab for ReadyToHarvest state
     func GetMutantPlantPrefab(seedId string) PrefabID {
         if seedId == "seed_apple" { return gen.EResPrefab.crop_mutation_apple }
+        if seedId == "seed_carrot" { return gen.EResPrefab.mutation_seed_growed }
         if seedId == "seed_tomato" { return gen.EResPrefab.mutation_seed_growed }
         return gen.EResPrefab.mutation_seed_growed
     }
@@ -123,10 +136,15 @@ static graph ItemConfig {
             return "seed_needwatering"
         }
         if state == gen.EFarmSlotState.Growing {
+            if seedId == "seed_apple" { return "seed_apple" }
+            if seedId == "seed_carrot" { return "seed_carrot" }
+            if seedId == "seed_tomato" { return "seed_tomato" }
             return "seed_model"
         }
         if state == gen.EFarmSlotState.ReadyToHarvest {
             if seedId == "seed_apple" { return "crop_apple" }
+            if seedId == "seed_carrot" { return "crop_carrot" }
+            if seedId == "seed_tomato" { return "crop_tomato" }
             return "seed_growed"
         }
         return "seed_model"

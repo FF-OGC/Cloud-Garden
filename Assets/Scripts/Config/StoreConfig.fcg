@@ -14,23 +14,25 @@ static graph StoreConfig {
 
     // --- Guaranteed items (always appear after refresh) ---
     func GetGuaranteedItems() List<string> {
-        return List<string>{"seed_apple", "potion"}
+        return List<string>{"seed_apple", "seed_carrot", "seed_tomato", "potion"}
     }
     func GetGuaranteedStock(itemId string) int {
         if itemId == "seed_apple" { return 10 }
+        if itemId == "seed_carrot" { return 8 }
+        if itemId == "seed_tomato" { return 5 }
         if itemId == "potion" { return 5 }
         return 0
     }
 
     // --- Random pool (gacha roll each refresh) ---
     func GetPoolItemIDs() List<string> {
-        return List<string>{"seed_apple"}
+        return List<string>{"seed_apple", "seed_carrot", "seed_tomato"}
     }
     func GetPoolItemRates() List<int> {
-        return List<int>{100}
+        return List<int>{50, 30, 20}
     }
-    func GetPoolItemMinQty() List<int> { return List<int>{1} }
-    func GetPoolItemMaxQty() List<int> { return List<int>{10} }
+    func GetPoolItemMinQty() List<int> { return List<int>{1, 1, 1} }
+    func GetPoolItemMaxQty() List<int> { return List<int>{10, 8, 5} }
 
     // --- Global pool limit (0 = unlimited) ---
     func GetGlobalPoolLimit(itemId string) int {

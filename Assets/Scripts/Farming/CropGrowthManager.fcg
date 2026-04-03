@@ -68,7 +68,7 @@ static graph CropGrowthManager {
                                 
                                 if map.ContainKey(cropPositions, key) {
                                     var gridPos = cropPositions[key] as Vector3
-                                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
+                                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
                                 }
                                 
                                 map.Remove(harvestTimes, key)

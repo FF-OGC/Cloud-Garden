@@ -203,13 +203,11 @@ static graph GameManager {
             }
         }
 
-        // 4. Add Seed to Backpack
-        var seedId = "seed_apple"
-        var amount = 50
-        if(backpackManager.AddItem(player, seedId, amount)) {
-            if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
-        }
-        backpackManager.AddItem(player, "crop_apple_gold", 1)
+        // 4. Add Seeds to Backpack
+        backpackManager.AddItem(player, "seed_apple", 20)
+        backpackManager.AddItem(player, "seed_carrot", 15)
+        backpackManager.AddItem(player, "seed_tomato", 10)
+        if _IsDebug { LogInfo("[GameManager] Added starting seeds to backpack.") }
 
         currencyManager.InitPlayerCurrency(player, 500)
 

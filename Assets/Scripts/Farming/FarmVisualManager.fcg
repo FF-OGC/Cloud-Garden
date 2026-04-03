@@ -64,23 +64,33 @@ static graph FarmVisualManager {
             if newState == gen.EFarmSlotState.ReadyToHarvest {
                 if map.ContainKey(floor<floorData>.GachaResults, key) {
                     prefabKey = itemCfg.GetMutantPlantPrefabKey(plantedSeedId)
-                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Using MUTANT prefab for seed=" + plantedSeedId) }
                 }
             }
 
-            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Getting plant from pool, key=" + prefabKey) }
+            LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey)
             
             var plantObj = cropPool.Get(prefabKey)
+            
             if plantObj != nil {
-                plantObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, surfaceY + 0.1, floorPos.Z + gridPos.Z}
+                var targetPos = Vector3{floorPos.X + gridPos.X, surfaceY + 0.1, floorPos.Z + gridPos.Z}
+                plantObj<Transform>.Position = targetPos
+                
+                var child = GetChildByName(plantObj, plantObj<Entity>.Name)
+                if child != nil {
+                    child<Transform>.Position = targetPos
+                    LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf)
+                } else {
+                    LogInfo("[VISUAL-DBG] NO child found, entity is leaf node")
+                }
+                
                 floor<floorData>.PlantVisuals[key] = plantObj
                 floor<floorData>.PlantPrefabKeys[key] = prefabKey
-                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Plant visual from pool OK at key=" + key) }
+                LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf)
             } else {
-                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to get plant from pool") }
+                LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey)
             }
         } else {
-            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] No seed planted at key=" + key + ", skipping visual") }
+            LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping")
         }
     }
 
