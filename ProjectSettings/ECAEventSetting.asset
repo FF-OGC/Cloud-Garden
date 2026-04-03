@@ -21,28 +21,6 @@
       "version": 45,
       "key": "signal_86389280"
     },
-    "signal_20131491": {
-      "name": "OnPlayerTapButton",
-      "eventType": 0,
-      "enitityType": "Component",
-      "typeID": 100004,
-      "props": [
-        {
-          "name": "button",
-          "value": "HudButtonWidget",
-          "key": 1
-        },
-        {
-          "name": "player",
-          "value": "Player",
-          "key": 2
-        }
-      ],
-      "propCount": 2,
-      "apiTargetV2": "both",
-      "version": 45,
-      "key": "signal_20131491"
-    },
     "signal_22656937": {
       "name": "OnRequestAddItem",
       "eventType": 0,
@@ -370,11 +348,49 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_53917574"
+    },
+    "signal_20131491": {
+      "name": "OnPlayerTapButton",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100004,
+      "props": [
+        {
+          "name": "button",
+          "value": "HudButtonWidget",
+          "key": 1
+        },
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_20131491"
+    },
+    "signal_41704574": {
+      "name": "OnExecuteFarmAction",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100016,
+      "props": [
+        {
+          "name": "player",
+          "value": "Entity",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_41704574"
     }
   },
   "customName": {
     "OnPlayerHoeAction": "signal_86389280",
-    "OnPlayerTapButton": "signal_20131491",
     "OnRequestAddItem": "signal_22656937",
     "OnBackpackDataChanged": "signal_76789303",
     "OnBuyItemResponse": "signal_74145831",
@@ -388,7 +404,9 @@
     "OnMarketSellTapped": "signal_73265997",
     "OnCurrencySync": "signal_66421665",
     "OnSyncStoreData": "signal_13434618",
-    "OnRequestBuyItem": "signal_53917574"
+    "OnRequestBuyItem": "signal_53917574",
+    "OnPlayerTapButton": "signal_20131491",
+    "OnExecuteFarmAction": "signal_41704574"
   },
   "children": []
 }

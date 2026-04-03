@@ -297,8 +297,14 @@
               "_entityId": "B4XfBLlT",
               "children": [],
               "prefabVariant": null,
-              "activeValue": null,
-              "unlockedValue": null,
+              "activeValue": {
+                "selfValue": true,
+                "valueTag": "activeValue"
+              },
+              "unlockedValue": {
+                "selfValue": true,
+                "valueTag": "unlockedValue"
+              },
               "editorLockValue": false,
               "editorVisibleValue": true,
               "speed": 1,
@@ -320,50 +326,20 @@
             }
           ],
           "prefabVariant": null,
-          "activeValue": null,
-          "unlockedValue": null,
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "editorLockValue": false,
           "editorVisibleValue": true,
           "isLoop": false,
           "isBaseLayer": true,
           "mute": false,
           "bodypartId": null,
-          "DisableChanged": false
-        },
-        {
-          "_entityName": "Bottom",
-          "_tag": {
-            "type": "ACLayerEntity"
-          },
-          "_entityId": "T4Ntonih",
-          "children": [],
-          "prefabVariant": null,
-          "activeValue": null,
-          "unlockedValue": null,
-          "editorLockValue": false,
-          "editorVisibleValue": true,
-          "isLoop": false,
-          "isBaseLayer": false,
-          "mute": true,
-          "bodypartId": "bpc_60742457",
-          "DisableChanged": false
-        },
-        {
-          "_entityName": "Top",
-          "_tag": {
-            "type": "ACLayerEntity"
-          },
-          "_entityId": "xgZQEenB",
-          "children": [],
-          "prefabVariant": null,
-          "activeValue": null,
-          "unlockedValue": null,
-          "editorLockValue": false,
-          "editorVisibleValue": true,
-          "isLoop": false,
-          "isBaseLayer": false,
-          "mute": true,
-          "bodypartId": "bpc_61932676",
           "DisableChanged": false
         }
       ],

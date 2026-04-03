@@ -1,0 +1,50 @@
+{
+  "_entityName": "",
+  "_tag": {
+    "type": "Material"
+  },
+  "_entityId": "ufTiVtoc",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "shader": {
+    "fileId": "s-64c4f071-1e93-4613-a3da-bef38339a2ec",
+    "filePath": "lib://ffshaders/BRMobile/UGC/DiffuseColor",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "shader"
+  },
+  "paramValue": {
+    "_Color": {
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 1
+    },
+    "_Brightness": 0.75,
+    "_MainTex": {
+      "Texture": {
+        "fileId": "d1dd7ce0d51780846795c1e56406ea66",
+        "filePath": "lib://fftextures/WorkshopItemTexture/SCENEEDIT_CUBE_TEXTURE_COLORFULCUBE001_D.png",
+        "_tag": {
+          "type": "GFileRefer"
+        },
+        "fileType": "texture"
+      },
+      "Tiling": {
+        "x": 1,
+        "y": 1
+      },
+      "Offset": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "_CullMode": 2
+  }
+}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

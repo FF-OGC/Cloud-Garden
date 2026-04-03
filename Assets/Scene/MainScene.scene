@@ -307,8 +307,8 @@
             },
             "materials": [
               {
-                "fileId": "4o1ewtuf3kd-mn7a3w8j-93fw7xo1z9n",
-                "filePath": "Assets\\Materials\\ClearGlass.mat",
+                "fileId": "e0g4s30dka-mniaxlxb-i8sy5cd5mtq",
+                "filePath": "Assets\\Materials\\Cloud.mat",
                 "fileType": "material"
               }
             ],
@@ -569,8 +569,8 @@
       },
       "materials": [
         {
-          "fileId": "4o1ewtuf3kd-mn7a3w8j-93fw7xo1z9n",
-          "filePath": "Assets\\Materials\\ClearGlass.mat",
+          "fileId": "e0g4s30dka-mniaxlxb-i8sy5cd5mtq",
+          "filePath": "Assets\\Materials\\Cloud.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -2154,7 +2154,7 @@
           "position": {
             "x": 0,
             "y": 0,
-            "z": 15
+            "z": 0
           },
           "scale": {
             "x": 1,
@@ -2187,7 +2187,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 23,
+          "tempIndex": 44,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -2207,6 +2207,111 @@
             "Entity": {},
             "Visibility": {},
             "Collider": {}
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "prefabVariant": null
+        },
+        {
+          "_entityId": "lXPvZoMW",
+          "children": [],
+          "_entityName": "Fence",
+          "_tag": {
+            "type": "UGCSceneEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "position": {
+            "x": 3,
+            "y": 0.2,
+            "z": -7
+          },
+          "scale": {
+            "x": 0.003,
+            "y": 0.003,
+            "z": 0.008
+          },
+          "rotation": {
+            "x": 90,
+            "y": -90,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [
+            "MeshRender"
+          ],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "materials": [
+            {
+              "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+              "filePath": "Assets\\Materials\\Building.mat",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "material"
+            }
+          ],
+          "colliders": [],
+          "IsNPC": false,
+          "isCreateAsEmpty": true,
+          "Rigidbody": {
+            "Type": 1,
+            "Mass": 1,
+            "CenterOfMass": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "UseGravity": true,
+            "Drag": 0.05,
+            "AngularDrag": 0.05,
+            "FreezePosX": false,
+            "FreezeRotX": false,
+            "FreezePosY": false,
+            "FreezeRotY": false,
+            "FreezePosZ": false,
+            "FreezeRotZ": false
+          },
+          "ecaScripts": [],
+          "ecaProps": {
+            "CustomLevelObject": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {},
+            "MeshRender": {}
+          },
+          "propsData": {},
+          "entityVersion": 3,
+          "mesh": {
+            "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
           },
           "editorLockValue": false,
           "editorVisibleValue": true,
@@ -3398,6 +3503,192 @@
             "entityVersion": 3,
             "editorLockValue": false,
             "editorVisibleValue": true
+          },
+          "F55N4eNT": {
+            "_entityId": "blc4M37K",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "editorLockValue": false,
+            "editorVisibleValue": true,
+            "position": {
+              "x": 3,
+              "y": 0,
+              "z": -7
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            }
+          },
+          "lXPvZoMW": {
+            "_entityId": "Kfn6C3P1",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "position": {
+              "x": 3,
+              "y": 0.2,
+              "z": -7
+            },
+            "scale": {
+              "x": 0.003,
+              "y": 0.003,
+              "z": 0.008
+            },
+            "rotation": {
+              "x": 90,
+              "y": -90,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            },
+            "editorLockValue": false,
+            "editorVisibleValue": true
           }
         }
       }
@@ -4397,7 +4688,7 @@
           "position": {
             "x": 0,
             "y": 0,
-            "z": 15
+            "z": 0
           },
           "scale": {
             "x": 1,
@@ -4430,7 +4721,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 24,
+          "tempIndex": 45,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -4454,6 +4745,111 @@
           "prefabVariant": null,
           "editorLockValue": false,
           "editorVisibleValue": true
+        },
+        {
+          "_entityId": "L3rZbkda",
+          "children": [],
+          "_entityName": "Fence",
+          "_tag": {
+            "type": "UGCSceneEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "position": {
+            "x": 3,
+            "y": 0.2,
+            "z": -7
+          },
+          "scale": {
+            "x": 0.003,
+            "y": 0.003,
+            "z": 0.008
+          },
+          "rotation": {
+            "x": 90,
+            "y": -90,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [
+            "MeshRender"
+          ],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "materials": [
+            {
+              "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+              "filePath": "Assets\\Materials\\Building.mat",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "material"
+            }
+          ],
+          "colliders": [],
+          "IsNPC": false,
+          "isCreateAsEmpty": true,
+          "Rigidbody": {
+            "Type": 1,
+            "Mass": 1,
+            "CenterOfMass": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "UseGravity": true,
+            "Drag": 0.05,
+            "AngularDrag": 0.05,
+            "FreezePosX": false,
+            "FreezeRotX": false,
+            "FreezePosY": false,
+            "FreezeRotY": false,
+            "FreezePosZ": false,
+            "FreezeRotZ": false
+          },
+          "ecaScripts": [],
+          "ecaProps": {
+            "CustomLevelObject": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {},
+            "MeshRender": {}
+          },
+          "propsData": {},
+          "entityVersion": 3,
+          "mesh": {
+            "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "prefabVariant": null
         }
       ],
       "activeValue": {
@@ -5621,6 +6017,192 @@
             },
             "propsData": {},
             "entityVersion": 3
+          },
+          "XLnwi3kk": {
+            "_entityId": "blc4M37K",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "editorLockValue": false,
+            "editorVisibleValue": true,
+            "position": {
+              "x": 3,
+              "y": 0,
+              "z": -7
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            }
+          },
+          "L3rZbkda": {
+            "_entityId": "Kfn6C3P1",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "position": {
+              "x": 3,
+              "y": 0.2,
+              "z": -7
+            },
+            "scale": {
+              "x": 0.003,
+              "y": 0.003,
+              "z": 0.008
+            },
+            "rotation": {
+              "x": 90,
+              "y": -90,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            },
+            "editorLockValue": false,
+            "editorVisibleValue": true
           }
         }
       },
@@ -6655,7 +7237,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 25,
+          "tempIndex": 46,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -6679,6 +7261,111 @@
           "prefabVariant": null,
           "editorLockValue": false,
           "editorVisibleValue": true
+        },
+        {
+          "_entityId": "szagJKIj",
+          "children": [],
+          "_entityName": "Fence",
+          "_tag": {
+            "type": "UGCSceneEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "position": {
+            "x": 3,
+            "y": 0.2,
+            "z": -7
+          },
+          "scale": {
+            "x": 0.003,
+            "y": 0.003,
+            "z": 0.008
+          },
+          "rotation": {
+            "x": 90,
+            "y": 90,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [
+            "MeshRender"
+          ],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "materials": [
+            {
+              "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+              "filePath": "Assets\\Materials\\Building.mat",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "material"
+            }
+          ],
+          "colliders": [],
+          "IsNPC": false,
+          "isCreateAsEmpty": true,
+          "Rigidbody": {
+            "Type": 1,
+            "Mass": 1,
+            "CenterOfMass": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "UseGravity": true,
+            "Drag": 0.05,
+            "AngularDrag": 0.05,
+            "FreezePosX": false,
+            "FreezeRotX": false,
+            "FreezePosY": false,
+            "FreezeRotY": false,
+            "FreezePosZ": false,
+            "FreezeRotZ": false
+          },
+          "ecaScripts": [],
+          "ecaProps": {
+            "CustomLevelObject": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {},
+            "MeshRender": {}
+          },
+          "propsData": {},
+          "entityVersion": 3,
+          "mesh": {
+            "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "prefabVariant": null
         }
       ],
       "activeValue": {
@@ -7846,6 +8533,192 @@
             },
             "propsData": {},
             "entityVersion": 3
+          },
+          "ZvIvRiUW": {
+            "_entityId": "blc4M37K",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "editorLockValue": false,
+            "editorVisibleValue": true,
+            "position": {
+              "x": 3,
+              "y": 0,
+              "z": -7
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            }
+          },
+          "szagJKIj": {
+            "_entityId": "Kfn6C3P1",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "position": {
+              "x": 3,
+              "y": 0.2,
+              "z": -7
+            },
+            "scale": {
+              "x": 0.003,
+              "y": 0.003,
+              "z": 0.008
+            },
+            "rotation": {
+              "x": 90,
+              "y": -90,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            },
+            "editorLockValue": false,
+            "editorVisibleValue": true
           }
         }
       },
@@ -8880,7 +9753,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 26,
+          "tempIndex": 47,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -8904,6 +9777,111 @@
           "prefabVariant": null,
           "editorLockValue": false,
           "editorVisibleValue": true
+        },
+        {
+          "_entityId": "dtN9xgO4",
+          "children": [],
+          "_entityName": "Fence",
+          "_tag": {
+            "type": "UGCSceneEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": null,
+          "position": {
+            "x": 3,
+            "y": 0.2,
+            "z": -7
+          },
+          "scale": {
+            "x": 0.003,
+            "y": 0.003,
+            "z": 0.008
+          },
+          "rotation": {
+            "x": 90,
+            "y": 90,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [
+            "MeshRender"
+          ],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "materials": [
+            {
+              "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+              "filePath": "Assets\\Materials\\Building.mat",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "material"
+            }
+          ],
+          "colliders": [],
+          "IsNPC": false,
+          "isCreateAsEmpty": true,
+          "Rigidbody": {
+            "Type": 1,
+            "Mass": 1,
+            "CenterOfMass": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "UseGravity": true,
+            "Drag": 0.05,
+            "AngularDrag": 0.05,
+            "FreezePosX": false,
+            "FreezeRotX": false,
+            "FreezePosY": false,
+            "FreezeRotY": false,
+            "FreezePosZ": false,
+            "FreezeRotZ": false
+          },
+          "ecaScripts": [],
+          "ecaProps": {
+            "CustomLevelObject": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {},
+            "MeshRender": {}
+          },
+          "propsData": {},
+          "entityVersion": 3,
+          "mesh": {
+            "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "mesh"
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true,
+          "prefabVariant": null
         }
       ],
       "activeValue": {
@@ -10071,6 +11049,192 @@
             },
             "propsData": {},
             "entityVersion": 3
+          },
+          "STRB1ZPH": {
+            "_entityId": "blc4M37K",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "editorLockValue": false,
+            "editorVisibleValue": true,
+            "position": {
+              "x": 3,
+              "y": 0,
+              "z": -7
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            }
+          },
+          "dtN9xgO4": {
+            "_entityId": "Kfn6C3P1",
+            "_entityName": "Fence",
+            "activeValue": {
+              "selfValue": true,
+              "valueTag": "activeValue"
+            },
+            "unlockedValue": null,
+            "position": {
+              "x": 3,
+              "y": 0.2,
+              "z": -7
+            },
+            "scale": {
+              "x": 0.003,
+              "y": 0.003,
+              "z": 0.008
+            },
+            "rotation": {
+              "x": 90,
+              "y": -90,
+              "z": 0
+            },
+            "BTPath": [
+              null
+            ],
+            "visible": true,
+            "VisibilityLayer": 0,
+            "modelOptimization": 0,
+            "streamingLayer": "",
+            "attributes": [
+              2,
+              4
+            ],
+            "isTrigger": false,
+            "collidable": true,
+            "physicalLayer": 0,
+            "physicalMaterial": null,
+            "aoiSetting": 0,
+            "initialTypes": {},
+            "componentList": [
+              "MeshRender"
+            ],
+            "entityTagData": {
+              "tagPointers": []
+            },
+            "materials": [
+              {
+                "fileId": "j5nznih53e-mn4ijouu-fpprnc5eupu",
+                "filePath": "Assets\\Materials\\Building.mat",
+                "fileType": "material"
+              }
+            ],
+            "colliders": [],
+            "IsNPC": false,
+            "isCreateAsEmpty": true,
+            "Rigidbody": {
+              "Type": 1,
+              "Mass": 1,
+              "CenterOfMass": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "UseGravity": true,
+              "Drag": 0.05,
+              "AngularDrag": 0.05,
+              "FreezePosX": false,
+              "FreezeRotX": false,
+              "FreezePosY": false,
+              "FreezeRotY": false,
+              "FreezePosZ": false,
+              "FreezeRotZ": false
+            },
+            "ecaScripts": [],
+            "ecaProps": {
+              "CustomLevelObject": {},
+              "LevelObject": {},
+              "Transform": {},
+              "Entity": {},
+              "Visibility": {},
+              "MeshRender": {}
+            },
+            "propsData": {},
+            "entityVersion": 3,
+            "mesh": {
+              "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB",
+              "filePath": "fab://Assets\\Resources\\FBX\\garden.fbx\\fence.mesh",
+              "fileType": "mesh"
+            },
+            "editorLockValue": false,
+            "editorVisibleValue": true
           }
         }
       },

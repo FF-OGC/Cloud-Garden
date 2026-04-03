@@ -52,6 +52,8 @@ static graph GameManager {
             WaitForMillisecond(1000) 
             _GameTime = _GameTime + 1.0
         }
+
+        
     }
 
     async func DelayedStoreInit() {
@@ -165,7 +167,7 @@ static graph GameManager {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
         // backpackManager.AddItem(player, "crop_apple", 10)
-        // backpackManager.AddItem(player, "crop_apple_gold", 10)
+        backpackManager.AddItem(player, "crop_apple_gold", 1)
         // backpackManager.AddItem(player, seedId, amount)
 
         player<Player>.DisableFallDamage = true

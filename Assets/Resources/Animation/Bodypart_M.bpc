@@ -1,0 +1,899 @@
+{
+  "_entityName": "Bodypart",
+  "_tag": {
+    "type": "BodyPartEntity"
+  },
+  "_entityId": "TmUq5bSS",
+  "children": [],
+  "prefabVariant": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "skeleton": {
+    "fileId": "UMA_101000006",
+    "filePath": "lib://ffuma/101000006",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "uma"
+  },
+  "bodyparts": [
+    {
+      "id": "bpc_94453122",
+      "name": "Spine",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_Spine",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_Spine1",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_Neck",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_Head",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "bone_Left_Spine_Backpack",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_Right_Spine_Weapon",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_Left_Spine_Weapon",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_LeftClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_LeftForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_LeftHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Left_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 L ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 L ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "bone_RightClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_RightForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_RightHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Right_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 R ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 R ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "Cheat_L",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "Cheat_L_end",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "Cheat_R",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "Cheat_R_end",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bpc_78846283",
+      "name": "NoSpine",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "Point001",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "bone_Root",
+          "Include": true,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": true,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": true,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_LeftLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_LeftLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_LeftAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "BoneName": "bone_RightLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_RightLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_RightAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "BoneName": "female_lobby_head_sc_KpopSinger",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Lobby_Hair_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Lobby_Shoe_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Lobby_Top_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Lobby_Bottom_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Hair_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Shoe_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Bottom_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        },
+        {
+          "BoneName": "Female_Top_Cos_Artist",
+          "Include": true,
+          "ChildBoneList": null
+        }
+      ]
+    },
+    {
+      "id": "bpc_86343821",
+      "name": "LegOnly",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_LeftLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_LeftLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_LeftAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "BoneName": "bone_RightLegUpper",
+                      "Include": true,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_RightLeg",
+                          "Include": true,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_RightAnkle",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightToe",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bpc_58674571",
+      "name": "HandsOnly",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_Spine",
+                      "Include": false,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_Spine1",
+                          "Include": false,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_LeftClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_LeftForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_LeftHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Left_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 L ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 L ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "bone_RightClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_RightForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_RightHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Right_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 R ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 R ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bpc_28280770",
+      "name": "RightHandOnly",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_Spine",
+                      "Include": false,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_Spine1",
+                          "Include": false,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_Right_Spine_Weapon",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_RightClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_RightArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_RightForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_RightHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Right_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Right_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Right_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 R ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 R ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "Cheat_R",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "Cheat_R_end",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bpc_55403800",
+      "name": "LeftHandOnly",
+      "type": 0,
+      "weight": 1,
+      "mask": [
+        {
+          "BoneName": "bone_Root",
+          "Include": false,
+          "ChildBoneList": [
+            {
+              "BoneName": "Bip01",
+              "Include": false,
+              "ChildBoneList": [
+                {
+                  "BoneName": "bone_Hips",
+                  "Include": false,
+                  "ChildBoneList": [
+                    {
+                      "BoneName": "bone_Spine",
+                      "Include": false,
+                      "ChildBoneList": [
+                        {
+                          "BoneName": "bone_Spine1",
+                          "Include": false,
+                          "ChildBoneList": [
+                            {
+                              "BoneName": "bone_Left_Spine_Backpack",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_Left_Spine_Weapon",
+                              "Include": true,
+                              "ChildBoneList": null
+                            },
+                            {
+                              "BoneName": "bone_LeftClav",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "bone_LeftArm",
+                                  "Include": true,
+                                  "ChildBoneList": [
+                                    {
+                                      "BoneName": "bone_LeftForeArm",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "bone_LeftHand",
+                                          "Include": true,
+                                          "ChildBoneList": [
+                                            {
+                                              "BoneName": "bone_Left_Finger01",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger02",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger11",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger12",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Finger21",
+                                              "Include": true,
+                                              "ChildBoneList": [
+                                                {
+                                                  "BoneName": "bone_Left_Finger22",
+                                                  "Include": true,
+                                                  "ChildBoneList": null
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "BoneName": "bone_Left_Weapon",
+                                              "Include": true,
+                                              "ChildBoneList": null
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "BoneName": "Bip01 L ForeTwist",
+                                      "Include": true,
+                                      "ChildBoneList": [
+                                        {
+                                          "BoneName": "Bip01 L ForeTwist1",
+                                          "Include": true,
+                                          "ChildBoneList": null
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "BoneName": "Cheat_L",
+                              "Include": true,
+                              "ChildBoneList": [
+                                {
+                                  "BoneName": "Cheat_L_end",
+                                  "Include": true,
+                                  "ChildBoneList": null
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+//"{FE:{"v":"1.16.4197289","c":{"FF":5001},"s":100}

@@ -6,10 +6,12 @@ graph PlayerFarmingData {
     CurrentFloor entity<Entity>
     CurrentGridPos Vector3
     ActiveTracker entity<Entity>
+    _IsPerformingAction bool = false
 
     event OnAwake() {
         CurrentFloor = nil
         CurrentGridPos = Vector3{0.0, 0.0, 0.0}
         ActiveTracker = nil
+        _IsPerformingAction = false
     }
 }

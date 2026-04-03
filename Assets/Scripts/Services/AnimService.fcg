@@ -1,0 +1,41 @@
+import "StdLibrary.fcc" as std
+import "Animation.fcc" as anim
+
+[platform_server]
+static graph AnimService {
+
+    func GetController(target entity<Entity>) entity<AnimationControllerAttachable> {
+        if HasComponent(target, typeof(AnimationControllerAttachable)) {
+            return target<AnimationControllerAttachable>
+        }
+        var model = GetChildByName(target, "Model")
+        if model == nil { return nil }
+        thisEntity<Player>.RunSpeedScale = 1.0
+        if !HasComponent(model, typeof(AnimationControllerAttachable)) { return nil }
+        return model<AnimationControllerAttachable>
+    }
+
+    func PlayAnim(target entity<Entity>, animName string) {
+        var ctrl = GetController(target)
+        if ctrl == nil { 
+            LogError("[AnimService] ABORT: controller is nil")
+            return 
+        }
+        anim.PlayAnimation(ctrl, animName, 1, LoopType.Loop)
+    }
+
+    func PlayAnimOnce(target entity<Entity>, animName string) {
+        var ctrl = GetController(target)
+        if ctrl == nil { 
+            LogError("[AnimService] ABORT: controller is nil")
+            return 
+        }
+        anim.PlayAnimation(ctrl, animName, 1, LoopType.Once)
+    }
+
+    func StopAnim(target entity<Entity>, animName string) {
+        var ctrl = GetController(target)
+        if ctrl == nil { return }
+        anim.StopAnimation(ctrl, animName)
+    }
+}

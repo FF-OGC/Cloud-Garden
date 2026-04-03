@@ -303,7 +303,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": 0,
         "y": 0,
@@ -346,8 +349,8 @@
       },
       "materials": [
         {
-          "fileId": "4o1ewtuf3kd-mn7a3w8j-93fw7xo1z9n",
-          "filePath": "Assets\\Materials\\ClearGlass.mat",
+          "fileId": "e0g4s30dka-mniaxlxb-i8sy5cd5mtq",
+          "filePath": "Assets\\Materials\\Cloud.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -426,8 +429,14 @@
     }
   ],
   "prefabVariant": null,
-  "activeValue": null,
-  "unlockedValue": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,

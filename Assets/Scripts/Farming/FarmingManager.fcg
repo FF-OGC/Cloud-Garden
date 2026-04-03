@@ -24,8 +24,8 @@ import "../Services/Utils/GridUtil.fcg" as gridUtil
 [platform_server]
 static graph FarmingManager {
     
-    event OnPlayerHoeAction(player entity<Entity>) {
-        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] >>> OnPlayerHoeAction FIRED") }
+    event OnExecuteFarmAction(player entity<Entity>) {
+        if gameMgr.IsDebug() { LogInfo("[FarmingMgr] >>> OnExecuteFarmAction FIRED") }
 
         if player == nil || player<playerFarmingData>.CurrentFloor == nil {
             if gameMgr.IsDebug() { LogInfo("[FarmingMgr] ABORT: player is nil or CurrentFloor is nil") }

@@ -1,0 +1,81 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Player.fcc" as Player
+import "Map.fcc" as map
+
+import "./PlayerFarmingData.fcg" as playerFarmingData
+import "../Services/AnimService.fcg" as animSvc
+import "../Core/GameManager.fcg" as gameMgr
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Services/Utils/GridUtil.fcg" as gridUtil
+
+[platform_server]
+static graph FarmActionAnimator {
+
+    _ACTION_DELAY int = 1500
+
+    event OnPlayerHoeAction(player entity<Entity>) {
+        if player == nil { return }
+        if player<playerFarmingData>._IsPerformingAction {
+            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: already performing action") }
+            return
+        }
+        start PerformAction(player)
+    }
+
+    async func PerformAction(player entity<Entity>) {
+        player<playerFarmingData>._IsPerformingAction = true
+
+        var floor = player<playerFarmingData>.CurrentFloor
+        if floor == nil || floor<floorData> == nil {
+            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: no valid floor") }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        var gridPos = player<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        if !map.ContainKey(floor<floorData>.CellStates, key) {
+            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: invalid grid key=" + key) }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        var state = floor<floorData>.CellStates[key] as int
+        if state == gen.EFarmSlotState.Growing {
+            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        DisableActions(player)
+
+        animSvc.PlayAnimOnce(player, "Farming")
+
+        DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+
+        WaitForMillisecond(_ACTION_DELAY)
+
+        EnableActions(player)
+
+        player<playerFarmingData>._IsPerformingAction = false
+    }
+
+    func DisableActions(player entity<Entity>) {
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Move, PlayerBehaviorStatusType.Disable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Sprint, PlayerBehaviorStatusType.Disable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Attack, PlayerBehaviorStatusType.Disable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Jump, PlayerBehaviorStatusType.Disable)
+        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Crouch, CommonUISwitchValue.Close)
+        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Prone, CommonUISwitchValue.Close)
+    }
+
+    func EnableActions(player entity<Entity>) {
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Move, PlayerBehaviorStatusType.Enable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Sprint, PlayerBehaviorStatusType.Enable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Attack, PlayerBehaviorStatusType.Enable)
+        SetBehaviorStatus(player<Player>, PlayerBehaviorType.Jump, PlayerBehaviorStatusType.Enable)
+        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Crouch, CommonUISwitchValue.Show)
+        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Prone, CommonUISwitchValue.Show)
+    }
+}

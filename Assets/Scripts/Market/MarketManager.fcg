@@ -387,11 +387,12 @@ static graph MarketManager {
         var totalTimeMs = (timePerUnit * amount) as int
 
         marketService.RemoveFromTable(market, itemId, amount)
-        marketVisual.UpdateTableDisplay(market)
 
         if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
 
         WaitForMillisecond(totalTimeMs)
+
+        marketVisual.UpdateTableDisplay(market)
 
         if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | wait done, customer leaving") }
 

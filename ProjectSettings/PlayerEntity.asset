@@ -62,7 +62,9 @@
     "Visibility": {},
     "BuffableEntity": {},
     "FormulableEntity": {},
-    "AnimationControllerAble": {}
+    "AnimationControllerAble": {
+      "acRef": null
+    }
   },
   "ecaScript": null,
   "ecaScripts": [
@@ -384,6 +386,14 @@
   "_entityName": "T_43_YU_WS_MODULE_PLAYER",
   "modId": 11,
   "modOpen": true,
-  "showSwitch": false
+  "showSwitch": false,
+  "animControllerInfo": {
+    "fileId": "ys5prbo721r-mnhayjjj-1la7qj4yi22",
+    "filePath": "Assets\\Resources\\Animation\\PlayerV2.ac",
+    "_tag": {
+      "type": "GFileRefer"
+    },
+    "fileType": "ac"
+  }
 }
 //"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

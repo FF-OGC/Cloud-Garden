@@ -1,0 +1,92 @@
+{
+  "fileId": "1s9is2uq3di-mnifb1ur-xe9rhdqs7a",
+  "globalscale": 1,
+  "enabletangent": false,
+  "properties": {
+    "Common": ""
+  },
+  "subDynamicResources": {},
+  "version": "1.6.4",
+  "manifest": {
+    "Meshes": [
+      {
+        "Name": "fence.~@FFFUB",
+        "MeshName": "fence",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      },
+      {
+        "Name": "land.~@FFFUB",
+        "MeshName": "land",
+        "Type": "common",
+        "OrgExtName": ".~@FFFUB"
+      }
+    ],
+    "BoneInfos": [],
+    "Anims": [],
+    "ManifestJSON": {
+      "FBXName": "garden",
+      "ImportSucceeded": true,
+      "MaterialCount": 1,
+      "MaterialDetail": [
+        {
+          "Index": 0,
+          "MaterialName": "lambert23"
+        }
+      ],
+      "MeshCount": 2,
+      "MeshDetail": [
+        {
+          "MeshName": "land",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.49548,
+              0.142213,
+              0.227164
+            ],
+            "Rotation": [
+              90,
+              0,
+              0
+            ],
+            "Scale": [
+              0.01,
+              0.01,
+              0.01
+            ]
+          }
+        },
+        {
+          "MeshName": "fence",
+          "MaterialIndex": [
+            0
+          ],
+          "Transform": {
+            "Position": [
+              -1.87251,
+              0.636436,
+              0.214561
+            ],
+            "Rotation": [
+              90,
+              0,
+              0
+            ],
+            "Scale": [
+              0.01,
+              0.01,
+              0.01
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "subColliderLOD": {
+    "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-fence.~@FFFUB": 0,
+    "1s9is2uq3di-mnifb1ur-xe9rhdqs7a-land.~@FFFUB": 0
+  }
+}
