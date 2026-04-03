@@ -107,9 +107,31 @@ static graph GameManager {
     event OnPlayerJoin(player entity<Player>) {
         list.Append(_ConnectedPlayers, player)
         if _IsDebug { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
-        LogInfo("[Game Manager] FarmZones: " + list.Length(_FarmZones) + " AllFloorsInWorld: " + list.Length(_AllFloorsInWorld))
-        // AddScript(player, playerFarmingData)
-        
+
+        // Freeze player immediately to prevent falling before teleport
+        player<Player>.RunSpeedScale = 0.0
+        player<Player>.DisableFallDamage = true
+
+        start WaitAndInitPlayer(player)
+    }
+
+    async func WaitAndInitPlayer(player entity<Player>) {
+        // Wait until at least one farm zone has registered
+        var maxWait = 30
+        var waited = 0
+        while list.Length(_FarmZones) == 0 && waited < maxWait {
+            WaitForMillisecond(500)
+            waited = waited + 1
+        }
+
+        if list.Length(_FarmZones) == 0 {
+            LogWarning("[GameManager] Timeout: No farm zones registered!")
+            player<Player>.RunSpeedScale = 1.0
+            return
+        }
+
+        LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones))
+
         var zCount = list.Length(_FarmZones)
         var assignedZone entity<Entity> = nil
         
@@ -145,35 +167,55 @@ static graph GameManager {
             }
         }
         
-        // 3. Teleport facing the market stall
+        // 3. Teleport to the left of customer queue, facing market
         if assignedZone != nil {
             var market = assignedZone<FarmZoneData>.Market
             if market != nil {
+                // Poll until market Transform is actually loaded (position != 0,0,0)
+                var posWait = 0
                 var mPos = market<Transform>.Position
-                var spawnPos = Vector3{mPos.X + 1.0, mPos.Y, mPos.Z + 4.0}
-                var facing = GetPlayerOrientation(spawnPos, mPos)
-                Teleport(player, spawnPos, facing)
+                while mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 && posWait < 20 {
+                    WaitForMillisecond(500)
+                    posWait = posWait + 1
+                    mPos = market<Transform>.Position
+                }
+
+                if mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 {
+                    LogWarning("[GameManager] Market position still (0,0,0) after polling, using zone fallback")
+                    var spawnPos = assignedZone<Transform>.Position
+                    Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
+                } else {
+                    var rotY = market<Transform>.Rotation.Y
+                    var c = math.Cos(rotY)
+                    var s = math.Sin(rotY)
+                    // Local offset: left of queue (-X), in front of market (-Z)
+                    var localOff = Vector3{-3.0, 0.0, -4.0}
+                    var ox = localOff.X * c + localOff.Z * s
+                    var oz = -localOff.X * s + localOff.Z * c
+                    var spawnPos = Vector3{mPos.X + ox, mPos.Y, mPos.Z + oz}
+                    var facing = GetPlayerOrientation(spawnPos, mPos)
+                    Teleport(player, spawnPos, facing)
+                    if _IsDebug { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
+                }
             } else {
                 var spawnPos = assignedZone<Transform>.Position
                 Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
             }
-            if _IsDebug { LogInfo("[GameManager] Teleported player to assigned zone.") }
         }
 
-        //4. Add Seed to Backpack
+        // 4. Add Seed to Backpack
         var seedId = "seed_apple"
         var amount = 50
         if(backpackManager.AddItem(player, seedId, amount)) {
             if _IsDebug { LogInfo("[GameManager] Added seed to backpack.") }
         }
-        // backpackManager.AddItem(player, "crop_apple", 10)
         backpackManager.AddItem(player, "crop_apple_gold", 1)
-        // backpackManager.AddItem(player, seedId, amount)
-
-        player<Player>.DisableFallDamage = true
 
         currencyManager.InitPlayerCurrency(player, 500)
-        // TestPerformance()
+
+        // Unfreeze player after everything is ready
+        player<Player>.RunSpeedScale = 1.0
+        if _IsDebug { LogInfo("[GameManager] Player fully initialized and unfrozen.") }
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {

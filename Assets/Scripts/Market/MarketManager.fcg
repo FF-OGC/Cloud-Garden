@@ -115,6 +115,7 @@ static graph MarketManager {
         var ox = rawOffset.X * c + rawOffset.Z * s
         var oz = -rawOffset.X * s + rawOffset.Z * c
         infoBoard<Transform>.Position = Vector3{marketPos.X + ox, marketPos.Y + rawOffset.Y, marketPos.Z + oz}
+        infoBoard<Transform>.Rotation = Vector3{0, rotY + 180.0, 0}
 
         var textObj = GetChildByName(infoBoard, "Text object")
         if textObj != nil {

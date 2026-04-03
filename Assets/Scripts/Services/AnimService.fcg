@@ -10,7 +10,6 @@ static graph AnimService {
         }
         var model = GetChildByName(target, "Model")
         if model == nil { return nil }
-        thisEntity<Player>.RunSpeedScale = 1.0
         if !HasComponent(model, typeof(AnimationControllerAttachable)) { return nil }
         return model<AnimationControllerAttachable>
     }
