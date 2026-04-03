@@ -25,7 +25,10 @@
       "editorVisibleValue": true,
       "gameDuration": 5,
       "ecaScripts": [],
-      "ecaProps": {},
+      "ecaProps": {
+        "Phase": {},
+        "Entity": {}
+      },
       "modId": 18,
       "_entityName": "FE_0_HW_GAME_EDITOR_FLOW_START",
       "phaseIndex": 362
@@ -67,8 +70,14 @@
       "_entityId": "SoRiI6df",
       "children": [],
       "prefabVariant": null,
-      "activeValue": null,
-      "unlockedValue": null,
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "editorLockValue": false,
       "editorVisibleValue": true,
       "gameDuration": 3000,
@@ -133,8 +142,14 @@
     "_entityId": "SoRiI6df",
     "children": [],
     "prefabVariant": null,
-    "activeValue": null,
-    "unlockedValue": null,
+    "activeValue": {
+      "selfValue": true,
+      "valueTag": "activeValue"
+    },
+    "unlockedValue": {
+      "selfValue": true,
+      "valueTag": "unlockedValue"
+    },
     "editorLockValue": false,
     "editorVisibleValue": true,
     "gameDuration": 3000,

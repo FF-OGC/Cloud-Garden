@@ -108,10 +108,6 @@ static graph GameManager {
         list.Append(_ConnectedPlayers, player)
         if _IsDebug { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
 
-        // Freeze player immediately to prevent falling before teleport
-        player<Player>.RunSpeedScale = 0.0
-        player<Player>.DisableFallDamage = true
-
         start WaitAndInitPlayer(player)
     }
 
@@ -126,7 +122,6 @@ static graph GameManager {
 
         if list.Length(_FarmZones) == 0 {
             LogWarning("[GameManager] Timeout: No farm zones registered!")
-            player<Player>.RunSpeedScale = 1.0
             return
         }
 
@@ -182,8 +177,14 @@ static graph GameManager {
 
                 if mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 {
                     LogWarning("[GameManager] Market position still (0,0,0) after polling, using zone fallback")
-                    var spawnPos = assignedZone<Transform>.Position
-                    Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
+                    var zonePos = assignedZone<Transform>.Position
+                    var zonePosWait = 0
+                    while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 10 {
+                        WaitForMillisecond(500)
+                        zonePosWait = zonePosWait + 1
+                        zonePos = assignedZone<Transform>.Position
+                    }
+                    Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
                 } else {
                     var rotY = market<Transform>.Rotation.Y
                     var c = math.Cos(rotY)
@@ -198,8 +199,14 @@ static graph GameManager {
                     if _IsDebug { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
                 }
             } else {
-                var spawnPos = assignedZone<Transform>.Position
-                Teleport(player, Vector3{spawnPos.X + 5.0, spawnPos.Y, spawnPos.Z}, Vector3{0.0, 0.0, 0.0})
+                var zonePos = assignedZone<Transform>.Position
+                var zonePosWait = 0
+                while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 10 {
+                    WaitForMillisecond(500)
+                    zonePosWait = zonePosWait + 1
+                    zonePos = assignedZone<Transform>.Position
+                }
+                Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
             }
         }
 
@@ -211,9 +218,7 @@ static graph GameManager {
 
         currencyManager.InitPlayerCurrency(player, 500)
 
-        // Unfreeze player after everything is ready
-        player<Player>.RunSpeedScale = 1.0
-        if _IsDebug { LogInfo("[GameManager] Player fully initialized and unfrozen.") }
+        if _IsDebug { LogInfo("[GameManager] Player fully initialized.") }
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {

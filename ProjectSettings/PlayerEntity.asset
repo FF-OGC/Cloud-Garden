@@ -62,9 +62,7 @@
     "Visibility": {},
     "BuffableEntity": {},
     "FormulableEntity": {},
-    "AnimationControllerAble": {
-      "acRef": null
-    }
+    "AnimationControllerAble": {}
   },
   "ecaScript": null,
   "ecaScripts": [
