@@ -6,6 +6,7 @@ import "Math.fcc" as math
 import "../Store/StoreData.fcg" as storeData
 import "../Config/StoreConfig.fcg" as storeCfg
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 import "../Core/ServerEconomyData.fcg" as economyData
 
 [platform_server]
@@ -29,7 +30,7 @@ static graph StoreService {
         if amount <= 0 { return false }
         var slot = FindSlotWithStock(itemId, amount)
         if slot != -1 { return true }
-        if gameManager.IsDebug() { LogInfo("[StoreService] CanBuy FAILED | itemId=" + itemId + " not enough stock.") }
+        if debugCfg.Store() { LogInfo("[StoreService] CanBuy FAILED | itemId=" + itemId + " not enough stock.") }
         return false
     }
 
@@ -38,7 +39,7 @@ static graph StoreService {
         if slot != -1 {
             var currentStock = storeData._ItemAmounts[slot] as int
             storeData._ItemAmounts[slot] = currentStock - amount
-            if gameManager.IsDebug() { LogInfo("[StoreService] ExecuteBuy | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slot)) }
+            if debugCfg.Store() { LogInfo("[StoreService] ExecuteBuy | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slot)) }
             return true
         }
         return false
@@ -52,7 +53,7 @@ static graph StoreService {
         if id != itemId { return false }
         var stock = storeData._ItemAmounts[slotIndex] as int
         if stock >= amount { return true }
-        if gameManager.IsDebug() { LogInfo("[StoreService] CanBuyFromSlot FAILED | slot=" + convert.ToString(slotIndex) + " itemId=" + itemId + " stock=" + convert.ToString(stock) + " requested=" + convert.ToString(amount)) }
+        if debugCfg.Store() { LogInfo("[StoreService] CanBuyFromSlot FAILED | slot=" + convert.ToString(slotIndex) + " itemId=" + itemId + " stock=" + convert.ToString(stock) + " requested=" + convert.ToString(amount)) }
         return false
     }
 
@@ -60,7 +61,7 @@ static graph StoreService {
         if !CanBuyFromSlot(slotIndex, itemId, amount) { return false }
         var currentStock = storeData._ItemAmounts[slotIndex] as int
         storeData._ItemAmounts[slotIndex] = currentStock - amount
-        if gameManager.IsDebug() { LogInfo("[StoreService] ExecuteBuyFromSlot | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slotIndex)) }
+        if debugCfg.Store() { LogInfo("[StoreService] ExecuteBuyFromSlot | Sold " + convert.ToString(amount) + " " + itemId + " from slot " + convert.ToString(slotIndex)) }
         return true
     }
 
@@ -72,7 +73,7 @@ static graph StoreService {
         if !devOverrideActive {
             _RollPoolWithQuotaCheck()
         }
-        if gameManager.IsDebug() { LogInfo("[StoreService] RefreshStore DONE | totalItems=" + convert.ToString(list.Length(storeData._ItemIDs))) }
+        if debugCfg.Store() { LogInfo("[StoreService] RefreshStore DONE | totalItems=" + convert.ToString(list.Length(storeData._ItemIDs))) }
     }
 
     func _ApplyDevOverride(currentGameTime float) bool {
@@ -90,7 +91,7 @@ static graph StoreService {
                     list.Append(storeData._ItemIDs, itemId)
                     list.Append(storeData._ItemAmounts, qty)
                     applied = true
-                    if gameManager.IsDebug() { LogInfo("[StoreService] DEV OVERRIDE | " + itemId + " x" + convert.ToString(qty)) }
+                    if debugCfg.Store() { LogInfo("[StoreService] DEV OVERRIDE | " + itemId + " x" + convert.ToString(qty)) }
                 }
             }
         }
@@ -105,7 +106,7 @@ static graph StoreService {
             var stock = storeCfg.GetGuaranteedStock(id)
             list.Append(storeData._ItemIDs, id)
             list.Append(storeData._ItemAmounts, stock)
-            if gameManager.IsDebug() { LogInfo("[StoreService] Guaranteed | " + id + " stock=" + convert.ToString(stock)) }
+            if debugCfg.Store() { LogInfo("[StoreService] Guaranteed | " + id + " stock=" + convert.ToString(stock)) }
         }
     }
 
@@ -126,7 +127,7 @@ static graph StoreService {
 
             if limit > 0 && economyData.IsOverQuota(itemId, limit) {
                 list.Append(effectiveRates, 0)
-                if gameManager.IsDebug() { LogInfo("[StoreService] QUOTA LOCKED | " + itemId + " limit=" + convert.ToString(limit)) }
+                if debugCfg.Store() { LogInfo("[StoreService] QUOTA LOCKED | " + itemId + " limit=" + convert.ToString(limit)) }
             } else {
                 list.Append(effectiveRates, baseRate)
                 totalEffective = (totalEffective + baseRate) as int
@@ -149,7 +150,7 @@ static graph StoreService {
                 list.Append(storeData._ItemIDs, wonId)
                 list.Append(storeData._ItemAmounts, qty)
                 economyData.RecordSold(wonId, qty)
-                if gameManager.IsDebug() { LogInfo("[StoreService] GACHA HIT | " + wonId + " x" + convert.ToString(qty) + " roll=" + convert.ToString(roll)) }
+                if debugCfg.Store() { LogInfo("[StoreService] GACHA HIT | " + wonId + " x" + convert.ToString(qty) + " roll=" + convert.ToString(roll)) }
                 break
             }
         }

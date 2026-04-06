@@ -1,0 +1,13 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Physics.fcc" as Physics
+
+[platform_client]
+graph MoneyCollectTrigger {
+
+    event OnTriggerEnter(enterEntity entity<Entity>) {
+        if !HasComponent(enterEntity, typeof(Player)) { return }
+        var player = enterEntity as entity<Player>
+        DispatchEventToEntity(OnCollectMoneyDrop, globalEntity, PlatformType.Server, List<object>{player, thisEntity<Transform>.Parent})
+    }
+}

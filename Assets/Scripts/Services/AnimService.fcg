@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "Animation.fcc" as anim
 
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph AnimService {
@@ -19,7 +20,7 @@ static graph AnimService {
     func PlayAnim(target entity<Entity>, animName string) {
         var ctrl = GetController(target)
         if ctrl == nil { 
-            if gameMgr.IsDebug() { LogError("[AnimService] ABORT: controller is nil") }
+            if debugCfg.Core() { LogError("[AnimService] ABORT: controller is nil") }
             return 
         }
         anim.PlayAnimation(ctrl, animName, 1, LoopType.Loop)
@@ -28,7 +29,7 @@ static graph AnimService {
     func PlayAnimOnce(target entity<Entity>, animName string) {
         var ctrl = GetController(target)
         if ctrl == nil { 
-            if gameMgr.IsDebug() { LogError("[AnimService] ABORT: controller is nil") }
+            if debugCfg.Core() { LogError("[AnimService] ABORT: controller is nil") }
             return 
         }
         anim.PlayAnimation(ctrl, animName, 1, LoopType.Once)

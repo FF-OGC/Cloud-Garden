@@ -5,6 +5,7 @@ import "EditorGenLib.fcc" as gen
 
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 import "./CropVisualPool.fcg" as cropPool
@@ -17,11 +18,11 @@ static graph FarmVisualManager {
         var floorPos = floor<Transform>.Position
         var surfaceY = floorPos.Y + (floor<Transform>.Scale.Y / 2.0)
         
-        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] >>> OnFarmCellStateChanged key=" + key + " newState=" + newState) }
+        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] >>> OnFarmCellStateChanged key=" + key + " newState=" + newState) }
 
         // --- CASE 1: TILLED DIRT (Grass -> Tilled OR Harvest -> Tilled) ---
         if (newState == gen.EFarmSlotState.Tilled) {
-            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] CASE1: Tilled state") }
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE1: Tilled state") }
 
             ReturnPlantToPool(floor, key)
 
@@ -29,25 +30,25 @@ static graph FarmVisualManager {
                 var soilPrefab = gen.EResPrefab.dirt_tilled
                 if floor<floorData>.IsLuckyDirt(key) {
                     soilPrefab = gen.EResPrefab.lucky_dirt_tilled
-                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Using LUCKY DIRT prefab for key=" + key) }
+                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Using LUCKY DIRT prefab for key=" + key) }
                 }
 
                 CreateFromPrefab(out var soilObj, soilPrefab)
                 if soilObj != nil {
                     soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, surfaceY + 0.01, floorPos.Z + gridPos.Z}
                     floor<floorData>.SoilVisuals[key] = soilObj
-                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Spawned soil visual at key=" + key) }
+                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned soil visual at key=" + key) }
                 } else {
-                    if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn soil prefab") }
+                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn soil prefab") }
                 }
             } else {
-                if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Soil visual already exists for key=" + key) }
+                if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Soil visual already exists for key=" + key) }
             }
             return
         }
 
         // --- CASE 2: PLANTING, WATERING, GROWING ---
-        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] CASE2: Plant state change") }
+        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE2: Plant state change") }
         
         ReturnPlantToPool(floor, key)
 
@@ -56,7 +57,7 @@ static graph FarmVisualManager {
             plantedSeedId = floor<floorData>.PlantedSeeds[key] as string
         }
 
-        if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] plantedSeedId=" + plantedSeedId) }
+        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] plantedSeedId=" + plantedSeedId) }
 
         if plantedSeedId != "unknown" {
             var prefabKey = itemCfg.GetPlantPrefabKey(plantedSeedId, newState)
@@ -67,7 +68,7 @@ static graph FarmVisualManager {
                 }
             }
 
-            if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
+            if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
             
             var plantObj = cropPool.Get(prefabKey)
             
@@ -78,19 +79,19 @@ static graph FarmVisualManager {
                 var child = GetChildByName(plantObj, plantObj<Entity>.Name)
                 if child != nil {
                     child<Transform>.Position = targetPos
-                    if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf) }
+                    if debugCfg.Farming() { LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf) }
                 } else {
-                    if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] NO child found, entity is leaf node") }
+                    if debugCfg.Farming() { LogInfo("[VISUAL-DBG] NO child found, entity is leaf node") }
                 }
                 
                 floor<floorData>.PlantVisuals[key] = plantObj
                 floor<floorData>.PlantPrefabKeys[key] = prefabKey
-                if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf) }
+                if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf) }
             } else {
-                if gameMgr.IsDebug() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
+                if debugCfg.Farming() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
             }
         } else {
-            if gameMgr.IsDebug() { LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping") }
+            if debugCfg.Farming() { LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping") }
         }
     }
 
@@ -105,7 +106,7 @@ static graph FarmVisualManager {
             }
             cropPool.Return(oldPrefabKey, oldPlant)
             map.Remove(floor<floorData>.PlantPrefabKeys, cellKey)
-            if gameMgr.IsDebug() { LogInfo("[FarmVisualMgr] Returned plant to pool '" + oldPrefabKey + "' for key=" + cellKey) }
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Returned plant to pool '" + oldPrefabKey + "' for key=" + cellKey) }
         }
         map.Remove(floor<floorData>.PlantVisuals, cellKey)
     }

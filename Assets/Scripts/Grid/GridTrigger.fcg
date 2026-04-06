@@ -3,6 +3,7 @@ import "Physics.fcc" as physics
 import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "./TrackerPoolManager.fcg" as poolManager
 import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
 import "../Config/FarmGridConfig.fcg" as gridCfg
@@ -14,7 +15,7 @@ graph GridTrigger {
 
     event OnAwake() { 
         _Floor = thisEntity<Transform>.Parent
-        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Initialized. Parent floor: " + _Floor<Entity>.Name) }
+        if debugCfg.Grid() { LogInfo("[GridTrigger] Initialized. Parent floor: " + _Floor<Entity>.Name) }
     }
 
     event OnTriggerEnter(target entity<Entity>) {
@@ -25,11 +26,11 @@ graph GridTrigger {
         if player<playerFarmingData> == nil { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData."); return }
 
         player<playerFarmingData>.CurrentFloor = _Floor
-        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
+        if debugCfg.Grid() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
 
         if player<playerFarmingData>.ActiveTracker == nil {
             player<playerFarmingData>.ActiveTracker = poolManager.GetTracker(player)
-            if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker assigned from pool.") }
+            if debugCfg.Grid() { LogInfo("[GridTrigger] Tracker assigned from pool.") }
         }
 
         var floorPos = _Floor<Transform>.Position
@@ -40,7 +41,7 @@ graph GridTrigger {
         var floorScale = _Floor<Transform>.Scale.X
         localPos = gridUtil.ClampToGridBounds(localPos, floorScale, tileSize)
         player<playerFarmingData>.CurrentGridPos = localPos
-        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Initial grid pos set to: " + localPos) }
+        if debugCfg.Grid() { LogInfo("[GridTrigger] Initial grid pos set to: " + localPos) }
     }
 
     event OnTriggerLeave(target entity<Entity>) {
@@ -52,9 +53,9 @@ graph GridTrigger {
         if player<playerFarmingData>.ActiveTracker != nil {
             poolManager.ReturnTracker(player<playerFarmingData>.ActiveTracker)
             player<playerFarmingData>.ActiveTracker = nil
-            if gameMgr.IsDebug() { LogInfo("[GridTrigger] Tracker returned to pool.") }
+            if debugCfg.Grid() { LogInfo("[GridTrigger] Tracker returned to pool.") }
         }
         player<playerFarmingData>.CurrentFloor = nil
-        if gameMgr.IsDebug() { LogInfo("[GridTrigger] Player left floor: " + _Floor<Entity>.Name) }
+        if debugCfg.Grid() { LogInfo("[GridTrigger] Player left floor: " + _Floor<Entity>.Name) }
     }
 }

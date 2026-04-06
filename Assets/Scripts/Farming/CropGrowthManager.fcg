@@ -4,6 +4,7 @@ import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Config/GachaConfig.fcg" as gachaCfg
@@ -13,7 +14,7 @@ import "../Gacha/GachaManager.fcg" as gachaManager
 static graph CropGrowthManager {
     
     async func StartBackgroundTick(floors List<entity<Entity>>) {
-        if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Background Tick Started...") }
+        if debugCfg.Farming() { LogInfo("[CropGrowthManager] Background Tick Started...") }
         
         while true {
             WaitForMillisecond(3000)
@@ -48,18 +49,18 @@ static graph CropGrowthManager {
                                         var bonusRate = 0
                                         if floor<floorData>.IsLuckyDirt(key) {
                                             bonusRate = gachaCfg.GetLuckyDirtMutationBonus()
-                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Lucky dirt bonus +" + bonusRate + "% at key=" + key) }
+                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Lucky dirt bonus +" + bonusRate + "% at key=" + key) }
                                         }
                                         if floor<floorData>.IsFertilized(key) {
                                             var fertBonus = floor<floorData>.FertilizerLuckBonus[key] as int
                                             bonusRate = bonusRate + fertBonus
-                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Fertilizer bonus +" + fertBonus + "% at key=" + key + " total=" + bonusRate) }
+                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Fertilizer bonus +" + fertBonus + "% at key=" + key + " total=" + bonusRate) }
                                         }
                                         var resultCropId = gachaManager.RollForHarvest(owner, seedId, bonusRate)
                                         var normalCropId = itemCfg.GetHarvestYield(seedId)
                                         if resultCropId != normalCropId {
                                             floor<floorData>.TrySetGachaResult(key, resultCropId)
-                                            if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Gacha HIT at key=" + key + " reward=" + resultCropId) }
+                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Gacha HIT at key=" + key + " reward=" + resultCropId) }
                                         }
                                     }
                                 }
@@ -75,7 +76,7 @@ static graph CropGrowthManager {
                                 map.Remove(cropPositions, key)
                                 shouldRemove = true
                                 
-                                if gameMgr.IsDebug() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at grid key: " + key) }
+                                if debugCfg.Farming() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at grid key: " + key) }
                             }
                         } else {
                             shouldRemove = true

@@ -1,0 +1,238 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
+
+import "../Config/MarketConfig.fcg" as marketCfg
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Market/MarketRuntimeData.fcg" as marketData
+import "./CurrencyService.fcg" as currencyService
+import "./CurrencyManager.fcg" as currencyManager
+import "../Config/DebugConfig.fcg" as debugCfg
+
+[platform_server]
+static graph CurrencyVisualManager {
+
+    _LayerPool List<entity<Entity>> = nil
+    _TriggerToMarket Map<entity<Entity>, entity<Entity>> = nil
+
+    func InitMoneyPool() {
+        _LayerPool = list.New(0, 20) as List<entity<Entity>>
+        _TriggerToMarket = map.New() as Map<entity<Entity>, entity<Entity>>
+        start _AsyncPreCreateLayers()
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] InitMoneyPool | init done, async pre-create started") }
+    }
+
+    async func _AsyncPreCreateLayers() {
+        WaitForMillisecond(3000)
+
+        var layerPrefab = marketCfg.GetMoneyLayerPrefab()
+        for batch = 0, 4, 1 {
+            for i = 0, 5, 1 {
+                CreateFromPrefab(out var layer, layerPrefab)
+                if layer != nil {
+                    layer<Transform>.Position = Vector3{0, -9999, 0}
+                    list.Append(_LayerPool, layer as entity<Entity>)
+                }
+            }
+            WaitForMillisecond(100)
+        }
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _AsyncPreCreateLayers | pool ready, count=" + convert.ToString(list.Length(_LayerPool))) }
+    }
+
+    // ===== SPAWN TRIGGER (called during RegisterMarket) =====
+
+    func SpawnMoneyTrigger(market entity<Entity>) {
+        if market == nil || market<marketData> == nil { return }
+        if market<marketData>._MoneyTriggerEntity != nil { return }
+
+        CreateFromPrefab(out var trigger, marketCfg.GetMoneyTriggerPrefab())
+        if trigger == nil {
+            if debugCfg.MoneyDrop() { LogWarning("[CurrencyVisualManager] SpawnMoneyTrigger FAILED | could not create money_trigger prefab") }
+            return
+        }
+
+        var pos = _GetDropWorldPos(market)
+        trigger<Transform>.Position = pos
+        trigger<Transform>.Rotation = Vector3{0, market<Transform>.Rotation.Y, 0}
+
+        market<marketData>._MoneyTriggerEntity = trigger
+        _TriggerToMarket[trigger] = market
+
+        var textObj = GetChildByName(trigger, "Text object")
+        if textObj != nil {
+            textObj<Text>.Content = ""
+        }
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] SpawnMoneyTrigger | spawned at market") }
+    }
+
+    // ===== DROP MONEY =====
+
+    func DropMoney(market entity<Entity>, itemId string, amount int) {
+        if market == nil || market<marketData> == nil { return }
+
+        var unitPrice = itemCfg.GetSellPrice(itemId)
+        var earnings = (unitPrice * amount) as int
+
+        market<marketData>._PendingMoney = (market<marketData>._PendingMoney + earnings) as int
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] DropMoney | +" + convert.ToString(earnings) + " pending=" + convert.ToString(market<marketData>._PendingMoney)) }
+
+        _UpdateMoneyStack(market)
+    }
+
+    // ===== COLLECT MONEY =====
+
+    event OnCollectMoneyDrop(player entity<Player>, triggerEntity entity<Entity>) {
+        if player == nil || triggerEntity == nil { return }
+
+        if !map.ContainKey(_TriggerToMarket, triggerEntity) {
+            if debugCfg.MoneyDrop() { LogWarning("[CurrencyVisualManager] OnCollectMoneyDrop | unknown trigger") }
+            return
+        }
+
+        var market = _TriggerToMarket[triggerEntity] as entity<Entity>
+        if market == nil || market<marketData> == nil { return }
+
+        if market<marketData>._Owner == nil || market<marketData>._Owner != player {
+            if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] OnCollectMoneyDrop SKIP | not owner") }
+            return
+        }
+
+        var pending = market<marketData>._PendingMoney as int
+        if pending <= 0 {
+            if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] OnCollectMoneyDrop SKIP | no pending") }
+            return
+        }
+
+        market<marketData>._PendingMoney = 0
+
+        currencyService.AddBalance(player, pending)
+        currencyManager.SyncCurrencyToPlayer(player)
+
+        var layerCount = list.Length(market<marketData>._MoneyLayers) as int
+        for i = 0, layerCount, 1 {
+            var layer = market<marketData>._MoneyLayers[i] as entity<Entity>
+            _ReturnLayerToPool(layer)
+        }
+        market<marketData>._MoneyLayers = List<entity<Entity>>{}
+
+        _UpdateMoneyText(market)
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] OnCollectMoneyDrop OK | collected $" + convert.ToString(pending)) }
+    }
+
+    // ===== INTERNAL: POSITION HELPER =====
+
+    func _GetDropWorldPos(market entity<Entity>) Vector3 {
+        var marketPos = market<Transform>.Position
+        var rotY = market<Transform>.Rotation.Y
+        var rawOffset = marketCfg.GetMoneyDropOffset()
+        var c = math.Cos(rotY)
+        var s = math.Sin(rotY)
+        var ox = rawOffset.X * c + rawOffset.Z * s
+        var oz = -rawOffset.X * s + rawOffset.Z * c
+        return Vector3{marketPos.X + ox, marketPos.Y + rawOffset.Y, marketPos.Z + oz}
+    }
+
+    // ===== INTERNAL: LAYER STACKING =====
+
+    func _UpdateMoneyStack(market entity<Entity>) {
+        if market<marketData>._MoneyTriggerEntity == nil { return }
+
+        var pending = market<marketData>._PendingMoney as int
+        if pending <= 0 { return }
+
+        var moneyPerLayer = marketCfg.GetMoneyPerLayer() as int
+        var maxLayers = marketCfg.GetMoneyMaxLayers() as int
+        var layerHeight = marketCfg.GetMoneyLayerHeight()
+
+        var neededLayers = ((pending + moneyPerLayer - 1) / moneyPerLayer) as int
+        if neededLayers > maxLayers { neededLayers = maxLayers as int }
+        if neededLayers <= 0 { neededLayers = 1 as int }
+
+        var currentLayers = list.Length(market<marketData>._MoneyLayers) as int
+        var triggerPos = market<marketData>._MoneyTriggerEntity<Transform>.Position
+        var triggerRotY = market<marketData>._MoneyTriggerEntity<Transform>.Rotation.Y
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _UpdateMoneyStack | needed=" + convert.ToString(neededLayers) + " current=" + convert.ToString(currentLayers) + " triggerPos=" + triggerPos) }
+
+        while currentLayers < neededLayers {
+            var layer = _GetLayerFromPool()
+            if layer == nil {
+                if debugCfg.MoneyDrop() { LogWarning("[CurrencyVisualManager] _UpdateMoneyStack | _GetLayerFromPool returned nil!") }
+                break
+            }
+
+            var fIdx = currentLayers as float
+            var layerY = triggerPos.Y + fIdx * layerHeight
+            layer<Transform>.Position = Vector3{triggerPos.X, layerY, triggerPos.Z}
+            layer<Transform>.Rotation = Vector3{0, triggerRotY, 0}
+
+            if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _UpdateMoneyStack | placed layer " + convert.ToString(currentLayers) + " at Y=" + convert.ToString(layerY)) }
+
+            list.Append(market<marketData>._MoneyLayers, layer)
+            currentLayers = (currentLayers + 1) as int
+        }
+
+        while currentLayers > neededLayers {
+            var idx = (currentLayers - 1) as int
+            var layer = market<marketData>._MoneyLayers[idx] as entity<Entity>
+            list.RemoveAt(market<marketData>._MoneyLayers, idx)
+            _ReturnLayerToPool(layer)
+            currentLayers = (currentLayers - 1) as int
+        }
+
+        _UpdateMoneyText(market)
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _UpdateMoneyStack | layers=" + convert.ToString(neededLayers) + " pending=$" + convert.ToString(pending)) }
+    }
+
+    func _UpdateMoneyText(market entity<Entity>) {
+        if market<marketData>._MoneyTriggerEntity == nil { return }
+
+        var textObj = GetChildByName(market<marketData>._MoneyTriggerEntity, "Text object")
+        if textObj == nil { return }
+
+        var amount = market<marketData>._PendingMoney as int
+        if amount > 0 {
+            textObj<Text>.Content = "$" + convert.ToString(amount)
+
+            var triggerPos = market<marketData>._MoneyTriggerEntity<Transform>.Position
+            var layerCount = list.Length(market<marketData>._MoneyLayers) as int
+            var layerHeight = marketCfg.GetMoneyLayerHeight()
+            var topY = triggerPos.Y + (layerCount as float) * layerHeight + 0.5
+            textObj<Transform>.Position = Vector3{triggerPos.X, topY, triggerPos.Z}
+        } else {
+            textObj<Text>.Content = ""
+        }
+    }
+
+    // ===== INTERNAL: POOL =====
+
+    func _GetLayerFromPool() entity<Entity> {
+        var count = list.Length(_LayerPool)
+        if count > 0 {
+            var layer = _LayerPool[count - 1] as entity<Entity>
+            list.RemoveAt(_LayerPool, count - 1)
+            if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _GetLayerFromPool | from pool, remaining=" + convert.ToString(count - 1)) }
+            return layer
+        }
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _GetLayerFromPool | pool empty, creating new") }
+        var layerPrefab = marketCfg.GetMoneyLayerPrefab()
+        CreateFromPrefab(out var newLayer, layerPrefab)
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] _GetLayerFromPool | CreateFromPrefab result=" + convert.ToString(newLayer != nil)) }
+        return newLayer
+    }
+
+    func _ReturnLayerToPool(layer entity<Entity>) {
+        if layer == nil { return }
+        layer<Transform>.Position = Vector3{0, -9999, 0}
+        list.Append(_LayerPool, layer)
+    }
+}

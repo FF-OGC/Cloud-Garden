@@ -387,6 +387,28 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_41704574"
+    },
+    "signal_72011782": {
+      "name": "OnCollectMoneyDrop",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100017,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "triggerEntity",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_72011782"
     }
   },
   "customName": {
@@ -406,7 +428,8 @@
     "OnSyncStoreData": "signal_13434618",
     "OnRequestBuyItem": "signal_53917574",
     "OnPlayerTapButton": "signal_20131491",
-    "OnExecuteFarmAction": "signal_41704574"
+    "OnExecuteFarmAction": "signal_41704574",
+    "OnCollectMoneyDrop": "signal_72011782"
   },
   "children": []
 }

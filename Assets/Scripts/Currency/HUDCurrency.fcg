@@ -6,6 +6,7 @@ import "Math.fcc" as math
 
 import "./PlayerCurrencyVisual.fcg" as playerCurrencyVisual
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph HUDCurrency {
@@ -27,15 +28,15 @@ graph HUDCurrency {
             if _CoinNum != nil {
                 _CoinNum<UIWidgetLabel>.Content = "0"
             }
-            if gameManager.IsDebug() { LogInfo("[HUDCurrency] OnAwake | UI created, icon=" + convert.ToString(_CoinIcon != nil) + " num=" + convert.ToString(_CoinNum != nil)) }
+            if debugCfg.Currency() { LogInfo("[HUDCurrency] OnAwake | UI created, icon=" + convert.ToString(_CoinIcon != nil) + " num=" + convert.ToString(_CoinNum != nil)) }
         } else {
-            if gameManager.IsDebug() { LogWarning("[HUDCurrency] OnAwake | FAILED to create Menu UI") }
+            if debugCfg.Currency() { LogWarning("[HUDCurrency] OnAwake | FAILED to create Menu UI") }
         }
     }
 
     event OnCurrencySync(player entity<Player>, balance int) {
         if player != thisEntity<Player> { return }
-        if gameManager.IsDebug() { LogInfo("[HUDCurrency] OnCurrencySync | newBalance=" + convert.ToString(balance) + " displayed=" + convert.ToString(_DisplayedBalance)) }
+        if debugCfg.Currency() { LogInfo("[HUDCurrency] OnCurrencySync | newBalance=" + convert.ToString(balance) + " displayed=" + convert.ToString(_DisplayedBalance)) }
 
         var oldBalance = _DisplayedBalance
         if oldBalance != balance {

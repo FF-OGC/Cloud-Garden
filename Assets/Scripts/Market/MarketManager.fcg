@@ -13,7 +13,8 @@ import "./CustomerVisualManager.fcg" as customerVisual
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Services/BackpackService.fcg" as backpackService
 import "../Core/GameManager.fcg" as gameManager
-import "../Currency/CurrencyManager.fcg" as currencyManager
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Currency/CurrencyVisualManager.fcg" as currencyVisualManager
 
 [platform_server]
 static graph MarketManager {
@@ -27,16 +28,17 @@ static graph MarketManager {
         _ZoneToMarket = map.New() as Map<entity<Entity>, entity<Entity>>
         customerVisual.InitNPCPool()
         marketVisual.InitProducePool()
+        currencyVisualManager.InitMoneyPool()
         _IsInitialized = true
         start TransactionLoopAll()
-        if gameManager.IsDebug() { LogInfo("[MarketManager] OnAwake | Initialized. Waiting for market registrations.") }
+        if debugCfg.Market() { LogInfo("[MarketManager] OnAwake | Initialized. Waiting for market registrations.") }
     }
 
     func RegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>) {
         if marketEntity == nil { return }
 
         if marketEntity<marketData> == nil {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] RegisterMarket | MarketRuntimeData not ready on '" + marketEntity<Entity>.Name + "', will retry...") }
+            if debugCfg.Market() { LogWarning("[MarketManager] RegisterMarket | MarketRuntimeData not ready on '" + marketEntity<Entity>.Name + "', will retry...") }
             start RetryRegisterMarket(marketEntity, farmZone, 5)
             return
         }
@@ -54,8 +56,9 @@ static graph MarketManager {
         }
 
         start SpawnInfoBoard(marketEntity, marketEntity<marketData>._Owner)
+        currencyVisualManager.SpawnMoneyTrigger(marketEntity)
         start DelayedMaintain(marketEntity)
-        if gameManager.IsDebug() { LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets))) }
+        if debugCfg.Market() { LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets))) }
     }
 
     async func RetryRegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>, retries int) {
@@ -63,10 +66,10 @@ static graph MarketManager {
         if marketEntity<marketData> != nil {
             RegisterMarket(marketEntity, farmZone)
         } else if retries > 0 {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] RetryRegisterMarket | Still not ready, retries=" + convert.ToString(retries)) }
+            if debugCfg.Market() { LogWarning("[MarketManager] RetryRegisterMarket | Still not ready, retries=" + convert.ToString(retries)) }
             start RetryRegisterMarket(marketEntity, farmZone, (retries - 1) as int)
         } else {
-            if gameManager.IsDebug() { LogError("[MarketManager] RetryRegisterMarket FAILED | MarketRuntimeData never became available. Check that MarketRuntimeData.fcg is attached to entity.") }
+            if debugCfg.Market() { LogError("[MarketManager] RetryRegisterMarket FAILED | MarketRuntimeData never became available. Check that MarketRuntimeData.fcg is attached to entity.") }
         }
     }
 
@@ -88,7 +91,7 @@ static graph MarketManager {
         if market != nil && market<marketData> != nil {
             market<marketData>._Owner = player
             start SpawnInfoBoard(market, player)
-            if gameManager.IsDebug() { LogInfo("[MarketManager] AssignMarketOwner | zone assigned to player") }
+            if debugCfg.Market() { LogInfo("[MarketManager] AssignMarketOwner | zone assigned to player") }
         }
     }
 
@@ -103,7 +106,7 @@ static graph MarketManager {
 
         CreateFromPrefab(out var infoBoard, gen.EResPrefab.farm_slot_info)
         if infoBoard == nil {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab") }
+            if debugCfg.Market() { LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab") }
             return
         }
 
@@ -122,17 +125,17 @@ static graph MarketManager {
             if owner != nil {
                 var ownerName = owner<Player>.NickName
                 textObj<Text>.Content = ownerName
-                if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
+                if debugCfg.Market() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
             } else {
                 textObj<Text>.Content = "X"
-                if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | no owner, set text to 'X'") }
+                if debugCfg.Market() { LogInfo("[MarketManager] SpawnInfoBoard | no owner, set text to 'X'") }
             }
         } else {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab") }
+            if debugCfg.Market() { LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab") }
         }
 
         market<marketData>._InfoBoard = infoBoard
-        if gameManager.IsDebug() {
+        if debugCfg.Market() {
             if owner != nil {
                 LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + owner<Player>.NickName)
             } else {
@@ -144,9 +147,9 @@ static graph MarketManager {
     // ===== TRIGGER EVENTS =====
 
     event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
-        if gameManager.IsDebug() { LogInfo("[MarketManager] OnPlayerEnterMarket | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
+        if debugCfg.Market() { LogInfo("[MarketManager] OnPlayerEnterMarket | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
         if market<marketData> == nil {
-            if gameManager.IsDebug() { LogError("[MarketManager] TRIGGER entity '" + market<Entity>.Name + "' has NO MarketRuntimeData! Make sure MarketTrigger and MarketRuntimeData are on the SAME entity.") }
+            if debugCfg.Market() { LogError("[MarketManager] TRIGGER entity '" + market<Entity>.Name + "' has NO MarketRuntimeData! Make sure MarketTrigger and MarketRuntimeData are on the SAME entity.") }
         }
         DispatchEventToEntity(OnPlayerEnterMarket, player, PlatformType.Server, List<object>{player, market})
     }
@@ -158,23 +161,23 @@ static graph MarketManager {
     // ===== FLOW 1: RESTOCK =====
 
     event OnRequestRestock(player entity<Player>, market entity<Entity>) {
-        if gameManager.IsDebug() { LogInfo("[MarketManager] OnRequestRestock | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
+        if debugCfg.Market() { LogInfo("[MarketManager] OnRequestRestock | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
         if player == nil || market == nil {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: player or market nil") }
+            if debugCfg.Market() { LogWarning("[MarketManager] OnRequestRestock ABORT: player or market nil") }
             return
         }
         if market<marketData> == nil {
-            if gameManager.IsDebug() { LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!") }
+            if debugCfg.Market() { LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!") }
             return
         }
 
         if market<marketData>._Owner == nil || market<marketData>._Owner != player {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall") }
+            if debugCfg.Market() { LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall") }
             return
         }
 
         if player<backpackData> == nil {
-            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil") }
+            if debugCfg.Market() { LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil") }
             return
         }
 
@@ -182,7 +185,7 @@ static graph MarketManager {
         var handle = player<backpackData>._QuickSlotRefs[activeSlot]
 
         if handle == -1 {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | no item in active slot") }
+            if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | no item in active slot") }
             return
         }
 
@@ -192,20 +195,20 @@ static graph MarketManager {
         var amount = player<backpackData>._ItemAmounts[handle] as int
 
         if !marketCfg.IsSellable(itemId) {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | " + itemId + " not sellable") }
+            if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | " + itemId + " not sellable") }
             return
         }
         if amount <= 0 { return }
 
         if !backpackService.ConsumeActiveItem(player, amount) {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] Restock FAILED | ConsumeActiveItem failed") }
+            if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | ConsumeActiveItem failed") }
             return
         }
 
         marketService.AddToTable(market, itemId, amount)
         marketVisual.UpdateTableDisplay(market)
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId) }
+        if debugCfg.Market() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId) }
         SyncQueueWithTable(market)
         CheckAndStartTransaction(market)
     }
@@ -214,21 +217,21 @@ static graph MarketManager {
 
     func MaintainQueue(market entity<Entity>) {
         if market == nil { return }
-        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue START") }
+        if debugCfg.Market() { LogInfo("[MarketManager] MaintainQueue START") }
         var queueSize = marketCfg.GetQueueSize() as int
         for i = 0, queueSize, 1 {
             var isEmpty = marketService.IsSlotEmpty(market, i)
-            if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue | slot " + convert.ToString(i) + " empty=" + convert.ToString(isEmpty)) }
+            if debugCfg.Market() { LogInfo("[MarketManager] MaintainQueue | slot " + convert.ToString(i) + " empty=" + convert.ToString(isEmpty)) }
             if isEmpty {
                 FillSlot(market, i)
             }
         }
-        if gameManager.IsDebug() { LogInfo("[MarketManager] MaintainQueue DONE | occupied=" + convert.ToString(marketService.GetOccupiedSlotCount(market))) }
+        if debugCfg.Market() { LogInfo("[MarketManager] MaintainQueue DONE | occupied=" + convert.ToString(marketService.GetOccupiedSlotCount(market))) }
     }
 
     func FillSlot(market entity<Entity>, slot int) {
         if market<marketData> == nil {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | marketData nil") }
+            if debugCfg.Market() { LogInfo("[MarketManager] FillSlot SKIP | marketData nil") }
             return
         }
         market<marketData>.EnsureInit()
@@ -261,7 +264,7 @@ static graph MarketManager {
             var allItems = marketCfg.GetSellableItems()
             var allCount = list.Length(allItems) as int
             if allCount <= 0 {
-                if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot SKIP | no sellable items") }
+                if debugCfg.Market() { LogInfo("[MarketManager] FillSlot SKIP | no sellable items") }
                 return
             }
             var itemIndex = (customerId % allCount) as int
@@ -269,7 +272,7 @@ static graph MarketManager {
             amount = minAmt as int
         }
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId) }
+        if debugCfg.Market() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId) }
         marketService.SetCustomer(market, slot, customerId, itemId, amount)
         customerVisual.SpawnCustomer(market, slot)
     }
@@ -285,7 +288,7 @@ static graph MarketManager {
         var tableItemCount = list.Length(tableItems) as int
 
         if tableItemCount <= 0 {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue SKIP | table empty") }
+            if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue SKIP | table empty") }
             return
         }
 
@@ -299,10 +302,10 @@ static graph MarketManager {
                 var tableStock = marketService.GetTableAmount(market, wantedItem) as int
 
                 if tableStock >= wantedAmount {
-                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " OK, " + convert.ToString(wantedAmount) + "x " + wantedItem + " fulfilled") }
+                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " OK, " + convert.ToString(wantedAmount) + "x " + wantedItem + " fulfilled") }
                 } else if tableStock > 0 {
                     market<marketData>._QueueItemAmounts[i] = tableStock as int
-                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " reduced " + convert.ToString(wantedAmount) + " -> " + convert.ToString(tableStock) + " for " + wantedItem) }
+                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " reduced " + convert.ToString(wantedAmount) + " -> " + convert.ToString(tableStock) + " for " + wantedItem) }
                 } else {
                     var customerId = market<marketData>._QueueCustomerIDs[i] as int
                     var newIndex = (customerId % tableItemCount) as int
@@ -314,23 +317,23 @@ static graph MarketManager {
 
                     market<marketData>._QueueItemIDs[i] = newItem as string
                     market<marketData>._QueueItemAmounts[i] = newAmount as int
-                    if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " switched " + wantedItem + " -> " + convert.ToString(newAmount) + "x " + newItem) }
+                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " switched " + wantedItem + " -> " + convert.ToString(newAmount) + "x " + newItem) }
                 }
             }
         }
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] SyncQueue DONE") }
+        if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue DONE") }
     }
 
     // ===== FLOW 3: TRANSACTION =====
 
     async func TransactionLoopAll() {
         WaitForMillisecond(2000)
-        if gameManager.IsDebug() { LogInfo("[MarketManager] TransactionLoopAll STARTED | markets=" + convert.ToString(list.Length(_Markets))) }
+        if debugCfg.Market() { LogInfo("[MarketManager] TransactionLoopAll STARTED | markets=" + convert.ToString(list.Length(_Markets))) }
         while true {
             var count = list.Length(_Markets) as int
             if count == 0 {
-                if gameManager.IsDebug() { LogInfo("[MarketManager] TransactionLoop | no markets registered yet") }
+                if debugCfg.Market() { LogInfo("[MarketManager] TransactionLoop | no markets registered yet") }
             }
             for i = 0, count, 1 {
                 var market = _Markets[i] as entity<Entity>
@@ -347,15 +350,15 @@ static graph MarketManager {
     func CheckAndStartTransaction(market entity<Entity>) {
         if market == nil { return }
         if market<marketData> == nil {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | marketData nil") }
+            if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | marketData nil") }
             return
         }
         if market<marketData>._IsTransacting {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | already transacting") }
+            if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | already transacting") }
             return
         }
         if marketService.IsSlotEmpty(market, 0) {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | slot0 empty, no customers") }
+            if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | slot0 empty, no customers") }
             return
         }
 
@@ -363,51 +366,51 @@ static graph MarketManager {
         var wantedAmount = market<marketData>._QueueItemAmounts[0] as int
         var customerId = market<marketData>._QueueCustomerIDs[0] as int
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction | customer=" + convert.ToString(customerId) + " wants " + convert.ToString(wantedAmount) + "x " + wantedItem) }
+        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction | customer=" + convert.ToString(customerId) + " wants " + convert.ToString(wantedAmount) + "x " + wantedItem) }
 
         if wantedAmount <= 0 {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | wantedAmount <= 0") }
+            if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | wantedAmount <= 0") }
             return
         }
 
         var tableAmount = marketService.GetTableAmount(market, wantedItem) as int
-        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction | tableStock=" + convert.ToString(tableAmount) + " needed=" + convert.ToString(wantedAmount)) }
+        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction | tableStock=" + convert.ToString(tableAmount) + " needed=" + convert.ToString(wantedAmount)) }
 
         if tableAmount < wantedAmount {
-            if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction SKIP | not enough stock (" + convert.ToString(tableAmount) + " < " + convert.ToString(wantedAmount) + ") for " + wantedItem) }
+            if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | not enough stock (" + convert.ToString(tableAmount) + " < " + convert.ToString(wantedAmount) + ") for " + wantedItem) }
             return
         }
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] CheckTransaction START | selling " + convert.ToString(wantedAmount) + "x " + wantedItem + " to customer " + convert.ToString(customerId)) }
+        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction START | selling " + convert.ToString(wantedAmount) + "x " + wantedItem + " to customer " + convert.ToString(customerId)) }
         market<marketData>._IsTransacting = true
         start ExecuteTransaction(market, wantedItem, wantedAmount)
     }
 
     async func ExecuteTransaction(market entity<Entity>, itemId string, amount int) {
-        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction BEGIN | " + convert.ToString(amount) + "x " + itemId) }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction BEGIN | " + convert.ToString(amount) + "x " + itemId) }
 
         var timePerUnit = marketCfg.GetTransactionTimeMs(itemId) as int
         var totalTimeMs = (timePerUnit * amount) as int
 
         marketService.RemoveFromTable(market, itemId, amount)
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
 
         WaitForMillisecond(totalTimeMs)
 
         marketVisual.UpdateTableDisplay(market)
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | wait done, customer leaving") }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | wait done, customer leaving") }
 
         customerVisual.AnimateLeaving(market, 0)
         marketService.ClearCustomer(market, 0)
 
         if market<marketData>._Owner != nil {
-            currencyManager.ProcessItemSale(market<marketData>._Owner, itemId, amount)
+            currencyVisualManager.DropMoney(market, itemId, amount)
         }
 
         var conveyorDelay = marketCfg.GetConveyorDelayMs() as int
-        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction | conveyor delay " + convert.ToString(conveyorDelay) + "ms") }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | conveyor delay " + convert.ToString(conveyorDelay) + "ms") }
         WaitForMillisecond(conveyorDelay)
 
         marketService.ShiftQueueForward(market)
@@ -418,7 +421,7 @@ static graph MarketManager {
 
         market<marketData>._IsTransacting = false
 
-        if gameManager.IsDebug() { LogInfo("[MarketManager] ExecuteTransaction DONE | refilling queue") }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction DONE | refilling queue") }
         MaintainQueue(market)
         SyncQueueWithTable(market)
         CheckAndStartTransaction(market)

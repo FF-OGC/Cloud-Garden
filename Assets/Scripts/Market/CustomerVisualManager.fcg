@@ -10,6 +10,7 @@ import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "../Services/AnimService.fcg" as animSvc
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph CustomerVisualManager {
@@ -28,7 +29,7 @@ static graph CustomerVisualManager {
             }
         }
 
-        if gameManager.IsDebug() { LogInfo("[CustomerVisual] InitNPCPool | Created 40 NPCs") }
+        if debugCfg.Market() { LogInfo("[CustomerVisual] InitNPCPool | Created 40 NPCs") }
     }
 
     func RotateOffset(offset Vector3, angleDeg float) Vector3 {
@@ -45,7 +46,7 @@ static graph CustomerVisualManager {
 
         var npc = GetNPCFromPool()
         if npc == nil {
-            if gameManager.IsDebug() { LogInfo("[CustomerVisual] SpawnCustomer FAILED | pool empty") }
+            if debugCfg.Market() { LogInfo("[CustomerVisual] SpawnCustomer FAILED | pool empty") }
             return
         }
 
@@ -66,7 +67,7 @@ static graph CustomerVisualManager {
         TweenMoveTo(npc, gatePos, targetPos, marketCfg.GetNPCTweenTimeMs())
         start DelayedPlayAnim(npc, "Idle", marketCfg.GetNPCTweenTimeMs())
 
-        if gameManager.IsDebug() { LogInfo("[CustomerVisual] SpawnCustomer | slot=" + convert.ToString(slotIndex)) }
+        if debugCfg.Market() { LogInfo("[CustomerVisual] SpawnCustomer | slot=" + convert.ToString(slotIndex)) }
     }
 
     func AnimateLeaving(market entity<Entity>, slotIndex int) {
@@ -90,7 +91,7 @@ static graph CustomerVisualManager {
 
         start AnimateLeavingSequence(npc, currentPos, sidePos, exitPos, rotY)
 
-        if gameManager.IsDebug() { LogInfo("[CustomerVisual] AnimateLeaving | slot=" + convert.ToString(slotIndex)) }
+        if debugCfg.Market() { LogInfo("[CustomerVisual] AnimateLeaving | slot=" + convert.ToString(slotIndex)) }
     }
 
     async func AnimateLeavingSequence(npc entity<Entity>, startPos Vector3, sidePos Vector3, exitPos Vector3, marketRotY float) {
@@ -130,7 +131,7 @@ static graph CustomerVisualManager {
             }
         }
 
-        if gameManager.IsDebug() { LogInfo("[CustomerVisual] AdvanceQueue | NPCs moving forward") }
+        if debugCfg.Market() { LogInfo("[CustomerVisual] AdvanceQueue | NPCs moving forward") }
     }
 
     func TweenMoveTo(npc entity<Entity>, fromPos Vector3, toPos Vector3, timeMs int) {

@@ -4,6 +4,7 @@ import "Convert.fcc" as convert
 
 import "./CurrencyRuntimeData.fcg" as currencyData
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph CurrencyService {
@@ -17,7 +18,7 @@ static graph CurrencyService {
     func SetBalance(player entity<Player>, amount int) {
         if player == nil { return }
         currencyData._Balances[player] = amount
-        if gameManager.IsDebug() { LogInfo("[CurrencyService] SetBalance | player=" + player<Player>.NickName + " balance=" + convert.ToString(amount)) }
+        if debugCfg.Currency() { LogInfo("[CurrencyService] SetBalance | player=" + player<Player>.NickName + " balance=" + convert.ToString(amount)) }
     }
 
     func HasEnough(player entity<Player>, amount int) bool {
@@ -31,7 +32,7 @@ static graph CurrencyService {
         var current = GetBalance(player)
         var newBalance = (current + amount) as int
         currencyData._Balances[player] = newBalance
-        if gameManager.IsDebug() { LogInfo("[CurrencyService] AddBalance | player=" + player<Player>.NickName + " +" + convert.ToString(amount) + " new=" + convert.ToString(newBalance)) }
+        if debugCfg.Currency() { LogInfo("[CurrencyService] AddBalance | player=" + player<Player>.NickName + " +" + convert.ToString(amount) + " new=" + convert.ToString(newBalance)) }
         return true
     }
 
@@ -39,12 +40,12 @@ static graph CurrencyService {
         if player == nil || amount <= 0 { return false }
         var current = GetBalance(player)
         if current < amount {
-            if gameManager.IsDebug() { LogInfo("[CurrencyService] SubtractBalance FAILED | player=" + player<Player>.NickName + " has " + convert.ToString(current) + " need " + convert.ToString(amount)) }
+            if debugCfg.Currency() { LogInfo("[CurrencyService] SubtractBalance FAILED | player=" + player<Player>.NickName + " has " + convert.ToString(current) + " need " + convert.ToString(amount)) }
             return false
         }
         var newBalance = (current - amount) as int
         currencyData._Balances[player] = newBalance
-        if gameManager.IsDebug() { LogInfo("[CurrencyService] SubtractBalance | player=" + player<Player>.NickName + " -" + convert.ToString(amount) + " new=" + convert.ToString(newBalance)) }
+        if debugCfg.Currency() { LogInfo("[CurrencyService] SubtractBalance | player=" + player<Player>.NickName + " -" + convert.ToString(amount) + " new=" + convert.ToString(newBalance)) }
         return true
     }
 
@@ -52,7 +53,7 @@ static graph CurrencyService {
         if player == nil { return }
         if map.ContainKey(currencyData._Balances, player) {
             map.Remove(currencyData._Balances, player)
-            if gameManager.IsDebug() { LogInfo("[CurrencyService] RemovePlayer | removed from ledger") }
+            if debugCfg.Currency() { LogInfo("[CurrencyService] RemovePlayer | removed from ledger") }
         }
     }
 }

@@ -4,6 +4,7 @@ import "Convert.fcc" as convert
 
 import "../Market/MarketRuntimeData.fcg" as marketData
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph MarketService {
@@ -18,11 +19,11 @@ static graph MarketService {
             var current = market<marketData>._TableItemAmounts[index] as int
             var newTotal = (current + amount) as int
             market<marketData>._TableItemAmounts[index] = newTotal
-            if gameManager.IsDebug() { LogInfo("[MarketService] AddToTable | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(newTotal)) }
+            if debugCfg.Market() { LogInfo("[MarketService] AddToTable | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(newTotal)) }
         } else {
             list.Append(market<marketData>._TableItemIDs, itemId)
             list.Append(market<marketData>._TableItemAmounts, amount)
-            if gameManager.IsDebug() { LogInfo("[MarketService] AddToTable | NEW " + itemId + " amount=" + convert.ToString(amount)) }
+            if debugCfg.Market() { LogInfo("[MarketService] AddToTable | NEW " + itemId + " amount=" + convert.ToString(amount)) }
         }
     }
 
@@ -44,7 +45,7 @@ static graph MarketService {
         } else {
             market<marketData>._TableItemAmounts[index] = remaining
         }
-        if gameManager.IsDebug() { LogInfo("[MarketService] RemoveFromTable | " + itemId + " -" + convert.ToString(amount) + " rem=" + convert.ToString(remaining)) }
+        if debugCfg.Market() { LogInfo("[MarketService] RemoveFromTable | " + itemId + " -" + convert.ToString(amount) + " rem=" + convert.ToString(remaining)) }
         return true
     }
 
@@ -68,7 +69,7 @@ static graph MarketService {
         market<marketData>._QueueCustomerIDs[slot] = id as int
         market<marketData>._QueueItemIDs[slot] = itemId as string
         market<marketData>._QueueItemAmounts[slot] = amount as int
-        if gameManager.IsDebug() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId) }
+        if debugCfg.Market() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId) }
     }
 
     func ClearCustomer(market entity<Entity>, slot int) {
@@ -99,7 +100,7 @@ static graph MarketService {
         }
         ClearCustomer(market, 4)
         market<marketData>._SlotNPCs[4] = nil
-        if gameManager.IsDebug() { LogInfo("[MarketService] ShiftQueueForward | Queue shifted") }
+        if debugCfg.Market() { LogInfo("[MarketService] ShiftQueueForward | Queue shifted") }
     }
 
     func IsSlotEmpty(market entity<Entity>, slot int) bool {

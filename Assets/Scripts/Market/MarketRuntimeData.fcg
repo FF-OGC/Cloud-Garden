@@ -3,6 +3,7 @@ import "List.fcc" as list
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph MarketRuntimeData {
@@ -26,6 +27,10 @@ graph MarketRuntimeData {
     _ActiveProduceItemIDs List<string> = nil
 
     _InfoBoard entity<Entity> = nil
+
+    _PendingMoney int = 0
+    _MoneyLayers List<entity<Entity>> = nil
+    _MoneyTriggerEntity entity<Entity> = nil
 
     event OnAwake() {
         EnsureInit()
@@ -52,7 +57,9 @@ graph MarketRuntimeData {
             list.Append(_SlotNPCs, nil)
         }
 
+        _MoneyLayers = List<entity<Entity>>{}
+
         _IsInitialized = true
-        if gameManager.IsDebug() { LogInfo("[MarketRuntimeData] Initialized on entity.") }
+        if debugCfg.Market() { LogInfo("[MarketRuntimeData] Initialized on entity.") }
     }
 }

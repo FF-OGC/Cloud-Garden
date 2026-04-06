@@ -328,6 +328,30 @@
           },
           "scriptName": "crop_carrot",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "asuuahth12s-mnmzib2x-q9pfe0dst4d",
+            "filePath": "Assets\\Prefabs\\Money.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "money",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "it1eod857sf-mnn029ek-2xl25qc2tyt",
+            "filePath": "Assets\\Prefabs\\Money_trigger.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "money_trigger",
+          "children": []
         }
       ]
     },

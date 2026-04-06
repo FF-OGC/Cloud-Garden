@@ -3,6 +3,7 @@ import "Map.fcc" as map
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph GachaData {
@@ -32,7 +33,7 @@ static graph GachaData {
     func MarkFirstRollUsed(player entity<Entity>) {
         var key = _MakePlayerKey(player)
         _FirstRollUsed[key] = true
-        if gameManager.IsDebug() { LogInfo("[GachaData] First roll used for player key=" + key) }
+        if debugCfg.Gacha() { LogInfo("[GachaData] First roll used for player key=" + key) }
     }
 
     func GetPityCounter(player entity<Entity>, gachaId string) int {
@@ -46,7 +47,7 @@ static graph GachaData {
     func SetPityCounter(player entity<Entity>, gachaId string, value int) {
         var key = _MakeKey(player, gachaId)
         _PityCounters[key] = value
-        if gameManager.IsDebug() { LogInfo("[GachaData] SetPity | key=" + key + " value=" + convert.ToString(value)) }
+        if debugCfg.Gacha() { LogInfo("[GachaData] SetPity | key=" + key + " value=" + convert.ToString(value)) }
     }
 
     func IncrementPity(player entity<Entity>, gachaId string) {

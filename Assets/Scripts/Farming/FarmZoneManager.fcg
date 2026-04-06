@@ -3,6 +3,7 @@ import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "../Floors/FloorManager.fcg" as floorManager
 import "../Grid/GridManager.fcg" as gridManager
 
@@ -25,6 +26,6 @@ static graph FarmZoneManager {
             gridManager.InitGridsForFloors(floors)
         }
 
-        if gameMgr.IsDebug() { LogInfo("[FarmZoneManager] Zone initialized using Visual Custom Component.") }
+        if debugCfg.Farming() { LogInfo("[FarmZoneManager] Zone initialized using Visual Custom Component.") }
     }
 }

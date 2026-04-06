@@ -3,6 +3,7 @@ import "Map.fcc" as map
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph CurrencyRuntimeData {
@@ -11,6 +12,6 @@ static graph CurrencyRuntimeData {
 
     event OnAwake() {
         _Balances = map.New() as Map<entity<Player>, int>
-        if gameManager.IsDebug() { LogInfo("[CurrencyRuntimeData] Initialized.") }
+        if debugCfg.Currency() { LogInfo("[CurrencyRuntimeData] Initialized.") }
     }
 }

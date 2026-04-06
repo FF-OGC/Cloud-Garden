@@ -1,0 +1,27 @@
+import "StdLibrary.fcc" as std
+
+[platform_server]
+static graph DebugConfig {
+    _DebugAll bool = false
+
+    _DebugCore bool = false
+    _DebugFarming bool = false
+    _DebugMarket bool = false
+    _DebugStore bool = false
+    _DebugBackpack bool = false
+    _DebugGrid bool = false
+    _DebugCurrency bool = false
+    _DebugGacha bool = false
+    _DebugMoneyDrop bool = true
+
+    func All() bool { return _DebugAll }
+    func Core() bool { return _DebugAll || _DebugCore }
+    func Farming() bool { return _DebugAll || _DebugFarming }
+    func Market() bool { return _DebugAll || _DebugMarket }
+    func Store() bool { return _DebugAll || _DebugStore }
+    func Backpack() bool { return _DebugAll || _DebugBackpack }
+    func Grid() bool { return _DebugAll || _DebugGrid }
+    func Currency() bool { return _DebugAll || _DebugCurrency }
+    func Gacha() bool { return _DebugAll || _DebugGacha }
+    func MoneyDrop() bool { return _DebugAll || _DebugMoneyDrop }
+}

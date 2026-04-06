@@ -3,6 +3,7 @@ import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph PlayerCurrencyVisual {
@@ -12,6 +13,6 @@ graph PlayerCurrencyVisual {
     event OnCurrencySync(player entity<Player>, balance int) {
         if player != thisEntity<Player> { return }
         _CachedBalance = balance
-        if gameManager.IsDebug() { LogInfo("[PlayerCurrencyVisual] OnCurrencySync | balance=" + convert.ToString(balance)) }
+        if debugCfg.Currency() { LogInfo("[PlayerCurrencyVisual] OnCurrencySync | balance=" + convert.ToString(balance)) }
     }
 }

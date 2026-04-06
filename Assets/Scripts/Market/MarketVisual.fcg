@@ -8,6 +8,7 @@ import "Math.fcc" as math
 import "../Config/MarketConfig.fcg" as marketCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph MarketVisual {
@@ -34,7 +35,7 @@ static graph MarketVisual {
             }
 
             _ProducePool[itemId] = poolList
-            if gameManager.IsDebug() { LogInfo("[MarketVisual] InitProducePool | " + itemId + " pool size=4") }
+            if debugCfg.Market() { LogInfo("[MarketVisual] InitProducePool | " + itemId + " pool size=4") }
         }
     }
 
@@ -75,14 +76,14 @@ static graph MarketVisual {
                     model<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
                     list.Append(market<marketData>._ActiveProduceItemIDs, itemId)
                     list.Append(market<marketData>._ActiveProduceModels, model)
-                    if gameManager.IsDebug() { LogInfo("[MarketVisual] SHOW " + itemId) }
+                    if debugCfg.Market() { LogInfo("[MarketVisual] SHOW " + itemId) }
                 }
             } else if !hasStock && hasActiveModel {
                 var model = market<marketData>._ActiveProduceModels[activeIndex] as entity<Entity>
                 ReturnModelToPool(itemId, model)
                 list.RemoveAt(market<marketData>._ActiveProduceItemIDs, activeIndex)
                 list.RemoveAt(market<marketData>._ActiveProduceModels, activeIndex)
-                if gameManager.IsDebug() { LogInfo("[MarketVisual] HIDE " + itemId) }
+                if debugCfg.Market() { LogInfo("[MarketVisual] HIDE " + itemId) }
             }
         }
     }

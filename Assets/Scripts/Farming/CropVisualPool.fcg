@@ -4,6 +4,7 @@ import "Map.fcc" as map
 import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph CropVisualPool {
@@ -119,7 +120,7 @@ static graph CropVisualPool {
         _Batch("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 5)
 
         _IsPoolReady = true
-        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] All pools ready.") }
+        if debugCfg.Farming() { LogInfo("[CropVisualPool] All pools ready.") }
     }
 
     func _Batch(key string, prefabId PrefabID, count int) {
@@ -139,7 +140,7 @@ static graph CropVisualPool {
                 created = created + 1
             }
         }
-        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] '" + key + "' +=" + created + " total=" + list.Length(poolList)) }
+        if debugCfg.Farming() { LogInfo("[CropVisualPool] '" + key + "' +=" + created + " total=" + list.Length(poolList)) }
     }
 
     func Get(prefabKey string) entity<Entity> {

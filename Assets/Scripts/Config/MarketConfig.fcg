@@ -75,4 +75,13 @@ static graph MarketConfig {
     func GetLeaveSideStepMs() int { return 600 }
 
     func GetInfoBoardOffset() Vector3 { return Vector3{3.0, 1.7, 0.0} }
+
+    // ===== MONEY DROP CONFIG =====
+
+    func GetMoneyDropOffset() Vector3 { return Vector3{-3.5, 0.0, 0.0} }
+    func GetMoneyLayerPrefab() PrefabID { return gen.EResPrefab.money }
+    func GetMoneyTriggerPrefab() PrefabID { return gen.EResPrefab.money_trigger }
+    func GetMoneyPerLayer() int { return 50 }
+    func GetMoneyLayerHeight() float { return 0.15 }
+    func GetMoneyMaxLayers() int { return 999 }
 }

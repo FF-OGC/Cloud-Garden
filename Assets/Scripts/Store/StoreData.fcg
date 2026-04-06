@@ -3,6 +3,7 @@ import "List.fcc" as list
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph StoreData {
@@ -14,12 +15,12 @@ static graph StoreData {
     event OnAwake() {
         _ItemIDs = list.New(0, 10) as List<string>
         _ItemAmounts = list.New(0, 10) as List<int>
-        if gameManager.IsDebug() { LogInfo("[StoreData] Initialized (empty, waiting for StoreManager refresh)") }
+        if debugCfg.Store() { LogInfo("[StoreData] Initialized (empty, waiting for StoreManager refresh)") }
     }
 
     func ClearStore() {
         list.Clear(_ItemIDs)
         list.Clear(_ItemAmounts)
-        if gameManager.IsDebug() { LogInfo("[StoreData] ClearStore: kho da xoa sach") }
+        if debugCfg.Store() { LogInfo("[StoreData] ClearStore: kho da xoa sach") }
     }
 }

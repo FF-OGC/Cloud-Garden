@@ -6,18 +6,19 @@ import "Convert.fcc" as convert
 
 import "./PlayerStoreVisual.fcg" as playerStoreVisual
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph HUDStore {
     
     event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
-        if gameManager.IsDebug() { LogInfo("[HUDStore] OnPlayerTapButton FIRED | hasMyButton=" + convert.ToString(HasComponent(button, typeof(MyButton))) + " entityName=" + button<Entity>.Name) }
+        if debugCfg.Store() { LogInfo("[HUDStore] OnPlayerTapButton FIRED | hasMyButton=" + convert.ToString(HasComponent(button, typeof(MyButton))) + " entityName=" + button<Entity>.Name) }
         if player == nil || button == nil {
-            if gameManager.IsDebug() { LogWarning("[HUDStore] OnPlayerTapButton: player or button is nil") }
+            if debugCfg.Store() { LogWarning("[HUDStore] OnPlayerTapButton: player or button is nil") }
             return
         }
         if player<playerStoreVisual> == nil {
-            if gameManager.IsDebug() { LogWarning("[HUDStore] OnPlayerTapButton: playerStoreVisual is nil on player") }
+            if debugCfg.Store() { LogWarning("[HUDStore] OnPlayerTapButton: playerStoreVisual is nil on player") }
             return
         }
 
@@ -25,19 +26,19 @@ graph HUDStore {
         if !HasComponent(button, typeof(MyButton)) {
             var storeUI = player<playerStoreVisual>._StoreUI
             var entityName = button<Entity>.Name
-            if gameManager.IsDebug() { LogWarning("[HUDStore] Button '" + entityName + "' has no MyButton, trying child /btn...") }
+            if debugCfg.Store() { LogWarning("[HUDStore] Button '" + entityName + "' has no MyButton, trying child /btn...") }
             var btnChild = GetWidgetByPath(player, storeUI, "/root/scroll/layout/" + entityName + "/btn")
             if btnChild != nil && HasComponent(btnChild, typeof(MyButton)) {
-                if gameManager.IsDebug() { LogInfo("[HUDStore] Found MyButton on child btn of '" + entityName + "'") }
+                if debugCfg.Store() { LogInfo("[HUDStore] Found MyButton on child btn of '" + entityName + "'") }
             } else {
-                if gameManager.IsDebug() { LogWarning("[HUDStore] No MyButton found on '" + entityName + "' or its /btn child") }
+                if debugCfg.Store() { LogWarning("[HUDStore] No MyButton found on '" + entityName + "' or its /btn child") }
                 return
             }
         }
 
         var btnType = actualBtn<MyButton>.Type
         var slotIndex = actualBtn<MyButton>.Arg0
-        if gameManager.IsDebug() { LogInfo("[HUDStore] Processing btnType=" + btnType + " slotIndex=" + convert.ToString(slotIndex)) }
+        if debugCfg.Store() { LogInfo("[HUDStore] Processing btnType=" + btnType + " slotIndex=" + convert.ToString(slotIndex)) }
 
         if btnType == "store_slot" {
             player<playerStoreVisual>.HandleSlotPressed(slotIndex)
@@ -56,7 +57,7 @@ graph HUDStore {
         } else if btnType == "store_tab_specialItem" {
             player<playerStoreVisual>.SwitchTab(4)
         } else {
-            if gameManager.IsDebug() { LogWarning("[HUDStore] Unknown btnType: " + btnType) }
+            if debugCfg.Store() { LogWarning("[HUDStore] Unknown btnType: " + btnType) }
         }
     }
 }

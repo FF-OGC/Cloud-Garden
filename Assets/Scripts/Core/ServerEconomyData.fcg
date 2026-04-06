@@ -3,6 +3,7 @@ import "Map.fcc" as map
 import "Convert.fcc" as convert
 
 import "./GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 static graph ServerEconomyData {
@@ -23,7 +24,7 @@ static graph ServerEconomyData {
     func RecordSold(itemId string, amount int) {
         var current = GetSoldCount(itemId)
         _SoldCounts[itemId] = (current + amount) as int
-        if gameManager.IsDebug() {
+        if debugCfg.Core() {
             LogInfo("[ServerEconomyData] RecordSold | " + itemId + " +" + convert.ToString(amount) + " total=" + convert.ToString(current + amount))
         }
     }
@@ -34,7 +35,7 @@ static graph ServerEconomyData {
 
     func ResetAll() {
         _SoldCounts = map.New() as Map<string, int>
-        if gameManager.IsDebug() {
+        if debugCfg.Core() {
             LogInfo("[ServerEconomyData] ResetAll")
         }
     }

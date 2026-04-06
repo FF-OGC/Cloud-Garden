@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "./GridTileTracker.fcg" as gridTracker
 
 [platform_server]
@@ -23,7 +24,7 @@ static graph TrackerPoolManager {
                 WaitForMillisecond(50)
             }
         }
-        if gameMgr.IsDebug() { LogInfo("[TrackerPool] Initialized " + created + "/10 Trackers.") }
+        if debugCfg.Grid() { LogInfo("[TrackerPool] Initialized " + created + "/10 Trackers.") }
     }
 
     func GetTracker(player entity<Player>) entity<Entity> {
@@ -34,7 +35,7 @@ static graph TrackerPoolManager {
             
             tracker<gridTracker>._Owner = player
             tracker<Transform>.Position = player<Player>.Position
-            if gameMgr.IsDebug() { LogInfo("[TrackerPool] Get Tracker from pool. Tracker position: " + tracker<Transform>.Position.X + ", " + tracker<Transform>.Position.Z) }
+            if debugCfg.Grid() { LogInfo("[TrackerPool] Get Tracker from pool. Tracker position: " + tracker<Transform>.Position.X + ", " + tracker<Transform>.Position.Z) }
             return tracker
         }
         

@@ -6,6 +6,7 @@ import "Map.fcc" as map
 import "./PlayerFarmingData.fcg" as playerFarmingData
 import "../Services/AnimService.fcg" as animSvc
 import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Services/Utils/GridUtil.fcg" as gridUtil
 
@@ -17,7 +18,7 @@ static graph FarmActionAnimator {
     event OnPlayerHoeAction(player entity<Entity>) {
         if player == nil { return }
         if player<playerFarmingData>._IsPerformingAction {
-            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: already performing action") }
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already performing action") }
             return
         }
         start PerformAction(player)
@@ -28,7 +29,7 @@ static graph FarmActionAnimator {
 
         var floor = player<playerFarmingData>.CurrentFloor
         if floor == nil || floor<floorData> == nil {
-            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: no valid floor") }
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: no valid floor") }
             player<playerFarmingData>._IsPerformingAction = false
             return
         }
@@ -36,14 +37,14 @@ static graph FarmActionAnimator {
         var gridPos = player<playerFarmingData>.CurrentGridPos
         var key = gridUtil.GetKeyFromPos(gridPos)
         if !map.ContainKey(floor<floorData>.CellStates, key) {
-            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: invalid grid key=" + key) }
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: invalid grid key=" + key) }
             player<playerFarmingData>._IsPerformingAction = false
             return
         }
 
         var state = floor<floorData>.CellStates[key] as int
         if state == gen.EFarmSlotState.Growing {
-            if gameMgr.IsDebug() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
             player<playerFarmingData>._IsPerformingAction = false
             return
         }

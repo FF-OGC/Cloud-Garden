@@ -17,11 +17,11 @@ import "../Currency/CurrencyManager.fcg" as currencyManager
 import "../Store/StoreManager.fcg" as storeManager
 import "../Config/FarmGridConfig.fcg" as gridCfg
 import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "../Config/DebugConfig.fcg" as debugCfg
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
     
-    _IsDebug bool = false
     _GameTime float = 0.0
     _IsTickStarted bool = false
     
@@ -30,7 +30,6 @@ static graph GameManager {
     _AllFloorsInWorld List<entity<Entity>> = nil
     _ConnectedPlayers List<entity<Player>> = nil
 
-    func IsDebug() bool { return _IsDebug }
     func GetGameTime() float { return _GameTime }
 
     event OnAwake() {
@@ -88,7 +87,7 @@ static graph GameManager {
             _IsTickStarted = true
         }
         
-        if _IsDebug { LogInfo("[GameManager] Successfully registered new Farm Zone dynamically.") }
+        if debugCfg.Core() { LogInfo("[GameManager] Successfully registered new Farm Zone dynamically.") }
     }
 
     async func DelayedMarketRegister(marketEntity entity<Entity>, farmZone entity<Entity>) {
@@ -102,12 +101,12 @@ static graph GameManager {
         if player == nil { return }
         var idx = list.IndexOf(_ConnectedPlayers, player)
         if idx != -1 { list.Remove(_ConnectedPlayers, idx) }
-        if _IsDebug { LogInfo("[GameManager] Player left. Connected: " + list.Length(_ConnectedPlayers)) }
+        if debugCfg.Core() { LogInfo("[GameManager] Player left. Connected: " + list.Length(_ConnectedPlayers)) }
     }
 
     event OnPlayerJoin(player entity<Player>) {
         list.Append(_ConnectedPlayers, player)
-        if _IsDebug { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
+        if debugCfg.Core() { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
 
         start WaitAndInitPlayer(player)
     }
@@ -122,11 +121,11 @@ static graph GameManager {
         }
 
         if list.Length(_FarmZones) == 0 {
-            if _IsDebug { LogWarning("[GameManager] Timeout: No farm zones registered!") }
+            if debugCfg.Core() { LogWarning("[GameManager] Timeout: No farm zones registered!") }
             return
         }
 
-        if _IsDebug { LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones)) }
+        if debugCfg.Core() { LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones)) }
 
         var zCount = list.Length(_FarmZones)
         var assignedZone entity<Entity> = nil
@@ -157,7 +156,7 @@ static graph GameManager {
                     }
                     assignedZone = zone
                     marketManager.AssignMarketOwner(zone, player)
-                    if _IsDebug { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
+                    if debugCfg.Core() { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
                     break
                 }
             }
@@ -177,7 +176,7 @@ static graph GameManager {
                 }
 
                 if mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 {
-                    if _IsDebug { LogWarning("[GameManager] Market position still (0,0,0) after polling, using zone fallback") }
+                    if debugCfg.Core() { LogWarning("[GameManager] Market position still (0,0,0) after polling, using zone fallback") }
                     var zonePos = assignedZone<Transform>.Position
                     var zonePosWait = 0
                     while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 10 {
@@ -197,7 +196,7 @@ static graph GameManager {
                     var spawnPos = Vector3{mPos.X + ox, mPos.Y, mPos.Z + oz}
                     var facing = GetPlayerOrientation(spawnPos, mPos)
                     Teleport(player, spawnPos, facing)
-                    if _IsDebug { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
+                    if debugCfg.Core() { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
                 }
             } else {
                 var zonePos = assignedZone<Transform>.Position
@@ -215,11 +214,12 @@ static graph GameManager {
         backpackManager.AddItem(player, "seed_apple", 20)
         backpackManager.AddItem(player, "seed_carrot", 15)
         backpackManager.AddItem(player, "seed_tomato", 10)
-        if _IsDebug { LogInfo("[GameManager] Added starting seeds to backpack.") }
+        backpackManager.AddItem(player, "crop_apple", 30)
+        if debugCfg.Core() { LogInfo("[GameManager] Added starting seeds to backpack.") }
 
         currencyManager.InitPlayerCurrency(player, 500)
 
-        if _IsDebug { LogInfo("[GameManager] Player fully initialized.") }
+        if debugCfg.Core() { LogInfo("[GameManager] Player fully initialized.") }
     }
 
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
@@ -228,61 +228,61 @@ static graph GameManager {
     }
 
     async func DebugSpawnAtHub() {
-        if _IsDebug { LogInfo("[DEBUG-SPAWN] Waiting 5s for pool init...") }
+        if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] Waiting 5s for pool init...") }
         WaitForMillisecond(5000)
-        if _IsDebug { LogInfo("[DEBUG-SPAWN] Starting spawn test at Central Hub") }
+        if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] Starting spawn test at Central Hub") }
 
         var hubY = 201.0
 
         CreateFromPrefab(out var directSeedCarrot, gen.EResPrefab.seed_carrot)
         if directSeedCarrot != nil {
             directSeedCarrot<Transform>.Position = Vector3{0.0, hubY, 0.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] A1 seed_carrot => pos=" + directSeedCarrot<Transform>.Position + " scale=" + directSeedCarrot<Transform>.Scale + " active=" + directSeedCarrot<Entity>.ActiveSelf + " name=" + directSeedCarrot<Entity>.Name) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] A1 seed_carrot => pos=" + directSeedCarrot<Transform>.Position + " scale=" + directSeedCarrot<Transform>.Scale + " active=" + directSeedCarrot<Entity>.ActiveSelf + " name=" + directSeedCarrot<Entity>.Name) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] A1 seed_carrot => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] A1 seed_carrot => FAILED (nil)") }
         }
 
         CreateFromPrefab(out var directCropCarrot, gen.EResPrefab.crop_carrot)
         if directCropCarrot != nil {
             directCropCarrot<Transform>.Position = Vector3{3.0, hubY, 0.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] A2 crop_carrot => pos=" + directCropCarrot<Transform>.Position + " scale=" + directCropCarrot<Transform>.Scale + " active=" + directCropCarrot<Entity>.ActiveSelf + " name=" + directCropCarrot<Entity>.Name) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] A2 crop_carrot => pos=" + directCropCarrot<Transform>.Position + " scale=" + directCropCarrot<Transform>.Scale + " active=" + directCropCarrot<Entity>.ActiveSelf + " name=" + directCropCarrot<Entity>.Name) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] A2 crop_carrot => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] A2 crop_carrot => FAILED (nil)") }
         }
 
         CreateFromPrefab(out var directCropTomato, gen.EResPrefab.crop_tomato)
         if directCropTomato != nil {
             directCropTomato<Transform>.Position = Vector3{6.0, hubY, 0.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] A3 crop_tomato => pos=" + directCropTomato<Transform>.Position + " scale=" + directCropTomato<Transform>.Scale + " active=" + directCropTomato<Entity>.ActiveSelf + " name=" + directCropTomato<Entity>.Name) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] A3 crop_tomato => pos=" + directCropTomato<Transform>.Position + " scale=" + directCropTomato<Transform>.Scale + " active=" + directCropTomato<Entity>.ActiveSelf + " name=" + directCropTomato<Entity>.Name) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] A3 crop_tomato => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] A3 crop_tomato => FAILED (nil)") }
         }
 
         var poolSeedCarrot = cropPool.Get("seed_carrot")
         if poolSeedCarrot != nil {
             poolSeedCarrot<Transform>.Position = Vector3{0.0, hubY, 5.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] B1 seed_carrot POOL => pos=" + poolSeedCarrot<Transform>.Position + " scale=" + poolSeedCarrot<Transform>.Scale + " active=" + poolSeedCarrot<Entity>.ActiveSelf) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] B1 seed_carrot POOL => pos=" + poolSeedCarrot<Transform>.Position + " scale=" + poolSeedCarrot<Transform>.Scale + " active=" + poolSeedCarrot<Entity>.ActiveSelf) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] B1 seed_carrot POOL => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] B1 seed_carrot POOL => FAILED (nil)") }
         }
 
         var poolCropCarrot = cropPool.Get("crop_carrot")
         if poolCropCarrot != nil {
             poolCropCarrot<Transform>.Position = Vector3{3.0, hubY, 5.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] B2 crop_carrot POOL => pos=" + poolCropCarrot<Transform>.Position + " scale=" + poolCropCarrot<Transform>.Scale + " active=" + poolCropCarrot<Entity>.ActiveSelf) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] B2 crop_carrot POOL => pos=" + poolCropCarrot<Transform>.Position + " scale=" + poolCropCarrot<Transform>.Scale + " active=" + poolCropCarrot<Entity>.ActiveSelf) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] B2 crop_carrot POOL => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] B2 crop_carrot POOL => FAILED (nil)") }
         }
 
         var poolCropTomato = cropPool.Get("crop_tomato")
         if poolCropTomato != nil {
             poolCropTomato<Transform>.Position = Vector3{6.0, hubY, 5.0}
-            if _IsDebug { LogInfo("[DEBUG-SPAWN] B3 crop_tomato POOL => pos=" + poolCropTomato<Transform>.Position + " scale=" + poolCropTomato<Transform>.Scale + " active=" + poolCropTomato<Entity>.ActiveSelf) }
+            if debugCfg.Core() { LogInfo("[DEBUG-SPAWN] B3 crop_tomato POOL => pos=" + poolCropTomato<Transform>.Position + " scale=" + poolCropTomato<Transform>.Scale + " active=" + poolCropTomato<Entity>.ActiveSelf) }
         } else {
-            if _IsDebug { LogError("[DEBUG-SPAWN] B3 crop_tomato POOL => FAILED (nil)") }
+            if debugCfg.Core() { LogError("[DEBUG-SPAWN] B3 crop_tomato POOL => FAILED (nil)") }
         }
 
-        if _IsDebug {
+        if debugCfg.Core() {
             if directSeedCarrot != nil {
                 var child = GetChildByName(directSeedCarrot, directSeedCarrot<Entity>.Name)
                 if child != nil {
@@ -315,7 +315,7 @@ static graph GameManager {
     }
 
     async func TestPerformance() {
-        if _IsDebug { LogInfo("[GameManager] === PERFORMANCE TEST START ===") }
+        if debugCfg.Core() { LogInfo("[GameManager] === PERFORMANCE TEST START ===") }
 
         var floorCount = list.Length(_AllFloorsInWorld)
         var tileSize = gridCfg.GetTileSize()
@@ -353,10 +353,10 @@ static graph GameManager {
                 }
             }
 
-            if _IsDebug { LogInfo("[GameManager] Floor " + i + " filled. Running total: " + totalCells) }
+            if debugCfg.Core() { LogInfo("[GameManager] Floor " + i + " filled. Running total: " + totalCells) }
             WaitForMillisecond(50)
         }
 
-        if _IsDebug { LogInfo("[GameManager] === PERFORMANCE TEST DONE === Floors=" + floorCount + " TotalCells=" + totalCells) }
+        if debugCfg.Core() { LogInfo("[GameManager] === PERFORMANCE TEST DONE === Floors=" + floorCount + " TotalCells=" + totalCells) }
     }
 }

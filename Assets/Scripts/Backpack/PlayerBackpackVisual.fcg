@@ -10,6 +10,7 @@ import "../Services/Utils/UIUtil.fcg" as uiUtil
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Services/BackpackService.fcg" as backpackService
 import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph PlayerBackpackVisual {
@@ -46,7 +47,7 @@ graph PlayerBackpackVisual {
     }
 
     event OnBackpackDataChanged(owner entity<Entity>) {
-        if gameManager.IsDebug() { LogInfo("[PlayerBackpackVisual] OnBackpackDataChanged received | ownerMatch=" + convert.ToString(owner == thisEntity<Entity>)) }
+        if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] OnBackpackDataChanged received | ownerMatch=" + convert.ToString(owner == thisEntity<Entity>)) }
         if owner == thisEntity<Entity> { RefreshVisuals() }
     }
 
@@ -58,7 +59,7 @@ graph PlayerBackpackVisual {
     }
 
     func RefreshVisuals() {
-        if gameManager.IsDebug() { LogInfo("[PlayerBackpackVisual] RefreshVisuals called | backpackData=" + convert.ToString(thisEntity<backpackData> != nil)) }
+        if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] RefreshVisuals called | backpackData=" + convert.ToString(thisEntity<backpackData> != nil)) }
         if thisEntity<backpackData> == nil { return }
 
         // 1. Render Quick Slots
@@ -66,7 +67,7 @@ graph PlayerBackpackVisual {
             var handle = thisEntity<backpackData>._QuickSlotRefs[i]
             var path = "/quick_slot/" + convert.ToString(i)
             
-            if gameManager._IsDebug { 
+            if debugCfg.Backpack() { 
                 var dbgItemId = ""
                 var dbgAmount = 0
                 if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
@@ -91,7 +92,7 @@ graph PlayerBackpackVisual {
                     highlight<UIWidgetImage>.Alpha = 1.0 
                 } else { highlight<UIWidgetImage>.Alpha = 0.0 }
             } else {
-                if gameManager._IsDebug { LogInfo("[PlayerBackpackVisual] highlight NOT FOUND at: " + path + "/highlight") }
+                if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] highlight NOT FOUND at: " + path + "/highlight") }
             }
         }
 
@@ -100,12 +101,12 @@ graph PlayerBackpackVisual {
             var handle = thisEntity<backpackData>._BackpackRefs[i]
             var path = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
             
-            if gameManager._IsDebug && handle != -1 { LogInfo("[PlayerBackpackVisual] BackpackSlot[" + convert.ToString(i) + "] handle=" + convert.ToString(handle)) }
+            if debugCfg.Backpack() && handle != -1 { LogInfo("[PlayerBackpackVisual] BackpackSlot[" + convert.ToString(i) + "] handle=" + convert.ToString(handle)) }
 
             if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
                 var itemId = thisEntity<backpackData>._ItemIDs[handle] as string
                 var amount = thisEntity<backpackData>._ItemAmounts[handle] as int
-                if(gameManager._IsDebug) {
+                if(debugCfg.Backpack()) {
                     LogInfo("[PlayerBackpackVisual] Path" + path)
                 }
                 _SetSlotVisual(path, itemId, amount)
@@ -152,9 +153,9 @@ graph PlayerBackpackVisual {
         if iconObj != nil {
             iconObj<UIWidgetImage>.Alpha = 1.0
             iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
-            if gameManager._IsDebug { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: icon OK | path=" + slotPath + " sprite=" + itemCfg.GetIconKey(itemId)) }
+            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: icon OK | path=" + slotPath + " sprite=" + itemCfg.GetIconKey(itemId)) }
         } else {
-            if gameManager._IsDebug { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: iconObj NOT FOUND | path=" + slotPath) }
+            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: iconObj NOT FOUND | path=" + slotPath) }
         }
         
         // 2. Find and update the Amount Text (both layouts use "num")
@@ -163,9 +164,9 @@ graph PlayerBackpackVisual {
         if textObj != nil {
             textObj<UIWidgetLabel>.Alpha = 1.0
             textObj<UIWidgetLabel>.Content = convert.ToString(amount)
-            if gameManager._IsDebug { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: text OK | path=" + slotPath + " amount=" + convert.ToString(amount)) }
+            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: text OK | path=" + slotPath + " amount=" + convert.ToString(amount)) }
         } else {
-            if gameManager._IsDebug { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: textObj NOT FOUND | path=" + slotPath + "/num") }
+            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: textObj NOT FOUND | path=" + slotPath + "/num") }
         }
     }
 
