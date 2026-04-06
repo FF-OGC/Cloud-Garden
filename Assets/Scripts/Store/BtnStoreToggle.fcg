@@ -5,8 +5,10 @@ import "EditorGenLib.fcc" as gen
 [platform_client]
 graph BtnStoreToggle {
 
+    _IsDebug bool = false
+
     event OnTapped(player entity<Player>) {
-        LogInfo("[BtnStoreToggle] Player tapped store toggle")
+        if _IsDebug { LogInfo("[BtnStoreToggle] Player tapped store toggle") }
         DispatchEventToEntity(OnPlayerToggleStore, globalEntity, PlatformType.Server, List<object>{player})
     }
 }

@@ -27,7 +27,7 @@ static graph GachaManager {
         if gachaData.IsFirstEverRoll(owner) {
             gachaData.MarkFirstRollUsed(owner)
             gachaData.ResetPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | FIRST EVER ROLL | seed=" + seedId + " -> GUARANTEED HIT! pity=0")
+            if gameManager.IsDebug() { LogInfo("[GACHA] " + playerName + " | FIRST EVER ROLL | seed=" + seedId + " -> GUARANTEED HIT! pity=0") }
             return gachaCfg.GetRewardId(gachaId)
         }
 
@@ -48,11 +48,11 @@ static graph GachaManager {
 
         if isHit {
             gachaData.ResetPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> HIT! pity reset to 0")
+            if gameManager.IsDebug() { LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> HIT! pity reset to 0") }
             return gachaCfg.GetRewardId(gachaId)
         } else {
             gachaData.IncrementPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
+            if gameManager.IsDebug() { LogInfo("[GACHA] " + playerName + " | seed=" + seedId + " | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% bonus=" + convert.ToString(bonusRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1)) }
             return normalCropId
         }
     }
@@ -78,11 +78,11 @@ static graph GachaManager {
 
         if isHit {
             gachaData.ResetPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> HIT! pity reset to 0")
+            if gameManager.IsDebug() { LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> HIT! pity reset to 0") }
             return true
         } else {
             gachaData.IncrementPity(owner, gachaId)
-            LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1))
+            if gameManager.IsDebug() { LogInfo("[GACHA] " + playerName + " | LUCKY DIRT | pity=" + convert.ToString(pityCount) + " rate=" + convert.ToString(currentRate) + "% -> MISS. pity now=" + convert.ToString(pityCount + 1)) }
             return false
         }
     }

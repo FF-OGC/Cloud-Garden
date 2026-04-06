@@ -14,23 +14,23 @@ graph HUDMarketAction {
     _CurrentMarket entity<Entity> = nil
 
     event OnAwake() {
-        LogInfo("[HUDMarketAction] OnAwake START | player=" + convert.ToString(thisEntity<Player> != nil))
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] OnAwake START | player=" + convert.ToString(thisEntity<Player> != nil)) }
         CreateCustomUI(out var btnInstance, thisEntity<Player>, EResUI.market_sell_btn)
         if btnInstance != nil {
             _SellBtnUI = btnInstance
             _SellBtnUI<CustomUI>.IsVisible = false
-            LogInfo("[HUDMarketAction] Sell button UI created OK, hidden")
+            if gameManager.IsDebug() { LogInfo("[HUDMarketAction] Sell button UI created OK, hidden") }
         } else {
-            LogError("[HUDMarketAction] FAILED to create sell button UI!")
+            if gameManager.IsDebug() { LogError("[HUDMarketAction] FAILED to create sell button UI!") }
         }
     }
 
     event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
-        LogInfo("[HUDMarketAction] OnPlayerEnterMarket FIRED | player=" + convert.ToString(player != nil) + " market=" + convert.ToString(market != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] OnPlayerEnterMarket FIRED | player=" + convert.ToString(player != nil) + " market=" + convert.ToString(market != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>)) }
         if player != thisEntity<Player> { return }
 
         if market<marketData> == nil || market<marketData>._Owner == nil || market<marketData>._Owner != player {
-            LogInfo("[HUDMarketAction] SKIP: player is NOT the owner of this market stall")
+            if gameManager.IsDebug() { LogInfo("[HUDMarketAction] SKIP: player is NOT the owner of this market stall") }
             return
         }
 
@@ -38,14 +38,14 @@ graph HUDMarketAction {
         _CurrentMarket = market
         if _SellBtnUI != nil {
             _SellBtnUI<CustomUI>.IsVisible = true
-            LogInfo("[HUDMarketAction] Sell button SHOWN")
+            if gameManager.IsDebug() { LogInfo("[HUDMarketAction] Sell button SHOWN") }
         } else {
-            LogWarning("[HUDMarketAction] _SellBtnUI is nil, cannot show!")
+            if gameManager.IsDebug() { LogWarning("[HUDMarketAction] _SellBtnUI is nil, cannot show!") }
         }
     }
 
     event OnPlayerExitMarket(player entity<Player>, market entity<Entity>) {
-        LogInfo("[HUDMarketAction] OnPlayerExitMarket FIRED")
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] OnPlayerExitMarket FIRED") }
         if player != thisEntity<Player> { return }
         _IsInZone = false
         _CurrentMarket = nil
@@ -55,27 +55,27 @@ graph HUDMarketAction {
     }
 
     event OnMarketSellTapped(player entity<Player>) {
-        LogInfo("[HUDMarketAction] OnMarketSellTapped FIRED | player=" + convert.ToString(player != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>))
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] OnMarketSellTapped FIRED | player=" + convert.ToString(player != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>)) }
 
         if player == nil { return }
         if player != thisEntity<Player> {
-            LogInfo("[HUDMarketAction] SKIP: not my player")
+            if gameManager.IsDebug() { LogInfo("[HUDMarketAction] SKIP: not my player") }
             return
         }
 
-        LogInfo("[HUDMarketAction] CHECK | _IsInZone=" + convert.ToString(_IsInZone) + " _CurrentMarket=" + convert.ToString(_CurrentMarket != nil))
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] CHECK | _IsInZone=" + convert.ToString(_IsInZone) + " _CurrentMarket=" + convert.ToString(_CurrentMarket != nil)) }
 
         if !_IsInZone || _CurrentMarket == nil {
-            LogWarning("[HUDMarketAction] ABORT: not in zone or no current market")
+            if gameManager.IsDebug() { LogWarning("[HUDMarketAction] ABORT: not in zone or no current market") }
             return
         }
 
         if _CurrentMarket<marketData> == nil || _CurrentMarket<marketData>._Owner == nil || _CurrentMarket<marketData>._Owner != player {
-            LogWarning("[HUDMarketAction] ABORT: player is NOT the owner of this market stall")
+            if gameManager.IsDebug() { LogWarning("[HUDMarketAction] ABORT: player is NOT the owner of this market stall") }
             return
         }
 
-        LogInfo("[HUDMarketAction] Sell tapped -> dispatching OnRequestRestock")
+        if gameManager.IsDebug() { LogInfo("[HUDMarketAction] Sell tapped -> dispatching OnRequestRestock") }
         DispatchEventToEntity(OnRequestRestock, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, _CurrentMarket})
     }
 }

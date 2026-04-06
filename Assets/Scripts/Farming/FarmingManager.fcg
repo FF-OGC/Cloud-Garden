@@ -139,7 +139,7 @@ static graph FarmingManager {
                                     if vfx != nil { vfx<Entity>.ActiveSelf = true }
                                 }
                             }
-                            LogInfo("[FarmingMgr] Potion applied at key=" + k + " | Growth speed +" + convert.ToString(growthReduction * 100.0) + "% faster | Luck +" + convert.ToString(luckBonus) + "%")
+                            if gameMgr.IsDebug() { LogInfo("[FarmingMgr] Potion applied at key=" + k + " | Growth speed +" + convert.ToString(growthReduction * 100.0) + "% faster | Luck +" + convert.ToString(luckBonus) + "%") }
                         }
                     }
 

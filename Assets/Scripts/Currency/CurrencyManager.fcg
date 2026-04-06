@@ -14,7 +14,7 @@ static graph CurrencyManager {
         if player == nil { return }
         currencyService.SetBalance(player, initialAmount)
         SyncCurrencyToPlayer(player)
-        LogInfo("[CurrencyManager] InitPlayerCurrency | player=" + player<Player>.NickName + " initial=" + convert.ToString(initialAmount))
+        if gameManager.IsDebug() { LogInfo("[CurrencyManager] InitPlayerCurrency | player=" + player<Player>.NickName + " initial=" + convert.ToString(initialAmount)) }
     }
 
     func CanAffordItem(player entity<Player>, itemId string, quantity int) bool {
@@ -37,7 +37,7 @@ static graph CurrencyManager {
         }
 
         SyncCurrencyToPlayer(player)
-        LogInfo("[CurrencyManager] ProcessItemPurchase OK | player=" + player<Player>.NickName + " spent " + convert.ToString(totalCost) + " on " + convert.ToString(quantity) + "x " + itemId)
+        if gameManager.IsDebug() { LogInfo("[CurrencyManager] ProcessItemPurchase OK | player=" + player<Player>.NickName + " spent " + convert.ToString(totalCost) + " on " + convert.ToString(quantity) + "x " + itemId) }
         return true
     }
 
@@ -48,7 +48,7 @@ static graph CurrencyManager {
 
         currencyService.AddBalance(player, totalEarnings)
         SyncCurrencyToPlayer(player)
-        LogInfo("[CurrencyManager] ProcessItemSale OK | player=" + player<Player>.NickName + " earned " + convert.ToString(totalEarnings) + " from " + convert.ToString(quantity) + "x " + itemId)
+        if gameManager.IsDebug() { LogInfo("[CurrencyManager] ProcessItemSale OK | player=" + player<Player>.NickName + " earned " + convert.ToString(totalEarnings) + " from " + convert.ToString(quantity) + "x " + itemId) }
     }
 
     func GetBalance(player entity<Player>) int {

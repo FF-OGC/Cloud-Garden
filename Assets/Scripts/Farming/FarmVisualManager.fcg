@@ -67,7 +67,7 @@ static graph FarmVisualManager {
                 }
             }
 
-            LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey)
+            if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
             
             var plantObj = cropPool.Get(prefabKey)
             
@@ -78,19 +78,19 @@ static graph FarmVisualManager {
                 var child = GetChildByName(plantObj, plantObj<Entity>.Name)
                 if child != nil {
                     child<Transform>.Position = targetPos
-                    LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf)
+                    if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf) }
                 } else {
-                    LogInfo("[VISUAL-DBG] NO child found, entity is leaf node")
+                    if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] NO child found, entity is leaf node") }
                 }
                 
                 floor<floorData>.PlantVisuals[key] = plantObj
                 floor<floorData>.PlantPrefabKeys[key] = prefabKey
-                LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf)
+                if gameMgr.IsDebug() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf) }
             } else {
-                LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey)
+                if gameMgr.IsDebug() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
             }
         } else {
-            LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping")
+            if gameMgr.IsDebug() { LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping") }
         }
     }
 

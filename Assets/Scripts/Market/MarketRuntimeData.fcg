@@ -53,6 +53,6 @@ graph MarketRuntimeData {
         }
 
         _IsInitialized = true
-        LogInfo("[MarketRuntimeData] Initialized on entity.")
+        if gameManager.IsDebug() { LogInfo("[MarketRuntimeData] Initialized on entity.") }
     }
 }

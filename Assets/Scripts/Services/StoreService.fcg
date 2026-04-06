@@ -72,7 +72,7 @@ static graph StoreService {
         if !devOverrideActive {
             _RollPoolWithQuotaCheck()
         }
-        LogInfo("[StoreService] RefreshStore DONE | totalItems=" + convert.ToString(list.Length(storeData._ItemIDs)))
+        if gameManager.IsDebug() { LogInfo("[StoreService] RefreshStore DONE | totalItems=" + convert.ToString(list.Length(storeData._ItemIDs))) }
     }
 
     func _ApplyDevOverride(currentGameTime float) bool {
@@ -90,7 +90,7 @@ static graph StoreService {
                     list.Append(storeData._ItemIDs, itemId)
                     list.Append(storeData._ItemAmounts, qty)
                     applied = true
-                    LogInfo("[StoreService] DEV OVERRIDE | " + itemId + " x" + convert.ToString(qty))
+                    if gameManager.IsDebug() { LogInfo("[StoreService] DEV OVERRIDE | " + itemId + " x" + convert.ToString(qty)) }
                 }
             }
         }
@@ -149,7 +149,7 @@ static graph StoreService {
                 list.Append(storeData._ItemIDs, wonId)
                 list.Append(storeData._ItemAmounts, qty)
                 economyData.RecordSold(wonId, qty)
-                LogInfo("[StoreService] GACHA HIT | " + wonId + " x" + convert.ToString(qty) + " roll=" + convert.ToString(roll))
+                if gameManager.IsDebug() { LogInfo("[StoreService] GACHA HIT | " + wonId + " x" + convert.ToString(qty) + " roll=" + convert.ToString(roll)) }
                 break
             }
         }

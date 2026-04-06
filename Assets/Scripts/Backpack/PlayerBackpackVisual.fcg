@@ -46,7 +46,7 @@ graph PlayerBackpackVisual {
     }
 
     event OnBackpackDataChanged(owner entity<Entity>) {
-        LogInfo("[PlayerBackpackVisual] OnBackpackDataChanged received | ownerMatch=" + convert.ToString(owner == thisEntity<Entity>))
+        if gameManager.IsDebug() { LogInfo("[PlayerBackpackVisual] OnBackpackDataChanged received | ownerMatch=" + convert.ToString(owner == thisEntity<Entity>)) }
         if owner == thisEntity<Entity> { RefreshVisuals() }
     }
 
@@ -58,7 +58,7 @@ graph PlayerBackpackVisual {
     }
 
     func RefreshVisuals() {
-        LogInfo("[PlayerBackpackVisual] RefreshVisuals called | backpackData=" + convert.ToString(thisEntity<backpackData> != nil))
+        if gameManager.IsDebug() { LogInfo("[PlayerBackpackVisual] RefreshVisuals called | backpackData=" + convert.ToString(thisEntity<backpackData> != nil)) }
         if thisEntity<backpackData> == nil { return }
 
         // 1. Render Quick Slots

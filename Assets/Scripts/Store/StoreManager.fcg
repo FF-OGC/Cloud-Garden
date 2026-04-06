@@ -19,7 +19,7 @@ static graph StoreManager {
     func InitRestock() {
         if _IsRestockStarted { return }
         _IsRestockStarted = true
-        LogInfo("[StoreManager] InitRestock -> starting RestockLoop")
+        if gameManager.IsDebug() { LogInfo("[StoreManager] InitRestock -> starting RestockLoop") }
         start RestockLoop()
     }
 
@@ -33,7 +33,7 @@ static graph StoreManager {
             var cycleSec = storeCfg.GetRestockCycleSeconds()
             storeData._NextResetTime = currentTime + (cycleSec as float)
 
-            LogInfo("[StoreManager] Restock DONE | nextReset=" + convert.ToString(storeData._NextResetTime) + " cycle=" + convert.ToString(cycleSec) + "s")
+            if gameManager.IsDebug() { LogInfo("[StoreManager] Restock DONE | nextReset=" + convert.ToString(storeData._NextResetTime) + " cycle=" + convert.ToString(cycleSec) + "s") }
 
             BroadcastStoreDataToAllPlayers()
 

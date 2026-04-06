@@ -23,7 +23,7 @@ static graph TrackerPoolManager {
                 WaitForMillisecond(50)
             }
         }
-        LogInfo("[TrackerPool] Initialized " + created + "/10 Trackers.")
+        if gameMgr.IsDebug() { LogInfo("[TrackerPool] Initialized " + created + "/10 Trackers.") }
     }
 
     func GetTracker(player entity<Player>) entity<Entity> {

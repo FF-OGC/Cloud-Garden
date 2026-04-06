@@ -119,7 +119,7 @@ static graph CropVisualPool {
         _Batch("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 5)
 
         _IsPoolReady = true
-        LogInfo("[CropVisualPool] All pools ready.")
+        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] All pools ready.") }
     }
 
     func _Batch(key string, prefabId PrefabID, count int) {
@@ -139,7 +139,7 @@ static graph CropVisualPool {
                 created = created + 1
             }
         }
-        LogInfo("[CropVisualPool] '" + key + "' +=" + created + " total=" + list.Length(poolList))
+        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] '" + key + "' +=" + created + " total=" + list.Length(poolList)) }
     }
 
     func Get(prefabKey string) entity<Entity> {

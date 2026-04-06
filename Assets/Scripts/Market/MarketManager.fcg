@@ -36,7 +36,7 @@ static graph MarketManager {
         if marketEntity == nil { return }
 
         if marketEntity<marketData> == nil {
-            LogWarning("[MarketManager] RegisterMarket | MarketRuntimeData not ready on '" + marketEntity<Entity>.Name + "', will retry...")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] RegisterMarket | MarketRuntimeData not ready on '" + marketEntity<Entity>.Name + "', will retry...") }
             start RetryRegisterMarket(marketEntity, farmZone, 5)
             return
         }
@@ -55,7 +55,7 @@ static graph MarketManager {
 
         start SpawnInfoBoard(marketEntity, marketEntity<marketData>._Owner)
         start DelayedMaintain(marketEntity)
-        LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets)))
+        if gameManager.IsDebug() { LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets))) }
     }
 
     async func RetryRegisterMarket(marketEntity entity<Entity>, farmZone entity<Entity>, retries int) {
@@ -63,10 +63,10 @@ static graph MarketManager {
         if marketEntity<marketData> != nil {
             RegisterMarket(marketEntity, farmZone)
         } else if retries > 0 {
-            LogWarning("[MarketManager] RetryRegisterMarket | Still not ready, retries=" + convert.ToString(retries))
+            if gameManager.IsDebug() { LogWarning("[MarketManager] RetryRegisterMarket | Still not ready, retries=" + convert.ToString(retries)) }
             start RetryRegisterMarket(marketEntity, farmZone, (retries - 1) as int)
         } else {
-            LogError("[MarketManager] RetryRegisterMarket FAILED | MarketRuntimeData never became available. Check that MarketRuntimeData.fcg is attached to entity.")
+            if gameManager.IsDebug() { LogError("[MarketManager] RetryRegisterMarket FAILED | MarketRuntimeData never became available. Check that MarketRuntimeData.fcg is attached to entity.") }
         }
     }
 
@@ -103,7 +103,7 @@ static graph MarketManager {
 
         CreateFromPrefab(out var infoBoard, gen.EResPrefab.farm_slot_info)
         if infoBoard == nil {
-            LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab") }
             return
         }
 
@@ -128,23 +128,25 @@ static graph MarketManager {
                 if gameManager.IsDebug() { LogInfo("[MarketManager] SpawnInfoBoard | no owner, set text to 'X'") }
             }
         } else {
-            LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab") }
         }
 
         market<marketData>._InfoBoard = infoBoard
-        if owner != nil {
-            LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + owner<Player>.NickName)
-        } else {
-            LogInfo("[MarketManager] SpawnInfoBoard OK | unclaimed (showing 'X')")
+        if gameManager.IsDebug() {
+            if owner != nil {
+                LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + owner<Player>.NickName)
+            } else {
+                LogInfo("[MarketManager] SpawnInfoBoard OK | unclaimed (showing 'X')")
+            }
         }
     }
 
     // ===== TRIGGER EVENTS =====
 
     event OnPlayerEnterMarket(player entity<Player>, market entity<Entity>) {
-        LogInfo("[MarketManager] OnPlayerEnterMarket | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil))
+        if gameManager.IsDebug() { LogInfo("[MarketManager] OnPlayerEnterMarket | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
         if market<marketData> == nil {
-            LogError("[MarketManager] TRIGGER entity '" + market<Entity>.Name + "' has NO MarketRuntimeData! Make sure MarketTrigger and MarketRuntimeData are on the SAME entity.")
+            if gameManager.IsDebug() { LogError("[MarketManager] TRIGGER entity '" + market<Entity>.Name + "' has NO MarketRuntimeData! Make sure MarketTrigger and MarketRuntimeData are on the SAME entity.") }
         }
         DispatchEventToEntity(OnPlayerEnterMarket, player, PlatformType.Server, List<object>{player, market})
     }
@@ -156,23 +158,23 @@ static graph MarketManager {
     // ===== FLOW 1: RESTOCK =====
 
     event OnRequestRestock(player entity<Player>, market entity<Entity>) {
-        LogInfo("[MarketManager] OnRequestRestock | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil))
+        if gameManager.IsDebug() { LogInfo("[MarketManager] OnRequestRestock | marketName=" + market<Entity>.Name + " hasMarketData=" + convert.ToString(market<marketData> != nil)) }
         if player == nil || market == nil {
-            LogWarning("[MarketManager] OnRequestRestock ABORT: player or market nil")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: player or market nil") }
             return
         }
         if market<marketData> == nil {
-            LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!")
+            if gameManager.IsDebug() { LogError("[MarketManager] OnRequestRestock ABORT: market entity '" + market<Entity>.Name + "' has NO MarketRuntimeData!") }
             return
         }
 
         if market<marketData>._Owner == nil || market<marketData>._Owner != player {
-            LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: player is NOT the owner of this market stall") }
             return
         }
 
         if player<backpackData> == nil {
-            LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil")
+            if gameManager.IsDebug() { LogWarning("[MarketManager] OnRequestRestock ABORT: backpackData nil") }
             return
         }
 

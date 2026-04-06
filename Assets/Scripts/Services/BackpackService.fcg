@@ -198,7 +198,7 @@ static graph BackpackService {
     func SetActiveQuickSlot(owner entity<Entity>, slotIndex int) {
         if owner<backpackData> == nil { return }
         
-        LogInfo("[BackpackService] SetActiveQuickSlot | slotIndex=" + convert.ToString(slotIndex))
+        if gameManager.IsDebug() { LogInfo("[BackpackService] SetActiveQuickSlot | slotIndex=" + convert.ToString(slotIndex)) }
         owner<backpackData>._ActiveQuickbarSlot = slotIndex
         
         // Notify UI to refresh highlight

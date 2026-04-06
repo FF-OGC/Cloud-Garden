@@ -29,7 +29,7 @@ graph HUDCurrency {
             }
             if gameManager.IsDebug() { LogInfo("[HUDCurrency] OnAwake | UI created, icon=" + convert.ToString(_CoinIcon != nil) + " num=" + convert.ToString(_CoinNum != nil)) }
         } else {
-            LogWarning("[HUDCurrency] OnAwake | FAILED to create Menu UI")
+            if gameManager.IsDebug() { LogWarning("[HUDCurrency] OnAwake | FAILED to create Menu UI") }
         }
     }
 

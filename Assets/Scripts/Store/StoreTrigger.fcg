@@ -5,11 +5,13 @@ import "EditorGenLib.fcc" as gen
 [platform_client]
 graph StoreTrigger {
 
+    _IsDebug bool = false
+
     event OnTriggerEnter(enterEntity entity<Entity>) {
         if !HasComponent(enterEntity, typeof(Player)) { return }
         var player = enterEntity as entity<Player>
 
-        LogInfo("[StoreTrigger] Player entered store zone")
+        if _IsDebug { LogInfo("[StoreTrigger] Player entered store zone") }
         DispatchEventToEntity(OnPlayerEnterStore, globalEntity, PlatformType.Server, List<object>{player})
     }
 
@@ -17,7 +19,7 @@ graph StoreTrigger {
         if !HasComponent(exitEntity, typeof(Player)) { return }
         var player = exitEntity as entity<Player>
 
-        LogInfo("[StoreTrigger] Player left store zone")
+        if _IsDebug { LogInfo("[StoreTrigger] Player left store zone") }
         DispatchEventToEntity(OnPlayerExitStore, globalEntity, PlatformType.Server, List<object>{player})
     }
 }

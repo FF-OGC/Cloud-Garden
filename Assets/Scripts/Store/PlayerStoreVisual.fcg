@@ -46,7 +46,7 @@ graph PlayerStoreVisual {
         if _StoreBtnUI != nil { 
             _StoreBtnUI<CustomUI>.IsVisible = true
         } else{
-            LogWarning("[PlayerStoreVisual] StoreBtnUI not found")
+            if gameManager.IsDebug() { LogWarning("[PlayerStoreVisual] StoreBtnUI not found") }
         }
     }
 
@@ -183,10 +183,10 @@ graph PlayerStoreVisual {
 
     func HandleSlotPressed(slotIndex int) {
         var filteredCount = list.Length(_FilteredIndices)
-        LogInfo("[PlayerStoreVisual] HandleSlotPressed slotIndex=" + convert.ToString(slotIndex) + " filteredCount=" + convert.ToString(filteredCount))
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleSlotPressed slotIndex=" + convert.ToString(slotIndex) + " filteredCount=" + convert.ToString(filteredCount)) }
         
         if slotIndex < 0 || slotIndex >= filteredCount {
-            LogWarning("[PlayerStoreVisual] HandleSlotPressed: slotIndex OUT OF RANGE!")
+            if gameManager.IsDebug() { LogWarning("[PlayerStoreVisual] HandleSlotPressed: slotIndex OUT OF RANGE!") }
             return
         }
         
@@ -195,10 +195,10 @@ graph PlayerStoreVisual {
         
         var itemId = _CachedItemIDs[realIdx] as string
         var amount = _CachedItemAmounts[realIdx] as int
-        LogInfo("[PlayerStoreVisual] HandleSlotPressed: display[" + convert.ToString(slotIndex) + "] -> real[" + convert.ToString(realIdx) + "] itemId=" + itemId + " amount=" + convert.ToString(amount))
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleSlotPressed: display[" + convert.ToString(slotIndex) + "] -> real[" + convert.ToString(realIdx) + "] itemId=" + itemId + " amount=" + convert.ToString(amount)) }
         
         if amount <= 0 {
-            LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot has no stock, ignoring")
+            if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] HandleSlotPressed: slot has no stock, ignoring") }
             return
         }
         
@@ -266,7 +266,7 @@ graph PlayerStoreVisual {
     // --- RENDERING ---
 
     func RenderShopUI() {
-        LogInfo("[PlayerStoreVisual] RenderShopUI CALLED | _StoreUI=" + convert.ToString(_StoreUI != nil) + " _IsOpen=" + convert.ToString(_IsOpen) + " tab=" + convert.ToString(_ActiveTab))
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] RenderShopUI CALLED | _StoreUI=" + convert.ToString(_StoreUI != nil) + " _IsOpen=" + convert.ToString(_IsOpen) + " tab=" + convert.ToString(_ActiveTab)) }
         if _StoreUI == nil { return }
         
         list.Clear(_FilteredIndices)
@@ -281,7 +281,7 @@ graph PlayerStoreVisual {
         var filteredCount = list.Length(_FilteredIndices)
         var slotCount = storeCfg.GetSlotCount()
         
-        LogInfo("[PlayerStoreVisual] RenderShopUI filteredCount=" + convert.ToString(filteredCount) + " slotCount=" + convert.ToString(slotCount))
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] RenderShopUI filteredCount=" + convert.ToString(filteredCount) + " slotCount=" + convert.ToString(slotCount)) }
 
         for i = 0, slotCount, 1 {
             var slotPath = "/root/scroll/layout/slot (" + convert.ToString(i) + ")"
@@ -339,7 +339,7 @@ graph PlayerStoreVisual {
         if _StoreUI == nil { return }
         var currentLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/current")
         var maxLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/maximum")
-        LogInfo("[PlayerStoreVisual] _UpdateBuyAmountUI | currentFound=" + convert.ToString(currentLabel != nil) + " maxFound=" + convert.ToString(maxLabel != nil) + " _BuyAmount=" + convert.ToString(_BuyAmount) + " _SelectedSlotIndex=" + convert.ToString(_SelectedSlotIndex))
+        if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _UpdateBuyAmountUI | currentFound=" + convert.ToString(currentLabel != nil) + " maxFound=" + convert.ToString(maxLabel != nil) + " _BuyAmount=" + convert.ToString(_BuyAmount) + " _SelectedSlotIndex=" + convert.ToString(_SelectedSlotIndex)) }
         
         if currentLabel != nil {
             currentLabel<UIWidgetLabel>.Content = convert.ToString(_BuyAmount)
@@ -381,7 +381,7 @@ graph PlayerStoreVisual {
             _IsOpen = false
             if _RootPanel != nil { _RootPanel<UIWidget>.IsVisible = false }
         } else {
-            LogError("[PlayerStoreVisual] _InitStoreUI: FAILED to create Store UI!")
+            if gameManager.IsDebug() { LogError("[PlayerStoreVisual] _InitStoreUI: FAILED to create Store UI!") }
         }
 
         CreateCustomUI(out var btnInstance, thisEntity<Player>, EResUI.store_btn)
@@ -390,7 +390,7 @@ graph PlayerStoreVisual {
             _StoreBtnUI<CustomUI>.IsVisible = false
             if gameManager.IsDebug() { LogInfo("[PlayerStoreVisual] _InitStoreUI: StoreBtnUI created and hidden") }
         } else {
-            LogError("[PlayerStoreVisual] _InitStoreUI: FAILED to create StoreBtn UI!")
+            if gameManager.IsDebug() { LogError("[PlayerStoreVisual] _InitStoreUI: FAILED to create StoreBtn UI!") }
         }
     }
 
@@ -442,7 +442,7 @@ graph PlayerStoreVisual {
             iconObj<UIWidgetImage>.Alpha = 1.0
             iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
         } else {
-            LogWarning("[PlayerStoreVisual] _SetSlotVisual: icon NOT FOUND at " + slotPath)
+            if gameManager.IsDebug() { LogWarning("[PlayerStoreVisual] _SetSlotVisual: icon NOT FOUND at " + slotPath) }
         }
 
         var nameObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, slotPath + "/name")

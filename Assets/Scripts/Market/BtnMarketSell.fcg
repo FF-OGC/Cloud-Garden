@@ -5,8 +5,10 @@ import "Hud.fcc" as hud
 [platform_client]
 graph BtnMarketSell {
 
+    _IsDebug bool = false
+
     event OnTapped(player entity<Player>) {
-        LogInfo("[BtnMarketSell] OnTapped FIRED! Dispatching OnMarketSellTapped to player")
+        if _IsDebug { LogInfo("[BtnMarketSell] OnTapped FIRED! Dispatching OnMarketSellTapped to player") }
         DispatchEventToEntity(OnMarketSellTapped, player, PlatformType.Server, List<object>{player})
     }
 }
