@@ -43,7 +43,9 @@
       "VisibilityLayer": 0,
       "modelOptimization": 0,
       "streamingLayer": "",
-      "attributes": [],
+      "attributes": [
+        4
+      ],
       "isTrigger": false,
       "collidable": true,
       "physicalLayer": 2,

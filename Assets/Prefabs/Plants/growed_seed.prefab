@@ -17,7 +17,10 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": 0,
         "y": 0,
@@ -41,7 +44,6 @@
       "modelOptimization": 0,
       "streamingLayer": "",
       "attributes": [
-        2,
         4
       ],
       "isTrigger": false,
@@ -151,7 +153,10 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": null,
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,

@@ -41,10 +41,11 @@ static graph GameManager {
         _AllFloorsInWorld = list.New(0, 10) as List<entity<Entity>>
         _ConnectedPlayers = list.New(0, 10) as List<entity<Player>>
         
-        trackerPool.InitPool()
-        cropPool.InitPool()
+        start trackerPool.InitPool()
+        start cropPool.InitPool()
         start StartGlobalClock()
         start DelayedStoreInit()
+        // start DebugSpawnAtHub()
     }
     
     async func StartGlobalClock() {
@@ -57,7 +58,7 @@ static graph GameManager {
     }
 
     async func DelayedStoreInit() {
-        WaitForMillisecond(1000)
+        WaitForMillisecond(1000)                                                                                                                                
         storeManager.InitRestock()
     }
 
@@ -65,7 +66,7 @@ static graph GameManager {
         
         if zoneObj == nil { return }
         
-        list.Append(_FarmZones, zoneObj)
+        list.Append(_FarmZones, zoneObj)                                                                            
         zoneManager.InitializeZone(zoneObj)
         
         // Collect floors
@@ -224,6 +225,100 @@ static graph GameManager {
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
         var orientation Vector3 = math.Normalize(Vector3{centerPoint.X - spawnPoint.X, 0, centerPoint.Z - spawnPoint.Z})
         return orientation
+    }
+
+    async func DebugSpawnAtHub() {
+        LogInfo("[DEBUG-SPAWN] Waiting 5s for pool init...")
+        WaitForMillisecond(5000)
+        LogInfo("[DEBUG-SPAWN] Starting spawn test at Central Hub (0,0,0)")
+
+        var hubY = 201.0
+
+        // === METHOD A: CreateFromPrefab directly (bypass pool) ===
+        LogInfo("[DEBUG-SPAWN] --- METHOD A: Direct CreateFromPrefab ---")
+
+        CreateFromPrefab(out var directSeedCarrot, gen.EResPrefab.seed_carrot)
+        if directSeedCarrot != nil {
+            directSeedCarrot<Transform>.Position = Vector3{0.0, hubY, 0.0}
+            LogInfo("[DEBUG-SPAWN] A1 seed_carrot => pos=" + directSeedCarrot<Transform>.Position + " active=" + directSeedCarrot<Entity>.ActiveSelf + " name=" + directSeedCarrot<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] A1 seed_carrot => FAILED (nil)")
+        }
+
+        CreateFromPrefab(out var directCropCarrot, gen.EResPrefab.crop_carrot)
+        if directCropCarrot != nil {
+            directCropCarrot<Transform>.Position = Vector3{3.0, hubY, 0.0}
+            LogInfo("[DEBUG-SPAWN] A2 crop_carrot => pos=" + directCropCarrot<Transform>.Position + " active=" + directCropCarrot<Entity>.ActiveSelf + " name=" + directCropCarrot<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] A2 crop_carrot => FAILED (nil)")
+        }
+
+        CreateFromPrefab(out var directCropTomato, gen.EResPrefab.crop_tomato)
+        if directCropTomato != nil {
+            directCropTomato<Transform>.Position = Vector3{6.0, hubY, 0.0}
+            LogInfo("[DEBUG-SPAWN] A3 crop_tomato => pos=" + directCropTomato<Transform>.Position + " active=" + directCropTomato<Entity>.ActiveSelf + " name=" + directCropTomato<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] A3 crop_tomato => FAILED (nil)")
+        }
+
+        // === METHOD B: Get from pool ===
+        LogInfo("[DEBUG-SPAWN] --- METHOD B: Pool Get ---")
+
+        var poolSeedCarrot = cropPool.Get("seed_carrot")
+        if poolSeedCarrot != nil {
+            poolSeedCarrot<Transform>.Position = Vector3{0.0, hubY, 5.0}
+            LogInfo("[DEBUG-SPAWN] B1 seed_carrot => pos=" + poolSeedCarrot<Transform>.Position + " active=" + poolSeedCarrot<Entity>.ActiveSelf + " name=" + poolSeedCarrot<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] B1 seed_carrot => FAILED (nil)")
+        }
+
+        var poolCropCarrot = cropPool.Get("crop_carrot")
+        if poolCropCarrot != nil {
+            poolCropCarrot<Transform>.Position = Vector3{3.0, hubY, 5.0}
+            LogInfo("[DEBUG-SPAWN] B2 crop_carrot => pos=" + poolCropCarrot<Transform>.Position + " active=" + poolCropCarrot<Entity>.ActiveSelf + " name=" + poolCropCarrot<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] B2 crop_carrot => FAILED (nil)")
+        }
+
+        var poolCropTomato = cropPool.Get("crop_tomato")
+        if poolCropTomato != nil {
+            poolCropTomato<Transform>.Position = Vector3{6.0, hubY, 5.0}
+            LogInfo("[DEBUG-SPAWN] B3 crop_tomato => pos=" + poolCropTomato<Transform>.Position + " active=" + poolCropTomato<Entity>.ActiveSelf + " name=" + poolCropTomato<Entity>.Name)
+        } else {
+            LogError("[DEBUG-SPAWN] B3 crop_tomato => FAILED (nil)")
+        }
+
+        // === METHOD C: Check child transforms (like FarmVisualManager does) ===
+        LogInfo("[DEBUG-SPAWN] --- METHOD C: Child inspection ---")
+        
+        if directSeedCarrot != nil {
+            var child = GetChildByName(directSeedCarrot, directSeedCarrot<Entity>.Name)
+            if child != nil {
+                LogInfo("[DEBUG-SPAWN] C1 seed_carrot child: name=" + child<Entity>.Name + " pos=" + child<Transform>.Position + " active=" + child<Entity>.ActiveSelf + " scale=" + child<Transform>.Scale)
+            } else {
+                LogInfo("[DEBUG-SPAWN] C1 seed_carrot: NO child found")
+            }
+        }
+
+        if directCropCarrot != nil {
+            var child2 = GetChildByName(directCropCarrot, directCropCarrot<Entity>.Name)
+            if child2 != nil {
+                LogInfo("[DEBUG-SPAWN] C2 crop_carrot child: name=" + child2<Entity>.Name + " pos=" + child2<Transform>.Position + " active=" + child2<Entity>.ActiveSelf + " scale=" + child2<Transform>.Scale)
+            } else {
+                LogInfo("[DEBUG-SPAWN] C2 crop_carrot: NO child found")
+            }
+        }
+
+        if directCropTomato != nil {
+            var child3 = GetChildByName(directCropTomato, directCropTomato<Entity>.Name)
+            if child3 != nil {
+                LogInfo("[DEBUG-SPAWN] C3 crop_tomato child: name=" + child3<Entity>.Name + " pos=" + child3<Transform>.Position + " active=" + child3<Entity>.ActiveSelf + " scale=" + child3<Transform>.Scale)
+            } else {
+                LogInfo("[DEBUG-SPAWN] C3 crop_tomato: NO child found")
+            }
+        }
+
+        LogInfo("[DEBUG-SPAWN] === TEST COMPLETE === Look at Central Hub center for 6 objects in 2 rows")
     }
 
     async func TestPerformance() {

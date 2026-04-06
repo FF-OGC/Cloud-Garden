@@ -9,16 +9,21 @@ static graph TrackerPoolManager {
     
     _Pool List<entity<Entity>>
 
-    func InitPool() {
+    async func InitPool() {
         _Pool = list.New(0, 10)
+        var created = 0
         for i = 0, 10, 1 {
             CreateFromPrefab(out var trackerObj, gen.EResPrefab.grid_tracker)
             if trackerObj != nil {
                 trackerObj<Transform>.Position = Vector3{0, -9999, 0}
-                list.Append(_Pool, trackerObj as entity<Entity>)    
+                list.Append(_Pool, trackerObj as entity<Entity>)
+                created = created + 1
+            }
+            if (i + 1) % 5 == 0 {
+                WaitForMillisecond(50)
             }
         }
-        if gameMgr.IsDebug() { LogInfo("[TrackerPool] Initialized 10 Trackers.") }
+        LogInfo("[TrackerPool] Initialized " + created + "/10 Trackers.")
     }
 
     func GetTracker(player entity<Player>) entity<Entity> {

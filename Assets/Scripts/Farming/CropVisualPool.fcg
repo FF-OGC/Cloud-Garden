@@ -9,36 +9,137 @@ import "../Core/GameManager.fcg" as gameMgr
 static graph CropVisualPool {
 
     _Pool Map<string, List<entity<Entity>>>
+    _IsPoolReady bool = false
 
-    func InitPool() {
+    async func InitPool() {
         _Pool = map.New() as Map<string, List<entity<Entity>>>
+        _IsPoolReady = false
 
-        _CreateBucket("seed_needwatering", gen.EResPrefab.seed_needwatering, 25)
-        _CreateBucket("seed_model", gen.EResPrefab.seed_model, 25)
-        _CreateBucket("seed_growed", gen.EResPrefab.seed_growed, 25)
-        _CreateBucket("seed_apple", gen.EResPrefab.seed_apple, 15)
-        _CreateBucket("seed_carrot", gen.EResPrefab.seed_carrot, 15)
-        _CreateBucket("seed_tomato", gen.EResPrefab.seed_tomato, 15)
-        _CreateBucket("crop_apple", gen.EResPrefab.crop_apple, 25)
-        _CreateBucket("crop_carrot", gen.EResPrefab.crop_carrot, 20)
-        _CreateBucket("crop_tomato", gen.EResPrefab.crop_tomato, 20)
-        _CreateBucket("mutation_seed_growed", gen.EResPrefab.mutation_seed_growed, 10)
-        _CreateBucket("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 10)
+        // seed_needwatering: 25 = 5+5+5+5+5
+        _Batch("seed_needwatering", gen.EResPrefab.seed_needwatering, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_needwatering", gen.EResPrefab.seed_needwatering, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_needwatering", gen.EResPrefab.seed_needwatering, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_needwatering", gen.EResPrefab.seed_needwatering, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_needwatering", gen.EResPrefab.seed_needwatering, 5)
+        WaitForMillisecond(100)
 
-        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] All plant pools initialized") }
+        // seed_model: 25 = 5+5+5+5+5
+        _Batch("seed_model", gen.EResPrefab.seed_model, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_model", gen.EResPrefab.seed_model, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_model", gen.EResPrefab.seed_model, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_model", gen.EResPrefab.seed_model, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_model", gen.EResPrefab.seed_model, 5)
+        WaitForMillisecond(100)
+
+        // seed_growed: 25 = 5+5+5+5+5
+        _Batch("seed_growed", gen.EResPrefab.seed_growed, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_growed", gen.EResPrefab.seed_growed, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_growed", gen.EResPrefab.seed_growed, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_growed", gen.EResPrefab.seed_growed, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_growed", gen.EResPrefab.seed_growed, 5)
+        WaitForMillisecond(100)
+
+        // seed_apple: 15 = 5+5+5
+        _Batch("seed_apple", gen.EResPrefab.seed_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_apple", gen.EResPrefab.seed_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_apple", gen.EResPrefab.seed_apple, 5)
+        WaitForMillisecond(100)
+
+        // seed_carrot: 15 = 5+5+5
+        _Batch("seed_carrot", gen.EResPrefab.seed_carrot, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_carrot", gen.EResPrefab.seed_carrot, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_carrot", gen.EResPrefab.seed_carrot, 5)
+        WaitForMillisecond(100)
+
+        // seed_tomato: 15 = 5+5+5
+        _Batch("seed_tomato", gen.EResPrefab.seed_tomato, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_tomato", gen.EResPrefab.seed_tomato, 5)
+        WaitForMillisecond(100)
+        _Batch("seed_tomato", gen.EResPrefab.seed_tomato, 5)
+        WaitForMillisecond(100)
+
+        // crop_apple: 25 = 5+5+5+5+5
+        _Batch("crop_apple", gen.EResPrefab.crop_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_apple", gen.EResPrefab.crop_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_apple", gen.EResPrefab.crop_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_apple", gen.EResPrefab.crop_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_apple", gen.EResPrefab.crop_apple, 5)
+        WaitForMillisecond(100)
+
+        // crop_carrot: 20 = 5+5+5+5
+        _Batch("crop_carrot", gen.EResPrefab.crop_carrot, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_carrot", gen.EResPrefab.crop_carrot, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_carrot", gen.EResPrefab.crop_carrot, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_carrot", gen.EResPrefab.crop_carrot, 5)
+        WaitForMillisecond(100)
+
+        // crop_tomato: 20 = 5+5+5+5
+        _Batch("crop_tomato", gen.EResPrefab.crop_tomato, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_tomato", gen.EResPrefab.crop_tomato, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_tomato", gen.EResPrefab.crop_tomato, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_tomato", gen.EResPrefab.crop_tomato, 5)
+        WaitForMillisecond(100)
+
+        // mutation_seed_growed: 10 = 5+5
+        _Batch("mutation_seed_growed", gen.EResPrefab.mutation_seed_growed, 5)
+        WaitForMillisecond(100)
+        _Batch("mutation_seed_growed", gen.EResPrefab.mutation_seed_growed, 5)
+        WaitForMillisecond(100)
+
+        // crop_mutation_apple: 10 = 5+5
+        _Batch("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 5)
+        WaitForMillisecond(100)
+        _Batch("crop_mutation_apple", gen.EResPrefab.crop_mutation_apple, 5)
+
+        _IsPoolReady = true
+        LogInfo("[CropVisualPool] All pools ready.")
     }
 
-    func _CreateBucket(key string, prefabId PrefabID, count int) {
-        var poolList = list.New(0, count) as List<entity<Entity>>
+    func _Batch(key string, prefabId PrefabID, count int) {
+        var poolList List<entity<Entity>> = nil
+        if map.ContainKey(_Pool, key) {
+            poolList = _Pool[key] as List<entity<Entity>>
+        } else {
+            poolList = list.New(0, 30) as List<entity<Entity>>
+            _Pool[key] = poolList
+        }
+        var created = 0
         for i = 0, count, 1 {
             CreateFromPrefab(out var obj, prefabId)
             if obj != nil {
                 obj<Transform>.Position = Vector3{0, -9999, 0}
-                list.Append(poolList, obj as entity<Entity>)
+                list.Append(poolList, obj)
+                created = created + 1
             }
         }
-        _Pool[key] = poolList
-        if gameMgr.IsDebug() { LogInfo("[CropVisualPool] Bucket '" + key + "' size=" + count) }
+        LogInfo("[CropVisualPool] '" + key + "' +=" + created + " total=" + list.Length(poolList))
     }
 
     func Get(prefabKey string) entity<Entity> {
