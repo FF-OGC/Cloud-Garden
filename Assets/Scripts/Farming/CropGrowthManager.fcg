@@ -2,12 +2,12 @@ import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
+import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Config/ItemConfig.fcg" as itemCfg
-import "../Config/GachaConfig.fcg" as gachaCfg
 import "../Gacha/GachaManager.fcg" as gachaManager
 
 [platform_server]
@@ -46,22 +46,17 @@ static graph CropGrowthManager {
                                     var seedId = floor<floorData>.PlantedSeeds[key] as string
                                     var owner = floor<floorData>.Owner
                                     if owner != nil {
-                                        var bonusRate = 0
-                                        if floor<floorData>.IsLuckyDirt(key) {
-                                            bonusRate = gachaCfg.GetLuckyDirtMutationBonus()
-                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Lucky dirt bonus +" + bonusRate + "% at key=" + key) }
+                                        var soilTier = 1
+                                        if map.ContainKey(floor<floorData>.SoilTiers, key) {
+                                            soilTier = floor<floorData>.SoilTiers[key] as int
                                         }
-                                        if floor<floorData>.IsFertilized(key) {
-                                            var fertBonus = floor<floorData>.FertilizerLuckBonus[key] as int
-                                            bonusRate = bonusRate + fertBonus
-                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Fertilizer bonus +" + fertBonus + "% at key=" + key + " total=" + bonusRate) }
-                                        }
-                                        var resultCropId = gachaManager.RollForHarvest(owner, seedId, bonusRate)
-                                        var normalCropId = itemCfg.GetHarvestYield(seedId)
-                                        if resultCropId != normalCropId {
-                                            floor<floorData>.TrySetGachaResult(key, resultCropId)
-                                            if debugCfg.Farming() { LogInfo("[CropGrowthManager] Gacha HIT at key=" + key + " reward=" + resultCropId) }
-                                        }
+                                        var isFert = floor<floorData>.IsFertilized(key)
+
+                                        var suffixTier = gachaManager.RollSuffixTier()
+                                        var prefixId = gachaManager.RollMutationPrefix(owner, seedId, soilTier, isFert)
+                                        var mutStr = itemCfg.BuildMutationStr(prefixId, suffixTier)
+                                        floor<floorData>.TrySetMutationResult(key, mutStr)
+                                        if debugCfg.Mutation() { LogInfo("[MUTATION] key=" + key + " seed=" + seedId + " soilTier=" + convert.ToString(soilTier) + " fert=" + convert.ToString(isFert) + " -> mutStr=" + mutStr) }
                                     }
                                 }
 

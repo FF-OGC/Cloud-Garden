@@ -13,6 +13,14 @@ static graph BackpackManager {
         return false
     }
 
+    func AddItemWithMutation(owner entity<Entity>, itemId string, amount int, mutStr string) bool {
+        if owner == nil || amount <= 0 { return false }
+        if backpackService.CanAddItem(owner, itemId, amount) {
+            return backpackService.AddItemWithMutation(owner, itemId, amount, mutStr)
+        }
+        return false
+    }
+
     // Handles the request to consume held item. Delegates to Service.
     func ConsumeActiveItem(owner entity<Entity>, amountToConsume int) bool {
         if owner == nil || amountToConsume <= 0 { return false }

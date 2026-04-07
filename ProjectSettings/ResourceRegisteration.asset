@@ -538,7 +538,56 @@
     },
     "material": {
       "id": "material",
-      "children": []
+      "children": [
+        {
+          "refer": {
+            "fileId": "k69ds2p0gka-mnim8acs-5fg6mei5v2",
+            "filePath": "Assets\\Materials\\PlantDefault.mat",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "material"
+          },
+          "scriptName": "plant_default",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "t14rh8ft3b8-mnobtzdz-pbsfrt9otla",
+            "filePath": "Assets\\Materials\\PlantGolden.mat",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "material"
+          },
+          "scriptName": "plant_gold",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "t5eup46pyxc-mnobtzem-prvhuz8uzk",
+            "filePath": "Assets\\Materials\\PlantRainbow.mat",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "material"
+          },
+          "scriptName": "plant_rainbow",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "blhioo2vjh-mnobtzf5-f2wu3mw7u05",
+            "filePath": "Assets\\Materials\\PlantSilver.mat",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "material"
+          },
+          "scriptName": "plant_silver",
+          "children": []
+        }
+      ]
     },
     "ac": {
       "id": "ac",

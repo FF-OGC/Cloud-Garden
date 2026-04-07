@@ -1,5 +1,9 @@
 import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
+import "Convert.fcc" as convert
+import "Math.fcc" as math
+
+import "./MutationConfig.fcg" as mutCfg
 
 // [platform_client]
 [platform_server]
@@ -9,7 +13,6 @@ static graph ItemConfig {
     func GetType(itemId string) int {
         if itemId == "seed_apple" || itemId == "seed_tomato" || itemId == "seed_carrot" { return 1 }
         if itemId == "crop_apple" || itemId == "crop_tomato" || itemId == "crop_carrot" { return 2 }
-        if itemId == "crop_apple_gold" || itemId == "crop_tomato_gold" || itemId == "crop_carrot_gold" { return 2 }
         if itemId == "potion" { return 4 }
         return 3
     }
@@ -49,9 +52,6 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return "Apple" }
         if itemId == "crop_carrot" { return "Carrot" }
         if itemId == "crop_tomato" { return "Tomato" }
-        if itemId == "crop_apple_gold" { return "Golden Apple" }
-        if itemId == "crop_carrot_gold" { return "Golden Carrot" }
-        if itemId == "crop_tomato_gold" { return "Golden Tomato" }
         if itemId == "watering_can" { return "Watering Can" }
         if itemId == "potion" { return "Growth Potion" }
         return itemId
@@ -69,9 +69,6 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return 30 }
         if itemId == "crop_carrot" { return 40 }
         if itemId == "crop_tomato" { return 55 }
-        if itemId == "crop_apple_gold" { return 150 }
-        if itemId == "crop_carrot_gold" { return 200 }
-        if itemId == "crop_tomato_gold" { return 275 }
         return 10
     }
 
@@ -85,9 +82,6 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return EResSprite.crop_apple }
         if itemId == "crop_carrot" { return EResSprite.crop_carrot }
         if itemId == "crop_tomato" { return EResSprite.crop_tomato }
-        if itemId == "crop_apple_gold" { return EResSprite.crop_goldenapple }
-        if itemId == "crop_carrot_gold" { return EResSprite.crop_carrot }
-        if itemId == "crop_tomato_gold" { return EResSprite.crop_tomato }
         if itemId == "potion" { return EResSprite.item_buff_dirt }
         return EResSprite.seed_apple 
     }
@@ -122,14 +116,6 @@ static graph ItemConfig {
         return gen.EResPrefab.dirt_tilled // Fallback
     }
 
-    // Returns the mutant/golden prefab for ReadyToHarvest state
-    func GetMutantPlantPrefab(seedId string) PrefabID {
-        if seedId == "seed_apple" { return gen.EResPrefab.crop_mutation_apple }
-        if seedId == "seed_carrot" { return gen.EResPrefab.mutation_seed_growed }
-        if seedId == "seed_tomato" { return gen.EResPrefab.mutation_seed_growed }
-        return gen.EResPrefab.mutation_seed_growed
-    }
-
     // Pool key mirrors for CropVisualPool lookups
     func GetPlantPrefabKey(seedId string, state int) string {
         if state == gen.EFarmSlotState.NeedWatering {
@@ -150,14 +136,95 @@ static graph ItemConfig {
         return "seed_model"
     }
 
-    func GetMutantPlantPrefabKey(seedId string) string {
-        if seedId == "seed_apple" { return "crop_mutation_apple" }
-        return "mutation_seed_growed"
-    }
-
     // ==========================================
     // 3. POTION / SPECIAL ITEM CONFIG
     // ==========================================
     func GetPotionLuckBonus() int { return 20 }
     func GetPotionGrowthReduction() float { return 0.3 }
+
+    // ==========================================
+    // 4. MUTATION HELPERS
+    // ==========================================
+
+    func BuildMutationStr(prefixId int, suffixTier int) string {
+        return "p" + convert.ToString(prefixId) + "s" + convert.ToString(suffixTier)
+    }
+
+    func ParseMutationPrefix(mutStr string) int {
+        if mutStr == "" { return 0 }
+        // Format: "p{X}s{Y}" - extract X (single digit after 'p')
+        if mutStr == "p0s1" || mutStr == "p0s2" || mutStr == "p0s3" { return 0 }
+        if mutStr == "p1s1" || mutStr == "p1s2" || mutStr == "p1s3" { return 1 }
+        if mutStr == "p2s1" || mutStr == "p2s2" || mutStr == "p2s3" { return 2 }
+        if mutStr == "p3s1" || mutStr == "p3s2" || mutStr == "p3s3" { return 3 }
+        return 0
+    }
+
+    func ParseMutationSuffix(mutStr string) int {
+        if mutStr == "" { return 0 }
+        if mutStr == "p0s1" || mutStr == "p1s1" || mutStr == "p2s1" || mutStr == "p3s1" { return 1 }
+        if mutStr == "p0s2" || mutStr == "p1s2" || mutStr == "p2s2" || mutStr == "p3s2" { return 2 }
+        if mutStr == "p0s3" || mutStr == "p1s3" || mutStr == "p2s3" || mutStr == "p3s3" { return 3 }
+        return 0
+    }
+
+    func GetMutationDisplayName(itemId string, mutStr string) string {
+        var baseName = GetItemName(itemId)
+        if mutStr == "" { return baseName }
+
+        var prefixId = ParseMutationPrefix(mutStr)
+        var suffixTier = ParseMutationSuffix(mutStr)
+
+        var result = ""
+        if prefixId > 0 {
+            result = mutCfg.GetPrefixName(prefixId) + " "
+        }
+        result = result + baseName
+        if suffixTier > 0 {
+            result = result + " " + mutCfg.GetSuffixName(suffixTier)
+        }
+        return result
+    }
+
+    func GetPrefixText(mutStr string) string {
+        var id = ParseMutationPrefix(mutStr)
+        return mutCfg.GetPrefixName(id)
+    }
+
+    func GetSuffixText(mutStr string) string {
+        var tier = ParseMutationSuffix(mutStr)
+        if tier == 0 { return "" }
+        return mutCfg.GetSuffixName(tier)
+    }
+
+    func GetMutationTagText(mutStr string) string {
+        if mutStr == "" { return "" }
+        var prefixId = ParseMutationPrefix(mutStr)
+        var suffixTier = ParseMutationSuffix(mutStr)
+
+        var tag = ""
+        if prefixId > 0 {
+            tag = mutCfg.GetPrefixName(prefixId)
+        }
+        if suffixTier > 0 {
+            if tag != "" { tag = tag + " " }
+            tag = tag + mutCfg.GetSuffixName(suffixTier)
+        }
+        return tag
+    }
+
+    func GetMutationSellPrice(itemId string, mutStr string) int {
+        var basePrice = GetSellPrice(itemId)
+        if mutStr == "" { return basePrice }
+
+        var prefixId = ParseMutationPrefix(mutStr)
+        var suffixTier = ParseMutationSuffix(mutStr)
+
+        var prefixMult = mutCfg.GetPrefixSellMultiplier(prefixId)
+        var suffixMult = mutCfg.GetSuffixSellMultiplier(suffixTier)
+
+        var result = math.Floor(basePrice * prefixMult * suffixMult)
+        if result < 1.0 { return 1 }
+        return result as int
+    }
 }

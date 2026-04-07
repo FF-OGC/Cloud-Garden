@@ -7,9 +7,10 @@ import "EditorGenLib.fcc" as gen
 graph BackpackData {
     
     // 1. ORIGINAL DATA (SINGLE SOURCE OF TRUTH)
-    _NextHandle int = 0 // Unique ID for each item instance
-    _ItemIDs Map<int, string> // Key: Handle -> Value: Item ID (e.g., "seed_apple")
-    _ItemAmounts Map<int, int> // Key: Handle -> Value: Amount
+    _NextHandle int = 0
+    _ItemIDs Map<int, string>
+    _ItemAmounts Map<int, int>
+    _ItemMutations Map<int, string>
 
     // 2. REFERENCES (FOR UI SLOTS)
     _BackpackRefs List<int> // Array storing Handles for backpack slots
@@ -21,6 +22,7 @@ graph BackpackData {
     event OnAwake() {
         _ItemIDs = map.New() as Map<int, string>
         _ItemAmounts = map.New() as Map<int, int>
+        _ItemMutations = map.New() as Map<int, string>
         _BackpackRefs = List<int>{}
         _QuickSlotRefs = List<int>{}
         _ActiveQuickbarSlot = 0

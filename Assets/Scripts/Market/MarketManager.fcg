@@ -6,6 +6,7 @@ import "EditorGenLib.fcc" as gen
 import "Math.fcc" as math
 
 import "../Config/MarketConfig.fcg" as marketCfg
+import "../Config/ItemConfig.fcg" as itemCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "../Services/MarketService.fcg" as marketService
 import "./MarketVisual.fcg" as marketVisual
@@ -200,15 +201,20 @@ static graph MarketManager {
         }
         if amount <= 0 { return }
 
+        var mutStr = ""
+        if map.ContainKey(player<backpackData>._ItemMutations, handle) {
+            mutStr = player<backpackData>._ItemMutations[handle] as string
+        }
+
         if !backpackService.ConsumeActiveItem(player, amount) {
             if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | ConsumeActiveItem failed") }
             return
         }
 
-        marketService.AddToTable(market, itemId, amount)
+        marketService.AddToTableWithMutation(market, itemId, amount, mutStr)
         marketVisual.UpdateTableDisplay(market)
 
-        if debugCfg.Market() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId) }
+        if debugCfg.Market() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId + " mut=" + mutStr) }
         SyncQueueWithTable(market)
         CheckAndStartTransaction(market)
     }
@@ -406,7 +412,18 @@ static graph MarketManager {
         marketService.ClearCustomer(market, 0)
 
         if market<marketData>._Owner != nil {
-            currencyVisualManager.DropMoney(market, itemId, amount)
+            // Find the mutation string for the sold items from the table
+            var soldMutStr = ""
+            var tCount = list.Length(market<marketData>._TableItemIDs)
+            for t = 0, tCount, 1 {
+                if market<marketData>._TableItemIDs[t] as string == itemId {
+                    if t < list.Length(market<marketData>._TableMutations) {
+                        soldMutStr = market<marketData>._TableMutations[t] as string
+                    }
+                    break
+                }
+            }
+            currencyVisualManager.DropMoneyWithMutation(market, itemId, amount, soldMutStr)
         }
 
         var conveyorDelay = marketCfg.GetConveyorDelayMs() as int

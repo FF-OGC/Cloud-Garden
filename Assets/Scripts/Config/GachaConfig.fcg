@@ -3,25 +3,16 @@ import "StdLibrary.fcc" as std
 static graph GachaConfig {
 
     func GetBaseRate(gachaId string) int {
-        if gachaId == "gacha_seed_apple" { return 1 }
-        if gachaId == "gacha_seed_carrot" { return 2 }
-        if gachaId == "gacha_seed_tomato" { return 2 }
         if gachaId == "gacha_lucky_dirt" { return 5 }
         return 1
     }
 
     func GetSoftPityThreshold(gachaId string) int {
-        if gachaId == "gacha_seed_apple" { return 50 }
-        if gachaId == "gacha_seed_carrot" { return 40 }
-        if gachaId == "gacha_seed_tomato" { return 35 }
         if gachaId == "gacha_lucky_dirt" { return 30 }
         return 50
     }
 
     func GetHardPityThreshold(gachaId string) int {
-        if gachaId == "gacha_seed_apple" { return 90 }
-        if gachaId == "gacha_seed_carrot" { return 75 }
-        if gachaId == "gacha_seed_tomato" { return 70 }
         if gachaId == "gacha_lucky_dirt" { return 60 }
         return 90
     }
@@ -34,26 +25,12 @@ static graph GachaConfig {
         return (100 - baseRate) / (hard - soft)
     }
 
-    func GetRewardId(gachaId string) string {
-        if gachaId == "gacha_seed_apple" { return "crop_apple_gold" }
-        if gachaId == "gacha_seed_carrot" { return "crop_carrot_gold" }
-        if gachaId == "gacha_seed_tomato" { return "crop_tomato_gold" }
-        if gachaId == "gacha_lucky_dirt" { return "lucky_dirt" }
-        return ""
-    }
-
     func GetKillZoneMaxBonus(gachaId string) int {
-        if gachaId == "gacha_seed_apple" { return 8 }
-        if gachaId == "gacha_seed_carrot" { return 7 }
-        if gachaId == "gacha_seed_tomato" { return 6 }
         if gachaId == "gacha_lucky_dirt" { return 5 }
         return 8
     }
 
     func HasGacha(gachaId string) bool {
-        if gachaId == "gacha_seed_apple" { return true }
-        if gachaId == "gacha_seed_carrot" { return true }
-        if gachaId == "gacha_seed_tomato" { return true }
         if gachaId == "gacha_lucky_dirt" { return true }
         return false
     }

@@ -8,6 +8,7 @@ import "Hud.fcc" as hud
 import "./BackpackData.fcg" as backpackData
 import "../Services/Utils/UIUtil.fcg" as uiUtil
 import "../Config/ItemConfig.fcg" as itemCfg
+import "../Config/MutationConfig.fcg" as mutCfg
 import "../Services/BackpackService.fcg" as backpackService
 import "../Core/GameManager.fcg" as gameManager
 import "../Config/DebugConfig.fcg" as debugCfg
@@ -28,7 +29,7 @@ graph PlayerBackpackVisual {
             _BackpackUI = uiInstance
             _MainPanel = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root")
             _QuickSlotPanel = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/quick_slot")
-            _ToggleBtn = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/icon_backpack")
+            _ToggleBtn = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/backpack")
 
             // Pre-assign Arg0 to pass index when UI is clicked
             // Quick slot: entity "0","1",... IS the button itself (no "/btn" sub-child)
@@ -80,7 +81,11 @@ graph PlayerBackpackVisual {
             if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
                 var itemId = thisEntity<backpackData>._ItemIDs[handle] as string
                 var amount = thisEntity<backpackData>._ItemAmounts[handle] as int
-                _SetSlotVisual(path, itemId, amount)
+                var mutStr = ""
+                if map.ContainKey(thisEntity<backpackData>._ItemMutations, handle) {
+                    mutStr = thisEntity<backpackData>._ItemMutations[handle] as string
+                }
+                _SetSlotVisualWithMutation(path, itemId, amount, mutStr)
             } else {
                 _ClearSlotVisual(path)
             }
@@ -106,21 +111,14 @@ graph PlayerBackpackVisual {
             if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
                 var itemId = thisEntity<backpackData>._ItemIDs[handle] as string
                 var amount = thisEntity<backpackData>._ItemAmounts[handle] as int
+                var mutStr = ""
+                if map.ContainKey(thisEntity<backpackData>._ItemMutations, handle) {
+                    mutStr = thisEntity<backpackData>._ItemMutations[handle] as string
+                }
                 if(debugCfg.Backpack()) {
                     LogInfo("[PlayerBackpackVisual] Path" + path)
                 }
-                _SetSlotVisual(path, itemId, amount)
-                
-                // Show 'equipped' icon if handle exists in QuickSlotRefs
-                var isEquipped = list.Contain(thisEntity<backpackData>._QuickSlotRefs, handle)
-                var equippedIcon = GetWidgetByPath(thisEntity<Player>, _BackpackUI, path + "/equipped")
-                if equippedIcon != nil {
-                    if isEquipped { 
-                        equippedIcon<UIWidgetImage>.Alpha = 1.0 
-                    } else { 
-                        equippedIcon<UIWidgetImage>.Alpha = 0.0
-                    }
-                }
+                _SetSlotVisualWithMutation(path, itemId, amount, mutStr)
             } else {
                 _ClearSlotVisual(path)
             }
@@ -142,45 +140,102 @@ graph PlayerBackpackVisual {
 
 // --- UI HELPER FUNCTIONS ---
 
-    // Uses GetWidgetByPath with named children - works for both backpack & quick slot layouts
     func _SetSlotVisual(slotPath string, itemId string, amount int) {
-        // 1. Find and update the Icon (try "rarity/icon" for backpack, fallback to "icon" for quick slot)
-        var iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/rarity/icon")
+        _SetSlotVisualWithMutation(slotPath, itemId, amount, "")
+    }
+
+    func _SetSlotVisualWithMutation(slotPath string, itemId string, amount int, mutStr string) {
+        // Quick slot path: /quick_slot/0..4  |  Backpack slot path: /root/scroll/layout/slot (N)
+        var isQuickSlot = slotPath == "/quick_slot/0" || slotPath == "/quick_slot/1" || slotPath == "/quick_slot/2" || slotPath == "/quick_slot/3" || slotPath == "/quick_slot/4"
+
+        var iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/rarity/item_icon")
         if iconObj == nil { 
             iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/icon") 
         }
-        
         if iconObj != nil {
             iconObj<UIWidgetImage>.Alpha = 1.0
             iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
-            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: icon OK | path=" + slotPath + " sprite=" + itemCfg.GetIconKey(itemId)) }
-        } else {
-            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: iconObj NOT FOUND | path=" + slotPath) }
         }
-        
-        // 2. Find and update the Amount Text (both layouts use "num")
-        var textObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/num")
-        
-        if textObj != nil {
-            textObj<UIWidgetLabel>.Alpha = 1.0
-            textObj<UIWidgetLabel>.Content = convert.ToString(amount)
-            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: text OK | path=" + slotPath + " amount=" + convert.ToString(amount)) }
+
+        var isCrop = itemCfg.GetType(itemId) == 2
+        var hasMutation = mutStr != ""
+
+        if isQuickSlot {
+            var numObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/num")
+            var textObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/text")
+
+            if textObj != nil {
+                textObj<UIWidgetLabel>.Alpha = 1.0
+                textObj<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+            }
+            if numObj != nil {
+                numObj<UIWidgetLabel>.Alpha = 1.0
+                numObj<UIWidgetLabel>.Content = convert.ToString(amount)
+            }
         } else {
-            if debugCfg.Backpack() { LogInfo("[PlayerBackpackVisual] _SetSlotVisual: textObj NOT FOUND | path=" + slotPath + "/num") }
+            var nameObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_name")
+            if nameObj != nil {
+                nameObj<UIWidgetLabel>.Alpha = 1.0
+                nameObj<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+            }
+
+            var itemPrefixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_prefix")
+            if itemPrefixObj != nil {
+                if isCrop {
+                    var prefixId = itemCfg.ParseMutationPrefix(mutStr)
+                    itemPrefixObj<UIWidgetLabel>.Alpha = 1.0
+                    itemPrefixObj<UIWidgetLabel>.Content = itemCfg.GetPrefixText(mutStr)
+                    itemPrefixObj<UIWidgetLabel>.Color = mutCfg.GetPrefixColor(prefixId)
+                } else {
+                    itemPrefixObj<UIWidgetLabel>.Alpha = 0.0
+                }
+            }
+
+            var itemSuffixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_suffix")
+            if itemSuffixObj != nil {
+                if isCrop {
+                    itemSuffixObj<UIWidgetLabel>.Alpha = 1.0
+                    itemSuffixObj<UIWidgetLabel>.Content = itemCfg.GetSuffixText(mutStr)
+                } else {
+                    itemSuffixObj<UIWidgetLabel>.Alpha = 0.0
+                }
+            }
+
+            var amountObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_amount")
+            if amountObj != nil {
+                if isCrop {
+                    amountObj<UIWidgetLabel>.Alpha = 0.0
+                } else {
+                    amountObj<UIWidgetLabel>.Alpha = 1.0
+                    amountObj<UIWidgetLabel>.Content = convert.ToString(amount)
+                }
+            }
         }
     }
 
-    // Clears a specific UI slot (hides icon and text)
     func _ClearSlotVisual(slotPath string) {
-        // 1. Hide the Icon
-        var iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/rarity/icon")
+        var isQuickSlot = slotPath == "/quick_slot/0" || slotPath == "/quick_slot/1" || slotPath == "/quick_slot/2" || slotPath == "/quick_slot/3" || slotPath == "/quick_slot/4"
+
+        var iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/rarity/item_icon")
         if iconObj == nil { 
             iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/icon") 
         }
         if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
-        
-        // 2. Hide the Amount Text
-        var textObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/num")
-        if textObj != nil { textObj<UIWidgetLabel>.Alpha = 0.0 }
+
+        if isQuickSlot {
+            var numObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/num")
+            if numObj != nil { numObj<UIWidgetLabel>.Alpha = 0.0 }
+            var textObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/text")
+            if textObj != nil { textObj<UIWidgetLabel>.Alpha = 0.0 }
+        } else {
+            var nameObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_name")
+            if nameObj != nil { nameObj<UIWidgetLabel>.Alpha = 0.0 }
+            var itemPrefixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_prefix")
+            if itemPrefixObj != nil { itemPrefixObj<UIWidgetLabel>.Alpha = 0.0 }
+            var itemSuffixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_suffix")
+            if itemSuffixObj != nil { itemSuffixObj<UIWidgetLabel>.Alpha = 0.0 }
+            var amountObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_amount")
+            if amountObj != nil { amountObj<UIWidgetLabel>.Alpha = 0.0 }
+        }
     }
 }

@@ -13,6 +13,7 @@ graph MarketRuntimeData {
 
     _TableItemIDs List<string> = nil
     _TableItemAmounts List<int> = nil
+    _TableMutations List<string> = nil
 
     _QueueCustomerIDs List<int> = nil
     _QueueItemIDs List<string> = nil
@@ -41,6 +42,7 @@ graph MarketRuntimeData {
 
         _TableItemIDs = List<string>{}
         _TableItemAmounts = List<int>{}
+        _TableMutations = List<string>{}
 
         _QueueCustomerIDs = List<int>{}
         _QueueItemIDs = List<string>{}

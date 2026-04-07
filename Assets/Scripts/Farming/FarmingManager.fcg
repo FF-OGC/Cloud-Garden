@@ -267,31 +267,45 @@ static graph FarmingManager {
                     return
                 }
 
-                var normalCount = 0
-                var mutantCount = 0
-                var mutantCropId = ""
+                // Collect unique (cropId, mutStr) groups for batched add
+                var groupCropIds = List<string>{}
+                var groupMutStrs = List<string>{}
+                var groupCounts = List<int>{}
 
                 for i = 0, harvestCount, 1 {
                     var k = finalHarvestKeys[i]
-                    if map.ContainKey(floorObj<floorData>.GachaResults, k) {
-                        mutantCropId = floorObj<floorData>.GachaResults[k] as string
-                        mutantCount = mutantCount + 1
-                    } else {
-                        normalCount = normalCount + 1
+                    var cellCropId = normalCropId
+                    var cellMutStr = ""
+                    if map.ContainKey(floorObj<floorData>.MutationResults, k) {
+                        cellMutStr = floorObj<floorData>.MutationResults[k] as string
+                    }
+
+                    var foundGroup = false
+                    var gLen = list.Length(groupCropIds)
+                    for g = 0, gLen, 1 {
+                        if groupCropIds[g] as string == cellCropId && groupMutStrs[g] as string == cellMutStr {
+                            groupCounts[g] = (groupCounts[g] as int) + 1
+                            foundGroup = true
+                            break
+                        }
+                    }
+                    if !foundGroup {
+                        list.Append(groupCropIds, cellCropId)
+                        list.Append(groupMutStrs, cellMutStr)
+                        list.Append(groupCounts, 1)
                     }
                 }
 
-                if debugCfg.Farming() { LogInfo("[FarmingMgr] Harvesting normal=" + normalCount + " mutant=" + mutantCount) }
-
                 var isAdded = true
-                if normalCount > 0 {
-                    isAdded = backpackMgr.AddItem(player, normalCropId, normalCount)
-                    if debugCfg.Farming() { LogInfo("[FarmingMgr] AddItem normal result=" + isAdded) }
-                }
-                if mutantCount > 0 {
-                    var mutantAdded = backpackMgr.AddItem(player, mutantCropId, mutantCount)
-                    if debugCfg.Farming() { LogInfo("[FarmingMgr] AddItem mutant result=" + mutantAdded) }
-                    if !isAdded { isAdded = mutantAdded }
+                var groupTotal = list.Length(groupCropIds)
+                for g = 0, groupTotal, 1 {
+                    var gCrop = groupCropIds[g] as string
+                    var gMut = groupMutStrs[g] as string
+                    var gCount = groupCounts[g] as int
+                    var gResult = backpackMgr.AddItemWithMutation(player, gCrop, gCount, gMut)
+                    if debugCfg.Farming() { LogInfo("[FarmingMgr] AddItemWithMutation | " + convert.ToString(gCount) + "x " + gCrop + " mut=" + gMut + " result=" + gResult) }
+                    if debugCfg.Mutation() && gMut != "" { LogInfo("[MUTATION-HARVEST] " + convert.ToString(gCount) + "x " + gCrop + " | mutation=" + gMut + " | prefix=" + itemCfg.GetPrefixText(gMut) + " suffix=" + itemCfg.GetSuffixText(gMut) + " | sellPrice=" + convert.ToString(itemCfg.GetMutationSellPrice(gCrop, gMut))) }
+                    if !gResult { isAdded = false }
                 }
 
                 if isAdded {

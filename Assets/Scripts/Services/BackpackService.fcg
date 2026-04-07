@@ -41,26 +41,40 @@ static graph BackpackService {
 
     // --- ADD ITEM LOGIC ---
     func AddItem(owner entity<Entity>, itemId string, amount int) bool {
+        return AddItemWithMutation(owner, itemId, amount, "")
+    }
+
+    func _GetItemMutation(owner entity<Entity>, handle int) string {
+        if map.ContainKey(owner<backpackData>._ItemMutations, handle) {
+            return owner<backpackData>._ItemMutations[handle] as string
+        }
+        return ""
+    }
+
+    func AddItemWithMutation(owner entity<Entity>, itemId string, amount int, mutStr string) bool {
         if owner<backpackData> == nil || amount <= 0 { return false }
 
         var maxStack = itemCfg.GetMaxStack(itemId)
         var remaining = amount
 
-        // Pass 1: Try to stack with existing items that are not full
+        // Pass 1: Try to stack with existing items that match itemId AND mutStr
         for i = 0, owner<backpackData>._MaxCapacity, 1 {
             var handle = owner<backpackData>._BackpackRefs[i]
             if handle != -1 {
                 if owner<backpackData>._ItemIDs[handle] as string == itemId {
-                    var curAmt = owner<backpackData>._ItemAmounts[handle] as int
-                    if curAmt < maxStack {
-                        var spaceLeft = maxStack - curAmt
-                        if remaining <= spaceLeft {
-                            owner<backpackData>._ItemAmounts[handle] = curAmt + remaining
-                            remaining = 0
-                            break
-                        } else {
-                            owner<backpackData>._ItemAmounts[handle] = maxStack
-                            remaining = remaining - spaceLeft
+                    var existingMut = _GetItemMutation(owner, handle)
+                    if existingMut == mutStr {
+                        var curAmt = owner<backpackData>._ItemAmounts[handle] as int
+                        if curAmt < maxStack {
+                            var spaceLeft = maxStack - curAmt
+                            if remaining <= spaceLeft {
+                                owner<backpackData>._ItemAmounts[handle] = curAmt + remaining
+                                remaining = 0
+                                break
+                            } else {
+                                owner<backpackData>._ItemAmounts[handle] = maxStack
+                                remaining = remaining - spaceLeft
+                            }
                         }
                     }
                 }
@@ -70,32 +84,35 @@ static graph BackpackService {
         // Pass 2: Find empty slots for remaining items, generate new Handle
         if remaining > 0 {
             for i = 0, owner<backpackData>._MaxCapacity, 1 {
-                if owner<backpackData>._BackpackRefs[i] == -1 { // Empty slot found
+                if owner<backpackData>._BackpackRefs[i] == -1 {
                     var newHandle = owner<backpackData>._NextHandle
-                    owner<backpackData>._NextHandle = owner<backpackData>._NextHandle + 1 // Increment ID for next use
+                    owner<backpackData>._NextHandle = owner<backpackData>._NextHandle + 1
 
                     owner<backpackData>._ItemIDs[newHandle] = itemId
+                    if mutStr != "" {
+                        owner<backpackData>._ItemMutations[newHandle] = mutStr
+                    }
                     if remaining <= maxStack {
                         owner<backpackData>._ItemAmounts[newHandle] = remaining
-                        owner<backpackData>._BackpackRefs[i] = newHandle // Assign reference to slot
+                        owner<backpackData>._BackpackRefs[i] = newHandle
                         remaining = 0
                         break
                     } else {
                         owner<backpackData>._ItemAmounts[newHandle] = maxStack
-                        owner<backpackData>._BackpackRefs[i] = newHandle // Assign reference to slot
+                        owner<backpackData>._BackpackRefs[i] = newHandle
                         remaining = remaining - maxStack
                     }
                 }
             }
         }
 
-        if remaining < amount { // Added at least some items
-            if debugCfg.Backpack() { LogInfo("[BackpackService] AddItem | itemId=" + itemId + " requested=" + convert.ToString(amount) + " added=" + convert.ToString(amount - remaining) + " nextHandle=" + convert.ToString(owner<backpackData>._NextHandle)) }
+        if remaining < amount {
+            if debugCfg.Backpack() { LogInfo("[BackpackService] AddItemWithMutation | itemId=" + itemId + " mut=" + mutStr + " requested=" + convert.ToString(amount) + " added=" + convert.ToString(amount - remaining)) }
             AutoFillQuickSlots(owner)
             DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
             return true
         }
-        if debugCfg.Backpack() { LogInfo("[BackpackService] AddItem FAILED | itemId=" + itemId + " amount=" + convert.ToString(amount) + " (backpack full?)") }
+        if debugCfg.Backpack() { LogInfo("[BackpackService] AddItemWithMutation FAILED | itemId=" + itemId + " mut=" + mutStr + " amount=" + convert.ToString(amount) + " (backpack full?)") }
         return false
     }
 
@@ -114,11 +131,13 @@ static graph BackpackService {
             if currentAmt >= amountToConsume {
                 owner<backpackData>._ItemAmounts[handle] = currentAmt - amountToConsume
                 
-                // If item is fully consumed, clean up data and references
                 if owner<backpackData>._ItemAmounts[handle] as int <= 0 {
                     if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem | item depleted, handle=" + convert.ToString(handle) + " removed from refs") }
                     map.Remove(owner<backpackData>._ItemIDs, handle)
                     map.Remove(owner<backpackData>._ItemAmounts, handle)
+                    if map.ContainKey(owner<backpackData>._ItemMutations, handle) {
+                        map.Remove(owner<backpackData>._ItemMutations, handle)
+                    }
                     
                     // Clear from backpack references
                     var bIndex = list.IndexOf(owner<backpackData>._BackpackRefs, handle)

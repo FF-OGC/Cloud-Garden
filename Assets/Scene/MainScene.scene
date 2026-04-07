@@ -2187,7 +2187,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 20,
+          "tempIndex": 1,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -2332,7 +2332,7 @@
       "position": {
         "x": 20,
         "y": 200.5,
-        "z": -40
+        "z": -20
       },
       "scale": {
         "x": 1,
@@ -4724,7 +4724,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 21,
+          "tempIndex": 2,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -4869,7 +4869,7 @@
       "position": {
         "x": -20,
         "y": 200.5,
-        "z": -40
+        "z": -20
       },
       "scale": {
         "x": 1,
@@ -7243,7 +7243,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 22,
+          "tempIndex": 3,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -7388,7 +7388,7 @@
       "position": {
         "x": 20,
         "y": 200.5,
-        "z": 40
+        "z": 20
       },
       "scale": {
         "x": 1,
@@ -9762,7 +9762,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 23,
+          "tempIndex": 4,
           "itemID": 160,
           "seParent": null,
           "ecaScripts": [
@@ -9907,7 +9907,7 @@
       "position": {
         "x": -20,
         "y": 200.5,
-        "z": 40
+        "z": 20
       },
       "scale": {
         "x": 1,
@@ -11308,7 +11308,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 24,
+      "tempIndex": 5,
       "itemID": 143,
       "seParent": null,
       "ecaScripts": [

@@ -73,14 +73,18 @@ static graph CurrencyVisualManager {
     // ===== DROP MONEY =====
 
     func DropMoney(market entity<Entity>, itemId string, amount int) {
+        DropMoneyWithMutation(market, itemId, amount, "")
+    }
+
+    func DropMoneyWithMutation(market entity<Entity>, itemId string, amount int, mutStr string) {
         if market == nil || market<marketData> == nil { return }
 
-        var unitPrice = itemCfg.GetSellPrice(itemId)
+        var unitPrice = itemCfg.GetMutationSellPrice(itemId, mutStr)
         var earnings = (unitPrice * amount) as int
 
         market<marketData>._PendingMoney = (market<marketData>._PendingMoney + earnings) as int
 
-        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] DropMoney | +" + convert.ToString(earnings) + " pending=" + convert.ToString(market<marketData>._PendingMoney)) }
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] DropMoney | +" + convert.ToString(earnings) + " pending=" + convert.ToString(market<marketData>._PendingMoney) + " mut=" + mutStr) }
 
         _UpdateMoneyStack(market)
     }

@@ -18,7 +18,7 @@ graph FloorGridData {
     PlantVisuals Map<string, entity<Entity>>
     PlantPrefabKeys Map<string, string>
 
-    GachaResults Map<string, string>  
+    MutationResults Map<string, string>
     LuckyDirtCells Map<string, bool>
 
     FertilizedCells Map<string, bool>
@@ -41,7 +41,7 @@ graph FloorGridData {
         PlantVisuals = map.New() as Map<string, entity<Entity>>
         PlantPrefabKeys = map.New() as Map<string, string>
 
-        GachaResults = map.New() as Map<string, string>
+        MutationResults = map.New() as Map<string, string>
         LuckyDirtCells = map.New() as Map<string, bool>
 
         FertilizedCells = map.New() as Map<string, bool>
@@ -84,8 +84,8 @@ graph FloorGridData {
         return true
     }
 
-    func TrySetGachaResult(key string, cropId string) {
-        GachaResults[key] = cropId
+    func TrySetMutationResult(key string, mutStr string) {
+        MutationResults[key] = mutStr
     }
 
     func TrySetLuckyDirt(key string, isLucky bool) {
@@ -113,7 +113,7 @@ graph FloorGridData {
         if map.ContainKey(HarvestTimes, key) { map.Remove(HarvestTimes, key) }
         if map.ContainKey(CropPositions, key) { map.Remove(CropPositions, key) }
         if map.ContainKey(PlantedSeeds, key) { map.Remove(PlantedSeeds, key) }
-        if map.ContainKey(GachaResults, key) { map.Remove(GachaResults, key) }
+        if map.ContainKey(MutationResults, key) { map.Remove(MutationResults, key) }
         if map.ContainKey(LuckyDirtCells, key) { map.Remove(LuckyDirtCells, key) }
         if map.ContainKey(PlantPrefabKeys, key) { map.Remove(PlantPrefabKeys, key) }
         ClearFertilizer(key)

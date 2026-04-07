@@ -6,6 +6,8 @@ import "EditorGenLib.fcc" as gen
 import "Math.fcc" as math
 
 import "../Config/MarketConfig.fcg" as marketCfg
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Config/MutationConfig.fcg" as mutCfg
 import "./MarketRuntimeData.fcg" as marketData
 import "../Core/GameManager.fcg" as gameManager
 import "../Config/DebugConfig.fcg" as debugCfg
@@ -58,12 +60,15 @@ static graph MarketVisual {
 
         for i = 0, itemCount, 1 {
             var itemId = items[i] as string
-            var tableIndex = list.IndexOf(market<marketData>._TableItemIDs, itemId)
             var hasStock = false
 
-            if tableIndex != -1 {
-                var amount = market<marketData>._TableItemAmounts[tableIndex] as int
-                hasStock = amount > 0
+            var tableCount = list.Length(market<marketData>._TableItemIDs)
+            for t = 0, tableCount, 1 {
+                if market<marketData>._TableItemIDs[t] as string == itemId {
+                    var amt = market<marketData>._TableItemAmounts[t] as int
+                    if amt > 0 { hasStock = true }
+                    break
+                }
             }
 
             var activeIndex = list.IndexOf(market<marketData>._ActiveProduceItemIDs, itemId)
@@ -76,6 +81,9 @@ static graph MarketVisual {
                     model<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
                     list.Append(market<marketData>._ActiveProduceItemIDs, itemId)
                     list.Append(market<marketData>._ActiveProduceModels, model)
+
+                    _ApplyMutationMaterial(market, model, itemId)
+
                     if debugCfg.Market() { LogInfo("[MarketVisual] SHOW " + itemId) }
                 }
             } else if !hasStock && hasActiveModel {
@@ -86,6 +94,28 @@ static graph MarketVisual {
                 if debugCfg.Market() { LogInfo("[MarketVisual] HIDE " + itemId) }
             }
         }
+    }
+
+    func _ApplyMutationMaterial(market entity<Entity>, model entity<Entity>, itemId string) {
+        // Find mutation string for this itemId from the table
+        var tableCount = list.Length(market<marketData>._TableItemIDs)
+        var mutStr = ""
+        for t = 0, tableCount, 1 {
+            if market<marketData>._TableItemIDs[t] as string == itemId {
+                if t < list.Length(market<marketData>._TableMutations) {
+                    mutStr = market<marketData>._TableMutations[t] as string
+                }
+                break
+            }
+        }
+
+        if mutStr == "" { return }
+        var prefixId = itemCfg.ParseMutationPrefix(mutStr)
+        var matId = mutCfg.GetMutationMaterialId(prefixId)
+        var matList = list.New(0, 1) as List<MaterialID>
+        list.Append(matList, matId)
+        model<CustomRender>.MaterialIDList = matList
+        if debugCfg.Mutation() { LogInfo("[MUTATION-MARKET] " + itemId + " | mutStr=" + mutStr + " prefixId=" + convert.ToString(prefixId) + " material applied") }
     }
 
     func GetModelFromPool(itemId string) entity<Entity> {

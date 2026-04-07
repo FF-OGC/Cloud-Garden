@@ -1,0 +1,112 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+
+[platform_server]
+static graph MutationConfig {
+
+    // =====================
+    // SUFFIX CONFIG (every crop gets one)
+    // =====================
+
+    func GetSuffixTierCount() int { return 3 }
+
+    func GetSuffixWeight(tier int) int {
+        if tier == 1 { return 70 }
+        if tier == 2 { return 25 }
+        if tier == 3 { return 5 }
+        return 0
+    }
+
+    func GetSuffixTotalWeight() int { return 100 }
+
+    func GetSuffixName(tier int) string {
+        if tier == 1 { return "I" }
+        if tier == 2 { return "II" }
+        if tier == 3 { return "III" }
+        return ""
+    }
+
+    func GetSuffixSellMultiplier(tier int) float {
+        if tier == 1 { return 1.0 }
+        if tier == 2 { return 1.8 }
+        if tier == 3 { return 3.0 }
+        return 1.0
+    }
+
+    // =====================
+    // PREFIX CONFIG (gacha chance-based)
+    // =====================
+
+    func GetPrefixCount() int { return 3 }
+
+    func GetPrefixName(id int) string {
+        if id == 0 { return "Normal" }
+        if id == 1 { return "Silver" }
+        if id == 2 { return "Golden" }
+        if id == 3 { return "Rainbow" }
+        return "Normal"
+    }
+
+    func GetBasePrefixChance(seedId string) int {
+        if seedId == "seed_apple" { return 3 }
+        if seedId == "seed_carrot" { return 4 }
+        if seedId == "seed_tomato" { return 5 }
+        return 3
+    }
+
+    func GetSoilChanceBonus(soilTier int) int {
+        if soilTier == 1 { return 0 }
+        if soilTier == 2 { return 2 }
+        if soilTier == 3 { return 5 }
+        return 0
+    }
+
+    func GetEnhancementChanceBonus() int { return 3 }
+
+    func GetPityBonus(pityCount int) int { return pityCount }
+
+    func GetPrefixChanceCap() int { return 18 }
+
+    func GetPrefixBaseWeight(id int) int {
+        if id == 1 { return 60 }
+        if id == 2 { return 30 }
+        if id == 3 { return 10 }
+        return 0
+    }
+
+    func GetPrefixTotalWeight() int { return 100 }
+
+    func GetPrefixSellMultiplier(id int) float {
+        if id == 1 { return 1.3 }
+        if id == 2 { return 1.5 }
+        if id == 3 { return 2.0 }
+        return 1.0
+    }
+
+    func GetPrefixColorHex(id int) string {
+        if id == 0 { return "#AAAAAA" }
+        if id == 1 { return "#C0C0C0" }
+        if id == 2 { return "#FFD700" }
+        if id == 3 { return "#FF69B4" }
+        return "#AAAAAA"
+    }
+
+    func GetPrefixColor(id int) Color {
+        if id == 0 { return #AAAAAA }
+        if id == 1 { return #C0C0C0 }
+        if id == 2 { return #FFD700 }
+        if id == 3 { return #FF69B4 }
+        return #AAAAAA
+    }
+
+    // =====================
+    // MATERIALS
+    // =====================
+
+    func GetMutationMaterialId(prefixId int) MaterialID {
+        if prefixId == 1 { return EResMaterial.plant_silver }
+        if prefixId == 2 { return EResMaterial.plant_gold }
+        if prefixId == 3 { return EResMaterial.plant_rainbow }
+        return EResMaterial.plant_default
+    }
+}
