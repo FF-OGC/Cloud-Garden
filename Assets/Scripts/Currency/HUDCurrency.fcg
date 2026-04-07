@@ -16,6 +16,7 @@ graph HUDCurrency {
     _CoinNum entity<UIWidget> = nil
 
     _DisplayedBalance int = 0
+    _TargetBalance int = 0
     _IsAnimating bool = false
 
     event OnAwake() {
@@ -38,47 +39,38 @@ graph HUDCurrency {
         if player != thisEntity<Player> { return }
         if debugCfg.Currency() { LogInfo("[HUDCurrency] OnCurrencySync | newBalance=" + convert.ToString(balance) + " displayed=" + convert.ToString(_DisplayedBalance)) }
 
-        var oldBalance = _DisplayedBalance
-        if oldBalance != balance {
-            start AnimateCount(oldBalance, balance)
+        _TargetBalance = balance
+        if !_IsAnimating {
+            start AnimateToTarget()
         }
     }
 
-    async func AnimateCount(fromVal int, toVal int) {
+    async func AnimateToTarget() {
         if _CoinNum == nil { return }
-        if _IsAnimating {
-            _DisplayedBalance = toVal
-            _CoinNum<UIWidgetLabel>.Content = FormatNumber(toVal)
-            return
-        }
-
         _IsAnimating = true
-        var diff = toVal - fromVal
-        if diff < 0 { diff = -diff }
 
-        var steps = 10
-        if diff < steps { steps = diff }
-        if steps <= 0 { steps = 1 }
+        while _DisplayedBalance != _TargetBalance {
+            var target = _TargetBalance
+            var diff = target - _DisplayedBalance
+            if diff < 0 { diff = -diff }
 
-        var stepSize = diff / steps
-        if stepSize <= 0 { stepSize = 1 }
+            var stepSize = diff / 10
+            if stepSize <= 0 { stepSize = 1 }
 
-        var current = fromVal
-        for i = 0, steps, 1 {
-            if toVal > fromVal {
-                current = current + stepSize
-                if current > toVal { current = toVal }
+            if target > _DisplayedBalance {
+                _DisplayedBalance = _DisplayedBalance + stepSize
+                if _DisplayedBalance > target { _DisplayedBalance = target }
             } else {
-                current = current - stepSize
-                if current < toVal { current = toVal }
+                _DisplayedBalance = _DisplayedBalance - stepSize
+                if _DisplayedBalance < target { _DisplayedBalance = target }
             }
-            _DisplayedBalance = current
-            _CoinNum<UIWidgetLabel>.Content = FormatNumber(current)
+
+            _CoinNum<UIWidgetLabel>.Content = FormatNumber(_DisplayedBalance)
             WaitForMillisecond(50)
         }
 
-        _DisplayedBalance = toVal
-        _CoinNum<UIWidgetLabel>.Content = FormatNumber(toVal)
+        _CoinNum<UIWidgetLabel>.Content = FormatNumber(_TargetBalance)
+        _DisplayedBalance = _TargetBalance
         _IsAnimating = false
     }
 

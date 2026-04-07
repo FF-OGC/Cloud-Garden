@@ -153,6 +153,14 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "y4g80tfrzy-mnn2whwz-9e8n7lbuux9",
+      "filePath": "Assets\\Scripts\\HUD\\HudPrompt.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

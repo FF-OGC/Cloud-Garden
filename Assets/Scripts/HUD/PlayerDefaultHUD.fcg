@@ -121,27 +121,36 @@ graph PlayerDefaultHUD {
         var key = gridUtil.GetKeyFromPos(gridPos)
         var cellStates = floor<floorData>.CellStates
 
+        var hasPotion = false
+        if thisEntity<backpackData> != nil {
+            var qs = thisEntity<backpackData>._ActiveQuickbarSlot
+            var qh = thisEntity<backpackData>._QuickSlotRefs[qs]
+            if qh != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, qh) {
+                var heldId = thisEntity<backpackData>._ItemIDs[qh] as string
+                if itemCfg.GetType(heldId) == 4 { hasPotion = true }
+            }
+        }
+
         var text = "Hoe"
         var shouldHide = false
         if map.ContainKey(cellStates, key) {
             var state = cellStates[key] as int
-            if state == gen.EFarmSlotState.Grass {
+
+            if hasPotion && state != gen.EFarmSlotState.ReadyToHarvest {
+                text = "Use"
+            } else if state == gen.EFarmSlotState.Grass {
                 text = "Hoe"
             } else if state == gen.EFarmSlotState.Tilled {
                 var hasSeed = false
-                var hasPotion = false
                 if thisEntity<backpackData> != nil {
-                    var qs = thisEntity<backpackData>._ActiveQuickbarSlot
-                    var qh = thisEntity<backpackData>._QuickSlotRefs[qs]
-                    if qh != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, qh) {
-                        var heldId = thisEntity<backpackData>._ItemIDs[qh] as string
-                        if itemCfg.GetType(heldId) == 1 { hasSeed = true }
-                        if itemCfg.GetType(heldId) == 4 { hasPotion = true }
+                    var qs2 = thisEntity<backpackData>._ActiveQuickbarSlot
+                    var qh2 = thisEntity<backpackData>._QuickSlotRefs[qs2]
+                    if qh2 != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, qh2) {
+                        var heldId2 = thisEntity<backpackData>._ItemIDs[qh2] as string
+                        if itemCfg.GetType(heldId2) == 1 { hasSeed = true }
                     }
-                } 
-                if hasPotion { 
-                    text = "Use" 
-                } else if hasSeed { 
+                }
+                if hasSeed { 
                     text = "Plant"
                 } else { 
                     text = "Hoe"

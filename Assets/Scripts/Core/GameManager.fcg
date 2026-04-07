@@ -215,6 +215,7 @@ static graph GameManager {
         backpackManager.AddItem(player, "seed_carrot", 15)
         backpackManager.AddItem(player, "seed_tomato", 10)
         backpackManager.AddItem(player, "crop_apple", 30)
+        backpackManager.AddItem(player, "potion", 10)
         if debugCfg.Core() { LogInfo("[GameManager] Added starting seeds to backpack.") }
 
         currencyManager.InitPlayerCurrency(player, 500)

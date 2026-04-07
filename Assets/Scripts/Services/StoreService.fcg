@@ -65,6 +65,17 @@ static graph StoreService {
         return true
     }
 
+    func RestoreStock(slotIndex int, itemId string, amount int) {
+        if slotIndex < 0 || amount <= 0 { return }
+        var count = list.Length(storeData._ItemIDs)
+        if slotIndex >= count { return }
+        var id = storeData._ItemIDs[slotIndex] as string
+        if id != itemId { return }
+        var currentStock = storeData._ItemAmounts[slotIndex] as int
+        storeData._ItemAmounts[slotIndex] = currentStock + amount
+        if debugCfg.Store() { LogInfo("[StoreService] RestoreStock | Restored " + convert.ToString(amount) + " " + itemId + " to slot " + convert.ToString(slotIndex)) }
+    }
+
     // --- REFRESH LOGIC (called by StoreManager each cycle) ---
 
     func RefreshStore(currentGameTime float) {

@@ -409,6 +409,23 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_72011782"
+    },
+    "signal_38469391": {
+      "name": "OnShowPrompt",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100018,
+      "props": [
+        {
+          "name": "prompt",
+          "value": "String",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_38469391"
     }
   },
   "customName": {
@@ -429,7 +446,8 @@
     "OnRequestBuyItem": "signal_53917574",
     "OnPlayerTapButton": "signal_20131491",
     "OnExecuteFarmAction": "signal_41704574",
-    "OnCollectMoneyDrop": "signal_72011782"
+    "OnCollectMoneyDrop": "signal_72011782",
+    "OnShowPrompt": "signal_38469391"
   },
   "children": []
 }

@@ -12,7 +12,8 @@ static graph DebugConfig {
     _DebugGrid bool = false
     _DebugCurrency bool = false
     _DebugGacha bool = false
-    _DebugMoneyDrop bool = true
+    _DebugMoneyDrop bool = false
+    _DebugPrompt bool = true
 
     func All() bool { return _DebugAll }
     func Core() bool { return _DebugAll || _DebugCore }
@@ -24,4 +25,5 @@ static graph DebugConfig {
     func Currency() bool { return _DebugAll || _DebugCurrency }
     func Gacha() bool { return _DebugAll || _DebugGacha }
     func MoneyDrop() bool { return _DebugAll || _DebugMoneyDrop }
+    func Prompt() bool { return _DebugAll || _DebugPrompt }
 }

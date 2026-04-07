@@ -1,0 +1,93 @@
+import "StdLibrary.fcc" as StdLib
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as Hud
+import "Map.fcc" as Map
+
+[platform_server]
+graph HudPrompt {
+
+    PROMPT_DURATION = 3000
+
+    PROMPT_MESSAGES Map<string, string> = Map<string, string>{
+        "PROMPT_POTION_WRONG_STATE": "Potion can only be used on tilled soil!",
+    }
+
+    PROMPT_COLORS Map<string, Color> = Map<string, Color>{
+        "PROMPT_POTION_WRONG_STATE": #FABF00,
+    }
+
+    _PromptHUD entity<CustomUI>
+    _BgLeftImg entity<UIWidgetImage>
+    _BgRightImg entity<UIWidgetImage>
+    _IconLeftImg entity<UIWidgetImage>
+    _IconRightImg entity<UIWidgetImage>
+    _ContentLabel entity<UIWidgetLabel>
+    _CountPrompt int
+
+    event OnAwake() {
+        _CountPrompt = 0
+    }
+
+    event OnShowPrompt(prompt string) {
+        start ShowPromptHUD(prompt)
+    }
+
+    func InitPromptHUD() {
+        if _PromptHUD != nil {
+            return
+        }
+
+        Hud.CreateCustomUI(out var promptHud, thisEntity<Player>, EResUI.prompt)
+        _PromptHUD = promptHud
+        _PromptHUD<CustomUI>.Depth = 200
+
+        var container entity<UIWidget> = GetChildByIndex(_PromptHUD, 0) as entity<UIWidget>
+        _BgLeftImg = GetChildByIndex(container, 0) as entity<UIWidgetImage>
+        _BgRightImg = GetChildByIndex(container, 1) as entity<UIWidgetImage>
+        _IconLeftImg = GetChildByIndex(container, 2) as entity<UIWidgetImage>
+        _IconRightImg = GetChildByIndex(container, 3) as entity<UIWidgetImage>
+        _ContentLabel = GetChildByIndex(container, 4) as entity<UIWidgetLabel>
+
+        HidePromptHUD()
+    }
+
+    async func ShowPromptHUD(prompt string) {
+        InitPromptHUD()
+        UpdatePromptHUD(prompt)
+        _PromptHUD<CustomUI>.IsVisible = true
+
+        _CountPrompt += 1
+
+        WaitForMillisecond(PROMPT_DURATION)
+        if _CountPrompt > 0 {
+            _CountPrompt -= 1
+        }
+
+        if _CountPrompt <= 0 {
+            HidePromptHUD()
+        }
+    }
+
+    func HidePromptHUD() {
+        if _PromptHUD == nil { return }
+        _PromptHUD<CustomUI>.IsVisible = false
+    }
+
+    func UpdatePromptHUD(prompt string) {
+        var color = #FABF00
+        if Map.ContainKey(PROMPT_COLORS, prompt) {
+            color = PROMPT_COLORS[prompt]
+        }
+
+        _BgLeftImg<UIWidgetImage>.Color = color
+        _BgRightImg<UIWidgetImage>.Color = color
+        _IconLeftImg<UIWidgetImage>.Color = color
+        _IconRightImg<UIWidgetImage>.Color = color
+
+        if Map.ContainKey(PROMPT_MESSAGES, prompt) {
+            _ContentLabel<UIWidgetLabel>.Content = PROMPT_MESSAGES[prompt]
+        } else {
+            _ContentLabel<UIWidgetLabel>.Content = prompt
+        }
+    }
+}

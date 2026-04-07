@@ -9,6 +9,8 @@ import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Grid/FloorGridData.fcg" as floorData
 import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "../Backpack/BackpackData.fcg" as backpackData
+import "../Config/ItemConfig.fcg" as itemCfg
 
 [platform_server]
 static graph FarmActionAnimator {
@@ -43,6 +45,24 @@ static graph FarmActionAnimator {
         }
 
         var state = floor<floorData>.CellStates[key] as int
+
+        var hasPotion = false
+        if player<backpackData> != nil {
+            var activeSlot = player<backpackData>._ActiveQuickbarSlot
+            var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+            if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
+                var heldId = player<backpackData>._ItemIDs[handle] as string
+                if itemCfg.GetType(heldId) == 4 { hasPotion = true }
+            }
+        }
+
+        if hasPotion && state != gen.EFarmSlotState.Tilled {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: potion can only be used on Tilled soil, current state=" + state) }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POTION_WRONG_STATE"})
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
         if state == gen.EFarmSlotState.Growing {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
             player<playerFarmingData>._IsPerformingAction = false
