@@ -63,6 +63,16 @@ static graph CurrencyManager {
         if debugCfg.Currency() { LogInfo("[CurrencyManager] SyncCurrencyToPlayer | balance=" + convert.ToString(balance)) }
     }
 
+    func RefundItemPurchase(player entity<Player>, itemId string, quantity int) {
+        if player == nil || quantity <= 0 { return }
+        var unitPrice = itemCfg.GetBuyPrice(itemId)
+        var totalCost = (unitPrice * quantity) as int
+    
+        currencyService.AddBalance(player, totalCost)
+        SyncCurrencyToPlayer(player)
+        if debugCfg.Currency() { LogInfo("[CurrencyManager] RefundItemPurchase OK") }
+    }
+
     func RemovePlayer(player entity<Player>) {
         currencyService.RemovePlayer(player)
     }

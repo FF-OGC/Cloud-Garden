@@ -2,6 +2,9 @@ import "StdLibrary.fcc" as StdLib
 import "EditorGenLib.fcc" as gen
 import "Hud.fcc" as Hud
 import "Map.fcc" as Map
+import "Convert.fcc" as convert
+
+import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
 graph HudPrompt {
@@ -10,10 +13,22 @@ graph HudPrompt {
 
     PROMPT_MESSAGES Map<string, string> = Map<string, string>{
         "PROMPT_POTION_WRONG_STATE": "Potion can only be used on tilled soil!",
+        "PROMPT_NOT_ON_FLOOR": "Go to your garden to start farming!",
+        "PROMPT_NOT_ON_FLOOR_PLANT": "Go to your garden to plant seeds!",
+        "PROMPT_NO_SEED": "Equip a seed from your backpack to plant!",
+        "PROMPT_NEED_HOE_FIRST": "Hoe the soil first before planting!",
+        "PROMPT_STILL_GROWING": "Your crops are still growing!",
+        "PROMPT_NOT_ON_FLOOR_POTION": "Go to your garden to use this item!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
         "PROMPT_POTION_WRONG_STATE": #FABF00,
+        "PROMPT_NOT_ON_FLOOR": #FABF00,
+        "PROMPT_NOT_ON_FLOOR_PLANT": #FABF00,
+        "PROMPT_NO_SEED": #FABF00,
+        "PROMPT_NEED_HOE_FIRST": #FABF00,
+        "PROMPT_STILL_GROWING": #FABF00,
+        "PROMPT_NOT_ON_FLOOR_POTION": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>
@@ -26,33 +41,39 @@ graph HudPrompt {
 
     event OnAwake() {
         _CountPrompt = 0
+
+        CreateCustomUI(out var promptHud, thisEntity<Player>, EResUI.prompt)
+        if promptHud != nil {
+            _PromptHUD = promptHud
+            _PromptHUD<CustomUI>.Depth = 200
+
+            var container entity<UIWidget> = GetChildByIndex(_PromptHUD, 0) as entity<UIWidget>
+            if container != nil {
+                _BgLeftImg = GetChildByIndex(container, 0) as entity<UIWidgetImage>
+                _BgRightImg = GetChildByIndex(container, 1) as entity<UIWidgetImage>
+                _IconLeftImg = GetChildByIndex(container, 2) as entity<UIWidgetImage>
+                _IconRightImg = GetChildByIndex(container, 3) as entity<UIWidgetImage>
+                _ContentLabel = GetChildByIndex(container, 4) as entity<UIWidgetLabel>
+            }
+
+            HidePromptHUD()
+            if debugCfg.Prompt() { LogInfo("[HudPrompt] OnAwake OK | label=" + convert.ToString(_ContentLabel != nil)) }
+        } else {
+            if debugCfg.Prompt() { LogWarning("[HudPrompt] OnAwake FAILED | CreateCustomUI returned nil") }
+        }
     }
 
     event OnShowPrompt(prompt string) {
+        if debugCfg.Prompt() { LogInfo("[HudPrompt] OnShowPrompt | prompt=" + prompt + " ready=" + convert.ToString(_PromptHUD != nil)) }
+        if _PromptHUD == nil { return }
         start ShowPromptHUD(prompt)
     }
 
-    func InitPromptHUD() {
-        if _PromptHUD != nil {
-            return
-        }
-
-        Hud.CreateCustomUI(out var promptHud, thisEntity<Player>, EResUI.prompt)
-        _PromptHUD = promptHud
-        _PromptHUD<CustomUI>.Depth = 200
-
-        var container entity<UIWidget> = GetChildByIndex(_PromptHUD, 0) as entity<UIWidget>
-        _BgLeftImg = GetChildByIndex(container, 0) as entity<UIWidgetImage>
-        _BgRightImg = GetChildByIndex(container, 1) as entity<UIWidgetImage>
-        _IconLeftImg = GetChildByIndex(container, 2) as entity<UIWidgetImage>
-        _IconRightImg = GetChildByIndex(container, 3) as entity<UIWidgetImage>
-        _ContentLabel = GetChildByIndex(container, 4) as entity<UIWidgetLabel>
-
-        HidePromptHUD()
-    }
-
     async func ShowPromptHUD(prompt string) {
-        InitPromptHUD()
+        if _PromptHUD == nil { return }
+
+        if debugCfg.Prompt() { LogInfo("[HudPrompt] ShowPromptHUD | showing prompt=" + prompt) }
+
         UpdatePromptHUD(prompt)
         _PromptHUD<CustomUI>.IsVisible = true
 
@@ -65,6 +86,7 @@ graph HudPrompt {
 
         if _CountPrompt <= 0 {
             HidePromptHUD()
+            if debugCfg.Prompt() { LogInfo("[HudPrompt] ShowPromptHUD | auto-hide") }
         }
     }
 
@@ -74,15 +96,17 @@ graph HudPrompt {
     }
 
     func UpdatePromptHUD(prompt string) {
+        if _ContentLabel == nil { return }
+
         var color = #FABF00
         if Map.ContainKey(PROMPT_COLORS, prompt) {
             color = PROMPT_COLORS[prompt]
         }
 
-        _BgLeftImg<UIWidgetImage>.Color = color
-        _BgRightImg<UIWidgetImage>.Color = color
-        _IconLeftImg<UIWidgetImage>.Color = color
-        _IconRightImg<UIWidgetImage>.Color = color
+        if _BgLeftImg != nil { _BgLeftImg<UIWidgetImage>.Color = color }
+        if _BgRightImg != nil { _BgRightImg<UIWidgetImage>.Color = color }
+        if _IconLeftImg != nil { _IconLeftImg<UIWidgetImage>.Color = color }
+        if _IconRightImg != nil { _IconRightImg<UIWidgetImage>.Color = color }
 
         if Map.ContainKey(PROMPT_MESSAGES, prompt) {
             _ContentLabel<UIWidgetLabel>.Content = PROMPT_MESSAGES[prompt]

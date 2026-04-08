@@ -17,7 +17,7 @@ static graph FarmActionAnimator {
 
     _ACTION_DELAY int = 1500
 
-    event OnPlayerHoeAction(player entity<Entity>) {
+    event OnPlayerHoeAction(player entity<Player>) {
         if player == nil { return }
         if player<playerFarmingData>._IsPerformingAction {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already performing action") }
@@ -74,6 +74,53 @@ static graph FarmActionAnimator {
         animSvc.PlayAnimOnce(player, "Farming")
 
         DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+
+        WaitForMillisecond(_ACTION_DELAY)
+
+        EnableActions(player)
+
+        player<playerFarmingData>._IsPerformingAction = false
+    }
+
+    event OnPlayerPlantAction(player entity<Player>) {
+        if player == nil { return }
+        if player<playerFarmingData>._IsPerformingAction {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: already performing action") }
+            return
+        }
+        start PerformPlantAction(player)
+    }
+
+    async func PerformPlantAction(player entity<Entity>) {
+        player<playerFarmingData>._IsPerformingAction = true
+
+        var floor = player<playerFarmingData>.CurrentFloor
+        if floor == nil || floor<floorData> == nil {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: no valid floor") }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        var gridPos = player<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        if !map.ContainKey(floor<floorData>.CellStates, key) {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: invalid grid key=" + key) }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        var state = floor<floorData>.CellStates[key] as int
+        if state != gen.EFarmSlotState.Tilled {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: cell is not Tilled, state=" + state) }
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
+        DisableActions(player)
+
+        animSvc.PlayAnimOnce(player, "Farming")
+
+        DispatchEventToEntity(OnExecutePlantAction, globalEntity, PlatformType.Server, List<object>{player})
 
         WaitForMillisecond(_ACTION_DELAY)
 

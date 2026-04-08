@@ -61150,16 +61150,7 @@
     "alpha": 100,
     "priority": 0
   },
-  "ecaScripts": [
-    {
-      "fileId": "mugr26d2lsk-mmytmjtp-n1qd8hwdqdq",
-      "filePath": "Assets\\Scripts\\Backpack\\HUDBackpack.fcg",
-      "_tag": {
-        "type": "GFileRefer"
-      },
-      "fileType": "ugcscript"
-    }
-  ],
+  "ecaScripts": [],
   "ecaProps": {
     "CustomHud": {},
     "Entity": {}

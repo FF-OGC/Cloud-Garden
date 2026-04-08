@@ -6,7 +6,7 @@ import "Hud.fcc" as Hud
 graph ButtonClient {
     event OnTapped(player entity<Player>) {
         var _ParentUI = thisEntity<UIWidget>.ParentUI
-        DispatchEventToEntity(OnPlayerTapButton, _ParentUI<Entity>, PlatformType.Server, 
+        DispatchEventToEntity(OnPlayerTapButton, player<Entity>, PlatformType.Server, 
             List<object>{thisEntity, player})
     }
 }

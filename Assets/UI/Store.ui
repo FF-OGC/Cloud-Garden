@@ -70322,16 +70322,7 @@
     "alpha": 100,
     "priority": 0
   },
-  "ecaScripts": [
-    {
-      "fileId": "gro3t6rdyw6-mn4evrpo-xh100c1zgjg",
-      "filePath": "Assets\\Scripts\\Store\\HUDStore.fcg",
-      "_tag": {
-        "type": "GFileRefer"
-      },
-      "fileType": "ugcscript"
-    }
-  ],
+  "ecaScripts": [],
   "ecaProps": {
     "CustomHud": {},
     "Entity": {}

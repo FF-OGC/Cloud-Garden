@@ -4,23 +4,6 @@
   },
   "_entityId": "YNTKwtqc",
   "customEventDefines": {
-    "signal_86389280": {
-      "name": "OnPlayerHoeAction",
-      "eventType": 0,
-      "enitityType": "Component",
-      "typeID": 100003,
-      "props": [
-        {
-          "name": "player",
-          "value": "Entity",
-          "key": 1
-        }
-      ],
-      "propCount": 3,
-      "apiTargetV2": "both",
-      "version": 45,
-      "key": "signal_86389280"
-    },
     "signal_22656937": {
       "name": "OnRequestAddItem",
       "eventType": 0,
@@ -426,10 +409,99 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_38469391"
+    },
+    "signal_67774659": {
+      "name": "OnPlayerEnterFloor",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100019,
+      "props": [
+        {
+          "name": "_player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "_entity",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_67774659"
+    },
+    "signal_15826077": {
+      "name": "OnPlayerLeaveFloor",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100020,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_15826077"
+    },
+    "signal_22116220": {
+      "name": "OnPlayerPlantAction",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100021,
+      "props": [
+        {
+          "name": "_player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_22116220"
+    },
+    "signal_73553884": {
+      "name": "OnExecutePlantAction",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100022,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_73553884"
+    },
+    "signal_86389280": {
+      "name": "OnPlayerHoeAction",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100003,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 4,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_86389280"
     }
   },
   "customName": {
-    "OnPlayerHoeAction": "signal_86389280",
     "OnRequestAddItem": "signal_22656937",
     "OnBackpackDataChanged": "signal_76789303",
     "OnBuyItemResponse": "signal_74145831",
@@ -447,7 +519,12 @@
     "OnPlayerTapButton": "signal_20131491",
     "OnExecuteFarmAction": "signal_41704574",
     "OnCollectMoneyDrop": "signal_72011782",
-    "OnShowPrompt": "signal_38469391"
+    "OnShowPrompt": "signal_38469391",
+    "OnPlayerEnterFloor": "signal_67774659",
+    "OnPlayerLeaveFloor": "signal_15826077",
+    "OnPlayerPlantAction": "signal_22116220",
+    "OnExecutePlantAction": "signal_73553884",
+    "OnPlayerHoeAction": "signal_86389280"
   },
   "children": []
 }

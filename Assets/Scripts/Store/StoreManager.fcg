@@ -72,32 +72,41 @@ static graph StoreManager {
     event OnRequestBuyItem(player entity<Player>, itemId string, amount int, slotIndex int) {
         if debugCfg.Store() { LogInfo("[StoreManager] OnRequestBuyItem | player=" + player<Entity>.Name + " itemId=" + itemId + " amount=" + convert.ToString(amount) + " slot=" + convert.ToString(slotIndex)) }
         if player == nil || amount <= 0 { return }
-
+    
+        // 1. Check if the store has enough stock in the slot
         if !storeService.CanBuyFromSlot(slotIndex, itemId, amount) {
             if debugCfg.Store() { LogInfo("[StoreManager] FAILED: Not enough stock in slot " + convert.ToString(slotIndex)) }
             DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Not enough stock!", nil, nil})
             return
         }
-
-        if !currencyManager.CanAffordItem(player, itemId, amount) {
+    
+        // 2. Deduct the price immediately to prevent spam!
+        // The ProcessItemPurchase function will check and deduct the price immediately. If it fails, it means the player has no money.
+        if !currencyManager.ProcessItemPurchase(player, itemId, amount) {
             if debugCfg.Store() { LogInfo("[StoreManager] FAILED: Not enough gold") }
             DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Not enough gold!", nil, nil})
             return
         }
-
+    
+        // 3. Deduct the stock from the store shelf
         storeService.ExecuteBuyFromSlot(slotIndex, itemId, amount)
-
+    
+        // 4. Add the item to the player's inventory
         if !backpackManager.AddItem(player, itemId, amount) {
             if debugCfg.Store() { LogInfo("[StoreManager] FAILED: Backpack full") }
+            
+            // ROLLBACK: If the inventory is full, we need to refund the money and restore the stock!
+            currencyManager.RefundItemPurchase(player, itemId, amount)
+            storeService.RestoreStock(slotIndex, itemId, amount)
+            
             DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, false, "Backpack is full!", nil, nil})
             return
         }
-
-        currencyManager.ProcessItemPurchase(player, itemId, amount)
-
+    
+        // 5. Everything is successful
         if debugCfg.Store() { LogInfo("[StoreManager] SUCCESS: Bought " + convert.ToString(amount) + "x " + itemId) }
         DispatchEventToEntity(OnBuyItemResponse, player, PlatformType.Server, List<object>{player, true, "Purchase successful!", storeData._ItemIDs, storeData._ItemAmounts})
-
+    
         BroadcastStoreDataToAll(player)
     }
 

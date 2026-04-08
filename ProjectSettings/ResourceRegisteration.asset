@@ -9,18 +9,6 @@
       "children": [
         {
           "refer": {
-            "fileId": "f7is6q0ew7-mmlrlqu2-b0n5fcsyu1v",
-            "filePath": "Assets\\UI\\HoeBtn.ui",
-            "_tag": {
-              "type": "GFileRefer"
-            },
-            "fileType": "ui"
-          },
-          "scriptName": "hoe_btn",
-          "children": []
-        },
-        {
-          "refer": {
             "fileId": "yjcwv27zj1-mn2k0ht7-9vgbl65yep",
             "filePath": "Assets\\UI\\Backpack.ui",
             "_tag": {
@@ -484,6 +472,66 @@
             "fileType": "texture"
           },
           "scriptName": "crop_carrot",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "zxz8jban0lr-mnojoyji-kncdgdrg70g",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\harvest.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_harvest",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "qibzunc08bg-mnojoypk-sz1vez9qbgs",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\icon_useitem_weedingshovel.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_hoe",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "kwkn4w96abm-mnojoym5-ehyjwt27pf",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\icon_useitem.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_useItem",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "j54pcgpucqs-mnojoys9-49xirmqdeos",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\plant.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_plan",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "b1tzwhg7ef-mnok6kby-lgn9hviddyd",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\watering.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_water",
           "children": []
         }
       ]

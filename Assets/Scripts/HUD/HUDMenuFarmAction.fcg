@@ -1,0 +1,356 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+import "Map.fcc" as map
+import "Convert.fcc" as convert
+
+import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
+import "../Grid/FloorGridData.fcg" as floorData
+import "../Backpack/BackpackData.fcg" as backpackData
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Currency/HUDCurrency.fcg" as hudCurrency
+
+[platform_server]
+graph HUDMenuFarmAction {
+
+    _MenuUI entity<CustomUI> = nil
+    _HarvestBtn entity<UIWidget> = nil
+    _HarvestText entity<UIWidget> = nil
+    _PlantBtn entity<UIWidget> = nil
+    _PlantText entity<UIWidget> = nil
+
+    _IsOnFloor bool = false
+    _IsTickRunning bool = false
+
+    COLOR_ACTIVE Color = #FFFFFF
+    COLOR_INACTIVE Color = #484848
+
+    event OnAwake() {
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnAwake") }
+        start InitWidgets()
+    }
+
+    async func InitWidgets() {
+        while thisEntity<hudCurrency>._MenuUI == nil {
+            WaitForMillisecond(50)
+        }
+        _MenuUI = thisEntity<hudCurrency>._MenuUI
+
+        _HarvestBtn = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/harvest_btn/btn")
+        _HarvestText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/harvest_btn/text")
+        _PlantBtn = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/plant_btn/btn")
+        _PlantText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/plant_btn/text")
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] InitWidgets OK | harvestBtn=" + convert.ToString(_HarvestBtn != nil) + " harvestText=" + convert.ToString(_HarvestText != nil) + " plantBtn=" + convert.ToString(_PlantBtn != nil) + " plantText=" + convert.ToString(_PlantText != nil)) }
+
+        SyncFloorState()
+        UpdateHarvestBtn()
+        UpdatePlantBtn()
+
+        if _IsOnFloor && !_IsTickRunning {
+            start StartFarmingTick()
+        }
+    }
+
+    // ==========================================
+    // SYNC FLOOR STATE (single source of truth)
+    // Reads CurrentFloor directly to prevent
+    // desync between flag and actual data
+    // ==========================================
+
+    func SyncFloorState() {
+        var wasOnFloor = _IsOnFloor
+        if thisEntity<playerFarmingData> == nil {
+            _IsOnFloor = false
+        } else {
+            var floor = thisEntity<playerFarmingData>.CurrentFloor
+            _IsOnFloor = floor != nil && floor<floorData> != nil
+        }
+        if debugCfg.Farming() && wasOnFloor != _IsOnFloor {
+            LogInfo("[HUDFarmAction] SyncFloorState CHANGED | " + convert.ToString(wasOnFloor) + " -> " + convert.ToString(_IsOnFloor))
+        }
+    }
+
+    // ==========================================
+    // BUTTON TAP HANDLER
+    // ==========================================
+
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
+        if !HasComponent(button, typeof(MyButton)) { return }
+
+        var btnType = button<MyButton>.Type
+
+        if btnType == "harvest_btn" {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] TAP harvest_btn") }
+            HandleHarvestTap(player)
+        } else if btnType == "plant_btn" {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] TAP plant_btn") }
+            HandlePlantTap(player)
+        }
+    }
+
+    func HandleHarvestTap(player entity<Player>) {
+        SyncFloorState()
+        var hasPotion = IsHoldingPotion(player)
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandleHarvestTap | _IsOnFloor=" + convert.ToString(_IsOnFloor) + " hasPotion=" + convert.ToString(hasPotion)) }
+
+        if !_IsOnFloor {
+            if hasPotion {
+                if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR_POTION") }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_POTION"})
+            } else {
+                if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR") }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
+            }
+            return
+        }
+
+        var floor = player<playerFarmingData>.CurrentFloor
+        if floor == nil || floor<floorData> == nil {
+            _IsOnFloor = false
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandleHarvestTap DESYNC CAUGHT | _IsOnFloor was true but CurrentFloor is nil, correcting") }
+            if hasPotion {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_POTION"})
+            } else {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
+            }
+            return
+        }
+
+        var gridPos = player<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        var state = gen.EFarmSlotState.Grass as int
+        if map.ContainKey(floor<floorData>.CellStates, key) {
+            state = floor<floorData>.CellStates[key] as int
+        }
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandleHarvestTap | gridPos=" + gridPos + " key=" + key + " state=" + state) }
+
+        if state == gen.EFarmSlotState.Growing {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_STILL_GROWING") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_STILL_GROWING"})
+            return
+        }
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> Dispatch OnPlayerHoeAction") }
+        DispatchEventToEntity(OnPlayerHoeAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
+    }
+
+    func HandlePlantTap(player entity<Player>) {
+        SyncFloorState()
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandlePlantTap | _IsOnFloor=" + convert.ToString(_IsOnFloor)) }
+
+        if !_IsOnFloor {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR_PLANT") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_PLANT"})
+            return
+        }
+
+        var floor = player<playerFarmingData>.CurrentFloor
+        if floor == nil || floor<floorData> == nil {
+            _IsOnFloor = false
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandlePlantTap DESYNC CAUGHT | _IsOnFloor was true but CurrentFloor is nil, correcting") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_PLANT"})
+            return
+        }
+
+        if !IsHoldingSeed(player) {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NO_SEED") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_SEED"})
+            return
+        }
+
+        var gridPos = player<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        var state = gen.EFarmSlotState.Grass as int
+        if map.ContainKey(floor<floorData>.CellStates, key) {
+            state = floor<floorData>.CellStates[key] as int
+        }
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandlePlantTap | gridPos=" + gridPos + " key=" + key + " state=" + state) }
+
+        if state != gen.EFarmSlotState.Tilled {
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NEED_HOE_FIRST") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NEED_HOE_FIRST"})
+            return
+        }
+
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> Dispatch OnPlayerPlantAction") }
+        DispatchEventToEntity(OnPlayerPlantAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
+    }
+
+    // ==========================================
+    // FLOOR ENTER / LEAVE (event-driven)
+    // ==========================================
+
+    event OnPlayerEnterFloor(player entity<Player>, floor entity<Entity>) {
+        if player != thisEntity<Player> { return }
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnPlayerEnterFloor | floor=" + convert.ToString(floor != nil)) }
+        SyncFloorState()
+        UpdateHarvestBtn()
+        UpdatePlantBtn()
+        if _IsOnFloor && !_IsTickRunning {
+            start StartFarmingTick()
+        }
+    }
+
+    event OnPlayerLeaveFloor(player entity<Player>) {
+        if player != thisEntity<Player> { return }
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnPlayerLeaveFloor") }
+        SyncFloorState()
+        UpdateHarvestBtn()
+        UpdatePlantBtn()
+    }
+
+    // ==========================================
+    // BACKPACK CHANGE (item equip / slot switch)
+    // ==========================================
+
+    event OnBackpackDataChanged(owner entity<Entity>) {
+        if owner != thisEntity<Entity> { return }
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnBackpackDataChanged | _IsOnFloor=" + convert.ToString(_IsOnFloor)) }
+        UpdateHarvestBtn()
+        UpdatePlantBtn()
+    }
+
+    // ==========================================
+    // CELL STATE CHANGE (immediate refresh)
+    // ==========================================
+
+    event OnFarmCellStateChanged(floor entity<Entity>, gridPos Vector3, newState int) {
+        if !_IsOnFloor { return }
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnFarmCellStateChanged | newState=" + newState) }
+        UpdateHarvestBtn()
+        UpdatePlantBtn()
+    }
+
+    // ==========================================
+    // FARMING TICK (fast loop while on floor)
+    // ==========================================
+
+    async func StartFarmingTick() {
+        _IsTickRunning = true
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] StartFarmingTick BEGIN") }
+        while _IsOnFloor {
+            WaitForMillisecond(100)
+            SyncFloorState()
+            if !_IsOnFloor { break }
+            UpdateHarvestBtn()
+            UpdatePlantBtn()
+        }
+        if debugCfg.Farming() { LogInfo("[HUDFarmAction] StartFarmingTick END") }
+        _IsTickRunning = false
+    }
+
+    // ==========================================
+    // UI UPDATE FUNCTIONS
+    // ==========================================
+
+    func UpdateHarvestBtn() {
+        if _HarvestBtn == nil || _HarvestText == nil { return }
+
+        var hasPotion = IsHoldingPotion(thisEntity)
+
+        if !_IsOnFloor {
+            if hasPotion {
+                SetHarvestBtnState(COLOR_INACTIVE, "Use", EResSprite.icon_useItem)
+            } else {
+                SetHarvestBtnState(COLOR_INACTIVE, "Hoe", EResSprite.icon_hoe)
+            }
+            return
+        }
+
+        if thisEntity<playerFarmingData> == nil { return }
+        var floor = thisEntity<playerFarmingData>.CurrentFloor
+        if floor == nil || floor<floorData> == nil {
+            if hasPotion {
+                SetHarvestBtnState(COLOR_INACTIVE, "Use", EResSprite.icon_useItem)
+            } else {
+                SetHarvestBtnState(COLOR_INACTIVE, "Hoe", EResSprite.icon_hoe)
+            }
+            return
+        }
+
+        var gridPos = thisEntity<playerFarmingData>.CurrentGridPos
+        var key = gridUtil.GetKeyFromPos(gridPos)
+        var state = gen.EFarmSlotState.Grass as int
+        if map.ContainKey(floor<floorData>.CellStates, key) {
+            state = floor<floorData>.CellStates[key] as int
+        }
+
+        if hasPotion && state != gen.EFarmSlotState.ReadyToHarvest && state != gen.EFarmSlotState.Growing {
+            SetHarvestBtnState(COLOR_ACTIVE, "Use", EResSprite.icon_useItem)
+        } else if state == gen.EFarmSlotState.Grass {
+            SetHarvestBtnState(COLOR_ACTIVE, "Hoe", EResSprite.icon_hoe)
+        } else if state == gen.EFarmSlotState.Tilled {
+            SetHarvestBtnState(COLOR_ACTIVE, "Hoe", EResSprite.icon_hoe)
+        } else if state == gen.EFarmSlotState.NeedWatering {
+            SetHarvestBtnState(COLOR_ACTIVE, "Water", EResSprite.icon_water)
+        } else if state == gen.EFarmSlotState.Growing {
+            SetHarvestBtnState(COLOR_INACTIVE, "Growing", EResSprite.icon_hoe)
+        } else if state == gen.EFarmSlotState.ReadyToHarvest {
+            SetHarvestBtnState(COLOR_ACTIVE, "Harvest", EResSprite.icon_harvest)
+        } else {
+            SetHarvestBtnState(COLOR_INACTIVE, "Hoe", EResSprite.icon_hoe)
+        }
+    }
+
+    func UpdatePlantBtn() {
+        if _PlantBtn == nil { return }
+        if !_IsOnFloor {
+            SetPlantBtnState(COLOR_INACTIVE)
+            return
+        }
+
+        if IsHoldingSeed(thisEntity) {
+            SetPlantBtnState(COLOR_ACTIVE)
+        } else {
+            SetPlantBtnState(COLOR_INACTIVE)
+        }
+    }
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
+
+    func SetHarvestBtnState(color Color, text string, icon SpriteID) {
+        if _HarvestBtn != nil {
+            _HarvestBtn<UIWidgetButton>.Color = color
+            _HarvestBtn<UIWidgetButton>.SpriteResource = icon
+        }
+        if _HarvestText != nil {
+            _HarvestText<UIWidgetLabel>.Content = text
+        }
+    }
+
+    func SetPlantBtnState(color Color) {
+        if _PlantBtn != nil {
+            _PlantBtn<UIWidgetButton>.Color = color
+        }
+    }
+
+    func IsHoldingSeed(player entity<Entity>) bool {
+        if player<backpackData> == nil { return false }
+        var activeSlot = player<backpackData>._ActiveQuickbarSlot
+        var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+        if handle == -1 { return false }
+        if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return false }
+        var heldId = player<backpackData>._ItemIDs[handle] as string
+        return itemCfg.GetType(heldId) == 1
+    }
+
+    func IsHoldingPotion(player entity<Entity>) bool {
+        if player<backpackData> == nil { return false }
+        var activeSlot = player<backpackData>._ActiveQuickbarSlot
+        var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+        if handle == -1 { return false }
+        if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return false }
+        var heldId = player<backpackData>._ItemIDs[handle] as string
+        return itemCfg.GetType(heldId) == 4
+    }
+}

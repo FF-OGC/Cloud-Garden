@@ -10,6 +10,5 @@ graph Button {
     event OnTapped(player entity<Player>) {
         var _ParentUI = thisEntity<UIWidget>.ParentUI
         if _IsDebug { LogInfo("[Button] OnTapped FIRED | widgetName=" + thisEntity<Entity>.Name + " parentUI=" + convert.ToString(_ParentUI != nil)) }
-        DispatchEventToEntity(OnPlayerTapButton, _ParentUI<Entity>, PlatformType.Server, List<object>{thisEntity, player})
-    }
+        DispatchEventToEntity(OnPlayerTapButton, player<Entity>, PlatformType.Server, List<object>{thisEntity, player})    }
 }

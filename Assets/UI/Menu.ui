@@ -4353,7 +4353,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -4666,7 +4666,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -4981,7 +4981,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -5991,7 +5991,7 @@
           "children": [],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": false,
+            "selfValue": true,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -6001,7 +6001,7 @@
           "editorLockValue": false,
           "editorVisibleValue": true,
           "propsData": {
-            "activeSelf": false,
+            "activeSelf": true,
             "transform": {
               "rotate": 0,
               "anchorMin": {
@@ -6029,7 +6029,7 @@
             "priority": 0,
             "button": {
               "spriteName": {
-                "fileId": "bu3k6kg3nr9-mfoaq3rc-gygdzmt18mg",
+                "fileId": "zxz8jban0lr-mnojoyji-kncdgdrg70g",
                 "filePath": "Assets\\Resources\\Texture\\Menu\\harvest.png",
                 "_tag": {
                   "type": "GFileRefer"
@@ -6081,7 +6081,16 @@
               }
             }
           },
-          "ecaScripts": [],
+          "ecaScripts": [
+            {
+              "fileId": "8kdp531fy4-mmytmjv6-zzpc3obeso",
+              "filePath": "Assets\\Scripts\\Services\\Utils\\Button.fcg",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "ugcscript"
+            }
+          ],
           "ecaProps": {
             "HudButtonWidget": {},
             "HudWidget": {},
@@ -6090,10 +6099,14 @@
               "PROP_87099051": "harvest_btn",
               "PROP_97884365": 0,
               "PROP_79902060": 0
+            },
+            "CustomComponent62548545": {
+              "PROP_41899047": "harvest_btn",
+              "PROP_24899680": 0
             }
           },
           "componentList": [
-            "CustomComponent36856112"
+            "CustomComponent62548545"
           ],
           "_entityName": "btn",
           "entityTagData": {
@@ -6109,7 +6122,7 @@
           "children": [],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": false,
+            "selfValue": true,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -6117,7 +6130,7 @@
             "valueTag": "unlockedValue"
           },
           "propsData": {
-            "activeSelf": false,
+            "activeSelf": true,
             "transform": {
               "rotate": 0,
               "anchorMin": {
@@ -6194,7 +6207,7 @@
       ],
       "prefabVariant": null,
       "activeValue": {
-        "selfValue": false,
+        "selfValue": true,
         "valueTag": "activeValue"
       },
       "unlockedValue": {
@@ -6202,7 +6215,7 @@
         "valueTag": "unlockedValue"
       },
       "propsData": {
-        "activeSelf": false,
+        "activeSelf": true,
         "transform": {
           "rotate": 0,
           "anchorMin": {
@@ -6230,8 +6243,8 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "a63tc7rrug-mhaas8nt-h4zhwiqfhx9",
-            "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
+            "fileId": "9zjail649uo-mnojoygw-lazuv1dpju",
+            "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_harvest.png",
             "_tag": {
               "type": "GFileRefer"
             },
@@ -6291,11 +6304,13 @@
           "PROP_87099051": "harvest_btn",
           "PROP_97884365": 0,
           "PROP_79902060": 0
+        },
+        "CustomComponent62548545": {
+          "PROP_41899047": "harvest_btn",
+          "PROP_24899680": 0
         }
       },
-      "componentList": [
-        "CustomComponent36856112"
-      ],
+      "componentList": [],
       "_filters": [],
       "_entityName": "harvest_btn",
       "entityTagData": {
@@ -6356,7 +6371,7 @@
             "priority": 0,
             "button": {
               "spriteName": {
-                "fileId": "c1kij09kihq-mgp1xlxm-51g69usb8iv",
+                "fileId": "j54pcgpucqs-mnojoys9-49xirmqdeos",
                 "filePath": "Assets\\Resources\\Texture\\Menu\\plant.png",
                 "_tag": {
                   "type": "GFileRefer"
@@ -6408,7 +6423,16 @@
               }
             }
           },
-          "ecaScripts": [],
+          "ecaScripts": [
+            {
+              "fileId": "8kdp531fy4-mmytmjv6-zzpc3obeso",
+              "filePath": "Assets\\Scripts\\Services\\Utils\\Button.fcg",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "ugcscript"
+            }
+          ],
           "ecaProps": {
             "HudButtonWidget": {},
             "HudWidget": {},
@@ -6417,10 +6441,14 @@
               "PROP_87099051": "plant_btn",
               "PROP_97884365": 0,
               "PROP_79902060": 0
+            },
+            "CustomComponent62548545": {
+              "PROP_41899047": "plant_btn",
+              "PROP_24899680": 0
             }
           },
           "componentList": [
-            "CustomComponent36856112"
+            "CustomComponent62548545"
           ],
           "_entityName": "btn",
           "entityTagData": {
@@ -6523,7 +6551,7 @@
       ],
       "prefabVariant": null,
       "activeValue": {
-        "selfValue": false,
+        "selfValue": true,
         "valueTag": "activeValue"
       },
       "unlockedValue": {
@@ -6531,7 +6559,7 @@
         "valueTag": "unlockedValue"
       },
       "propsData": {
-        "activeSelf": false,
+        "activeSelf": true,
         "transform": {
           "rotate": 0,
           "anchorMin": {
@@ -6559,7 +6587,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -6620,10 +6648,14 @@
           "PROP_87099051": "plant_btn",
           "PROP_97884365": 0,
           "PROP_79902060": 0
+        },
+        "CustomComponent62548545": {
+          "PROP_41899047": "plant_btn",
+          "PROP_24899680": 0
         }
       },
       "componentList": [
-        "CustomComponent36856112"
+        "CustomComponent62548545"
       ],
       "_filters": [],
       "_entityName": "plant_btn",
@@ -6875,7 +6907,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -7187,7 +7219,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -7502,7 +7534,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -7629,7 +7661,7 @@
             "priority": 0,
             "image": {
               "source": {
-                "fileId": "ob4mt4s4bn-mhlmsnez-bd13fmc8zzw",
+                "fileId": "kwkn4w96abm-mnojoym5-ehyjwt27pf",
                 "filePath": "Assets\\Resources\\Texture\\Menu\\icon_useitem.png",
                 "_tag": {
                   "type": "GFileRefer"
@@ -7837,7 +7869,7 @@
             "priority": 0,
             "image": {
               "source": {
-                "fileId": "6zvtzmj1uc5-mi5qfdno-m5s6pib8qr",
+                "fileId": "qibzunc08bg-mnojoypk-sz1vez9qbgs",
                 "filePath": "Assets\\Resources\\Texture\\Menu\\icon_useitem_weedingshovel.png",
                 "_tag": {
                   "type": "GFileRefer"
@@ -8129,7 +8161,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "a63tc7rrug-mhaas8nt-h4zhwiqfhx9",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -9519,7 +9551,7 @@
         "priority": 0,
         "button": {
           "spriteName": {
-            "fileId": "8cd0n2wwyll-mhaaxv6j-ogtnno3x7g",
+            "fileId": "9o8gi1u7vx-mnojoy4b-ucqcv8exu2c",
             "filePath": "Assets\\Resources\\Texture\\Menu\\btn_bg_circle.png",
             "_tag": {
               "type": "GFileRefer"
@@ -9629,16 +9661,7 @@
     "alpha": 100,
     "priority": 0
   },
-  "ecaScripts": [
-    {
-      "fileId": "3z9jhqb31dj-mnd18xvh-9yd2ovyehf",
-      "filePath": "Assets\\Scripts\\Currency\\HUDCurrency.fcg",
-      "_tag": {
-        "type": "GFileRefer"
-      },
-      "fileType": "ugcscript"
-    }
-  ],
+  "ecaScripts": [],
   "ecaProps": {
     "CustomHud": {},
     "Entity": {}
@@ -9649,7 +9672,7 @@
   "entityTagData": {
     "tagPointers": []
   },
-  "layer": 100,
+  "layer": 90,
   "discriminator": "ISceneLike",
   "version": 3
 }

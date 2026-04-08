@@ -42,6 +42,8 @@ graph GridTrigger {
         localPos = gridUtil.ClampToGridBounds(localPos, floorScale, tileSize)
         player<playerFarmingData>.CurrentGridPos = localPos
         if debugCfg.Grid() { LogInfo("[GridTrigger] Initial grid pos set to: " + localPos) }
+
+        DispatchEventToEntity(OnPlayerEnterFloor, player, PlatformType.Server, List<object>{player, _Floor})
     }
 
     event OnTriggerLeave(target entity<Entity>) {
@@ -57,5 +59,7 @@ graph GridTrigger {
         }
         player<playerFarmingData>.CurrentFloor = nil
         if debugCfg.Grid() { LogInfo("[GridTrigger] Player left floor: " + _Floor<Entity>.Name) }
+
+        DispatchEventToEntity(OnPlayerLeaveFloor, player, PlatformType.Server, List<object>{player})
     }
 }

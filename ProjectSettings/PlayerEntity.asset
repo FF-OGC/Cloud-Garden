@@ -161,6 +161,14 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "dsab088m7bn-mn32j7lu-kn5kd65za5p",
+      "filePath": "Assets\\Scripts\\HUD\\HUDMenuFarmAction.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

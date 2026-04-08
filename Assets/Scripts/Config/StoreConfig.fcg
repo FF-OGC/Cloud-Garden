@@ -2,7 +2,6 @@ import "StdLibrary.fcc" as std
 import "List.fcc" as list
 
 static graph StoreConfig {
-
     // --- Restock cycle (seconds) ---
     func GetRestockCycleSeconds() int { return 10 }
 
