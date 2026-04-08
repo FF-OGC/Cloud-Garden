@@ -3,7 +3,7 @@ import "List.fcc" as list
 
 static graph StoreConfig {
     // --- Restock cycle (seconds) ---
-    func GetRestockCycleSeconds() int { return 10 }
+    func GetRestockCycleSeconds() int { return 60 }
 
     // --- Event Schedule (Dev Override) ---
     func GetEventCount() int { return 0 }

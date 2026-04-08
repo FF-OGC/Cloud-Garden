@@ -12,23 +12,27 @@ graph HudPrompt {
     PROMPT_DURATION = 3000
 
     PROMPT_MESSAGES Map<string, string> = Map<string, string>{
-        "PROMPT_POTION_WRONG_STATE": "Potion can only be used on tilled soil!",
+        "PROMPT_ITEM_WRONG": "Potion can only be used on tilled soil!",
         "PROMPT_NOT_ON_FLOOR": "Go to your garden to start farming!",
         "PROMPT_NOT_ON_FLOOR_PLANT": "Go to your garden to plant seeds!",
-        "PROMPT_NO_SEED": "Equip a seed from your backpack to plant!",
-        "PROMPT_NEED_HOE_FIRST": "Hoe the soil first before planting!",
+        "PROMPT_NO_EQUIP": "Equip a seed from your backpack to plant!",
+        "PROMPT_NEED_PREPARE_FIRST": "Digging the soil first before planting!",
         "PROMPT_STILL_GROWING": "Your crops are still growing!",
-        "PROMPT_NOT_ON_FLOOR_POTION": "Go to your garden to use this item!",
+        "PROMPT_NOT_ON_FLOOR_ITEM": "Go to your garden to use this item!",
+        "PROMPT_MARKET_NO_CROP": "Switch to a crop in your quickbar to sell!",
+        "PROMPT_MARKET_EMPTY_HAND": "Equip a crop from your backpack to sell!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
-        "PROMPT_POTION_WRONG_STATE": #FABF00,
+        "PROMPT_ITEM_WRONG": #FABF00,
         "PROMPT_NOT_ON_FLOOR": #FABF00,
         "PROMPT_NOT_ON_FLOOR_PLANT": #FABF00,
-        "PROMPT_NO_SEED": #FABF00,
-        "PROMPT_NEED_HOE_FIRST": #FABF00,
+        "PROMPT_NO_EQUIP": #FABF00,
+        "PROMPT_NEED_PREPARE_FIRST": #FABF00,
         "PROMPT_STILL_GROWING": #FABF00,
-        "PROMPT_NOT_ON_FLOOR_POTION": #FABF00,
+        "PROMPT_NOT_ON_FLOOR_ITEM": #FABF00,
+        "PROMPT_MARKET_NO_CROP": #FABF00,
+        "PROMPT_MARKET_EMPTY_HAND": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>

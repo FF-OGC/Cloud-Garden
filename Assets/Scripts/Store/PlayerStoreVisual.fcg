@@ -306,40 +306,131 @@ graph PlayerStoreVisual {
         var realIdx = _GetRealIndex(_SelectedSlotIndex)
         if _StoreUI == nil || realIdx < 0 { return }
         var itemId = _CachedItemIDs[realIdx] as string
-        
-        var nameLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/name")
-        if nameLabel != nil {
-            nameLabel<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
-        }
+        var amount = _CachedItemAmounts[realIdx] as int
+        var fruitBase = "/root/bg_inspector/selection_info/fruit"
+        var seedBase = "/root/bg_inspector/selection_info/seed"
 
+        // rarity icon
         var rarityObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity")
-        if rarityObj != nil {
-            rarityObj<UIWidgetImage>.Alpha = 1.0
-        }
+        if rarityObj != nil { rarityObj<UIWidgetImage>.Alpha = 1.0 }
 
         var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity/icon")
         if iconObj != nil {
             iconObj<UIWidgetImage>.Alpha = 1.0
             iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
         }
+
+        // fruit panel: name, price, weight, introduce
+        var fruitName = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/name")
+        if fruitName != nil {
+            fruitName<UIWidgetLabel>.Alpha = 1.0
+            fruitName<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+        }
+
+        var fruitPrePrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_price")
+        if fruitPrePrice != nil {
+            fruitPrePrice<UIWidgetLabel>.Alpha = 1.0
+            fruitPrePrice<UIWidgetLabel>.Content = "Price:"
+        }
+
+        var fruitPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/price")
+        if fruitPrice != nil {
+            fruitPrice<UIWidgetLabel>.Alpha = 1.0
+            fruitPrice<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetBuyPrice(itemId))
+        }
+
+        var fruitIconPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/icon_price")
+        if fruitIconPrice != nil { fruitIconPrice<UIWidgetImage>.Alpha = 1.0 }
+
+        var fruitPreWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_weight")
+        if fruitPreWeight != nil {
+            fruitPreWeight<UIWidgetLabel>.Alpha = 1.0
+            fruitPreWeight<UIWidgetLabel>.Content = "Stock:"
+        }
+
+        var fruitWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/weight")
+        if fruitWeight != nil {
+            fruitWeight<UIWidgetLabel>.Alpha = 1.0
+            fruitWeight<UIWidgetLabel>.Content = convert.ToString(amount)
+        }
+
+        var fruitIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/introduce")
+        if fruitIntroduce != nil {
+            fruitIntroduce<UIWidgetLabel>.Alpha = 1.0
+            fruitIntroduce<UIWidgetLabel>.Content = itemCfg.GetItemDescription(itemId)
+        }
+
+        // seed panel: name + count
+        var seedName = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/name")
+        if seedName != nil {
+            seedName<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+        }
+
+        var seedPreCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_count")
+        if seedPreCount != nil {
+            seedPreCount<UIWidgetLabel>.Alpha = 1.0
+            seedPreCount<UIWidgetLabel>.Content = "Stock:"
+        }
+
+        var seedCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/count")
+        if seedCount != nil {
+            seedCount<UIWidgetLabel>.Alpha = 1.0
+            seedCount<UIWidgetLabel>.Content = convert.ToString(amount)
+        }
     }
 
     func _ClearSelectionUI() {
         if _StoreUI == nil { return }
-        var nameLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/name")
-        if nameLabel != nil { nameLabel<UIWidgetLabel>.Content = "" }
+        var fruitBase = "/root/bg_inspector/selection_info/fruit"
+        var seedBase = "/root/bg_inspector/selection_info/seed"
 
+        // rarity icon
         var rarityObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity")
         if rarityObj != nil { rarityObj<UIWidgetImage>.Alpha = 0.0 }
 
         var iconObj = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/rarity/icon")
         if iconObj != nil { iconObj<UIWidgetImage>.Alpha = 0.0 }
+
+        // fruit panel
+        var fruitName = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/name")
+        if fruitName != nil { fruitName<UIWidgetLabel>.Alpha = 0.0 }
+
+        var fruitPrePrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_price")
+        if fruitPrePrice != nil { fruitPrePrice<UIWidgetLabel>.Alpha = 0.0 }
+
+        var fruitPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/price")
+        if fruitPrice != nil { fruitPrice<UIWidgetLabel>.Alpha = 0.0 }
+
+        var fruitIconPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/icon_price")
+        if fruitIconPrice != nil { fruitIconPrice<UIWidgetImage>.Alpha = 0.0 }
+
+        var fruitPreWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_weight")
+        if fruitPreWeight != nil { fruitPreWeight<UIWidgetLabel>.Alpha = 0.0 }
+
+        var fruitWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/weight")
+        if fruitWeight != nil { fruitWeight<UIWidgetLabel>.Alpha = 0.0 }
+
+        var fruitIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/introduce")
+        if fruitIntroduce != nil { fruitIntroduce<UIWidgetLabel>.Alpha = 0.0 }
+
+        // seed panel
+        var seedName = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/name")
+        if seedName != nil { seedName<UIWidgetLabel>.Content = "" }
+
+        var seedPreCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_count")
+        if seedPreCount != nil { seedPreCount<UIWidgetLabel>.Alpha = 0.0 }
+
+        var seedCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/count")
+        if seedCount != nil { seedCount<UIWidgetLabel>.Alpha = 0.0 }
     }
 
     func _UpdateBuyAmountUI() {
         if _StoreUI == nil { return }
-        var currentLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/current")
-        var maxLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/seed/purchase_slider/maximum")
+        var seedBase = "/root/bg_inspector/selection_info/seed"
+        var fruitBase = "/root/bg_inspector/selection_info/fruit"
+
+        var currentLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/purchase_slider/current")
+        var maxLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/purchase_slider/maximum")
         if debugCfg.Store() { LogInfo("[PlayerStoreVisual] _UpdateBuyAmountUI | currentFound=" + convert.ToString(currentLabel != nil) + " maxFound=" + convert.ToString(maxLabel != nil) + " _BuyAmount=" + convert.ToString(_BuyAmount) + " _SelectedSlotIndex=" + convert.ToString(_SelectedSlotIndex)) }
         
         if currentLabel != nil {
@@ -351,6 +442,16 @@ graph PlayerStoreVisual {
                 maxLabel<UIWidgetLabel>.Content = convert.ToString(_CachedItemAmounts[realMaxIdx] as int)
             } else {
                 maxLabel<UIWidgetLabel>.Content = "0"
+            }
+        }
+
+        var fruitPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/price")
+        if fruitPrice != nil {
+            var realIdx = _GetRealIndex(_SelectedSlotIndex)
+            if realIdx >= 0 {
+                var itemId = _CachedItemIDs[realIdx] as string
+                var totalPrice = itemCfg.GetBuyPrice(itemId) * _BuyAmount
+                fruitPrice<UIWidgetLabel>.Content = convert.ToString(totalPrice)
             }
         }
     }
@@ -399,37 +500,46 @@ graph PlayerStoreVisual {
 
     func _HideUnusedInspectorElements() {
         if _StoreUI == nil { return }
+        var fruitBase = "/root/bg_inspector/selection_info/fruit"
         var seedBase = "/root/bg_inspector/selection_info/seed"
 
         var noneLabel = GetWidgetByPath(thisEntity<Player>, _StoreUI, "/root/bg_inspector/selection_info/none")
         if noneLabel != nil { noneLabel<UIWidgetLabel>.Alpha = 0.0 }
 
-        var mutation = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/mutation")
-        if mutation != nil { mutation<UIWidgetLabel>.Alpha = 0.0 }
+        // fruit panel: hide all children initially
+        var fruitMutation = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/mutation")
+        if fruitMutation != nil { fruitMutation<UIWidgetLabel>.Alpha = 0.0 }
 
-        var prePrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_price")
-        if prePrice != nil { prePrice<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitName = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/name")
+        if fruitName != nil { fruitName<UIWidgetLabel>.Alpha = 0.0 }
 
-        var iconPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/icon_price")
-        if iconPrice != nil { iconPrice<UIWidgetImage>.Alpha = 0.0 }
+        var fruitPrePrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_price")
+        if fruitPrePrice != nil { fruitPrePrice<UIWidgetLabel>.Alpha = 0.0 }
 
-        var price = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/price")
-        if price != nil { price<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitIconPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/icon_price")
+        if fruitIconPrice != nil { fruitIconPrice<UIWidgetImage>.Alpha = 0.0 }
 
-        var preWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_weight")
-        if preWeight != nil { preWeight<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitPrice = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/price")
+        if fruitPrice != nil { fruitPrice<UIWidgetLabel>.Alpha = 0.0 }
 
-        var weight = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/weight")
-        if weight != nil { weight<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitPreWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/pre_weight")
+        if fruitPreWeight != nil { fruitPreWeight<UIWidgetLabel>.Alpha = 0.0 }
 
-        var introduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/introduce")
-        if introduce != nil { introduce<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitWeight = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/weight")
+        if fruitWeight != nil { fruitWeight<UIWidgetLabel>.Alpha = 0.0 }
 
-        var count = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/count")
-        if count != nil { count<UIWidgetLabel>.Alpha = 0.0 }
+        var fruitIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/introduce")
+        if fruitIntroduce != nil { fruitIntroduce<UIWidgetLabel>.Alpha = 0.0 }
 
-        var preCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_count")
-        if preCount != nil { preCount<UIWidgetLabel>.Alpha = 0.0 }
+        // seed panel: hide children initially
+        var seedCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/count")
+        if seedCount != nil { seedCount<UIWidgetLabel>.Alpha = 0.0 }
+
+        var seedPreCount = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/pre_count")
+        if seedPreCount != nil { seedPreCount<UIWidgetLabel>.Alpha = 0.0 }
+
+        var seedIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/introduce")
+        if seedIntroduce != nil { seedIntroduce<UIWidgetLabel>.Alpha = 0.0 }
 
         if debugCfg.Store() { LogInfo("[PlayerStoreVisual] _HideUnusedInspectorElements done") }
     }

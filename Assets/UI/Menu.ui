@@ -6029,8 +6029,8 @@
             "priority": 0,
             "button": {
               "spriteName": {
-                "fileId": "zxz8jban0lr-mnojoyji-kncdgdrg70g",
-                "filePath": "Assets\\Resources\\Texture\\Menu\\harvest.png",
+                "fileId": "b1tzwhg7ef-mnok6kby-lgn9hviddyd",
+                "filePath": "Assets\\Resources\\Texture\\Menu\\watering.png",
                 "_tag": {
                   "type": "GFileRefer"
                 },
@@ -9676,4 +9676,4 @@
   "discriminator": "ISceneLike",
   "version": 3
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

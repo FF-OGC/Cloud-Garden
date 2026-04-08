@@ -37,7 +37,7 @@ static graph GachaManager {
     // MUTATION: PREFIX ROLL (chance-based gacha)
     // =====================
 
-    func RollMutationPrefix(owner entity<Entity>, seedId string, soilTier int, isFertilized bool) int {
+    func RollMutationPrefix(owner entity<Entity>, seedId string, soilTier int, isFertilized bool, isLuckyDirt bool) int {
         if gachaData.IsFirstEverRoll(owner) {
             gachaData.MarkFirstRollUsed(owner)
             if debugCfg.Mutation() { LogInfo("[MUTATION] " + owner<Player>.NickName + " | FIRST EVER ROLL -> GUARANTEED Rainbow prefix") }
@@ -67,15 +67,26 @@ static graph GachaManager {
         if chanceRoll <= totalChance {
             gachaData.ResetPity(owner, pityId)
 
-            var prefixTotalWeight = mutCfg.GetPrefixTotalWeight()
-            var prefixRoll = math.RandomInt(1, prefixTotalWeight)
-            var cumulative = 0
             var prefixCount = mutCfg.GetPrefixCount()
 
+            var totalWeight = 0
             for p = 1, prefixCount + 1, 1 {
-                cumulative = cumulative + mutCfg.GetPrefixBaseWeight(p)
+                var w = mutCfg.GetPrefixBaseWeight(p)
+                if isLuckyDirt { w = w + mutCfg.GetLuckyDirtWeightBonus(p) }
+                if isFertilized { w = w + mutCfg.GetEnhancementWeightBonus(p) }
+                totalWeight = totalWeight + w
+            }
+
+            var prefixRoll = math.RandomInt(1, totalWeight)
+            var cumulative = 0
+
+            for p = 1, prefixCount + 1, 1 {
+                var w = mutCfg.GetPrefixBaseWeight(p)
+                if isLuckyDirt { w = w + mutCfg.GetLuckyDirtWeightBonus(p) }
+                if isFertilized { w = w + mutCfg.GetEnhancementWeightBonus(p) }
+                cumulative = cumulative + w
                 if prefixRoll <= cumulative {
-                    if debugCfg.Mutation() { LogInfo("[MUTATION] PREFIX HIT -> " + mutCfg.GetPrefixName(p) + " (id=" + convert.ToString(p) + ")") }
+                    if debugCfg.Mutation() { LogInfo("[MUTATION] PREFIX HIT -> " + mutCfg.GetPrefixName(p) + " (id=" + convert.ToString(p) + ") | finalWeight=" + convert.ToString(w) + "/" + convert.ToString(totalWeight) + " dirt=" + convert.ToString(isLuckyDirt) + " fert=" + convert.ToString(isFertilized)) }
                     return p
                 }
             }

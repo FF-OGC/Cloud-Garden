@@ -187,6 +187,7 @@ static graph MarketManager {
 
         if handle == -1 {
             if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | no item in active slot") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_MARKET_EMPTY_HAND"})
             return
         }
 
@@ -197,6 +198,7 @@ static graph MarketManager {
 
         if !marketCfg.IsSellable(itemId) {
             if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | " + itemId + " not sellable") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_MARKET_NO_CROP"})
             return
         }
         if amount <= 0 { return }

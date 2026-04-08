@@ -54595,7 +54595,7 @@
                       },
                       "anchoredPosition": {
                         "x": 0,
-                        "y": 85
+                        "y": 110
                       },
                       "sizeDelta": {
                         "x": 94,
@@ -54707,7 +54707,7 @@
                           },
                           "anchoredPosition": {
                             "x": 0,
-                            "y": 25
+                            "y": 43
                           },
                           "sizeDelta": {
                             "x": 240,
@@ -54717,7 +54717,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "potato",
+                          "value": "",
                           "key": "",
                           "font": "Default",
                           "fontSize": 28,
@@ -54785,11 +54785,11 @@
                         "transform": {
                           "rotate": 0,
                           "anchorMin": {
-                            "x": 0.5,
+                            "x": 0,
                             "y": 0.5
                           },
                           "anchorMax": {
-                            "x": 0.5,
+                            "x": 0,
                             "y": 0.5
                           },
                           "pivot": {
@@ -54797,11 +54797,11 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 0,
-                            "y": -18
+                            "x": 54,
+                            "y": -39
                           },
                           "sizeDelta": {
-                            "x": 240,
+                            "x": 92,
                             "y": 45
                           }
                         },
@@ -54813,7 +54813,7 @@
                           "font": "Default",
                           "fontSize": 22,
                           "fontStyle": {
-                            "bold": false,
+                            "bold": true,
                             "italic": false,
                             "underline": false
                           },
@@ -54848,7 +54848,98 @@
                       },
                       "componentList": [],
                       "_filters": [],
-                      "_entityName": "mutation",
+                      "_entityName": "Prefix",
+                      "entityTagData": {
+                        "tagPointers": []
+                      },
+                      "editorLockValue": false,
+                      "editorVisibleValue": true
+                    },
+                    {
+                      "_tag": {
+                        "type": "UITextEntity",
+                        "resourceId": ""
+                      },
+                      "_entityId": "xeMNkeFA",
+                      "children": [],
+                      "prefabVariant": null,
+                      "activeValue": {
+                        "selfValue": true,
+                        "valueTag": "activeValue"
+                      },
+                      "unlockedValue": {
+                        "selfValue": true,
+                        "valueTag": "unlockedValue"
+                      },
+                      "propsData": {
+                        "activeSelf": true,
+                        "transform": {
+                          "rotate": 0,
+                          "anchorMin": {
+                            "x": 0,
+                            "y": 0.5
+                          },
+                          "anchorMax": {
+                            "x": 0,
+                            "y": 0.5
+                          },
+                          "pivot": {
+                            "x": 0.5,
+                            "y": 0.5
+                          },
+                          "anchoredPosition": {
+                            "x": 193,
+                            "y": -38
+                          },
+                          "sizeDelta": {
+                            "x": 92,
+                            "y": 45
+                          }
+                        },
+                        "alpha": 100,
+                        "priority": 0,
+                        "text": {
+                          "value": "",
+                          "key": "",
+                          "font": "Default",
+                          "fontSize": 22,
+                          "fontStyle": {
+                            "bold": true,
+                            "italic": false,
+                            "underline": false
+                          },
+                          "color": "#FFFFFF",
+                          "alignment": {
+                            "h": "center",
+                            "v": "middle"
+                          },
+                          "lineSpacing": 0,
+                          "background": false,
+                          "backgroundColor": "#e7b200",
+                          "overflow": 1,
+                          "backgroundRGBA": {
+                            "r": 0,
+                            "g": 0,
+                            "b": 0,
+                            "a": 0
+                          },
+                          "shadow": false,
+                          "shadowColor": "#C0C0C0",
+                          "shadowOffset": {
+                            "x": 2,
+                            "y": 2
+                          }
+                        }
+                      },
+                      "ecaScripts": [],
+                      "ecaProps": {
+                        "HudLabelWidget": {},
+                        "HudWidget": {},
+                        "Entity": {}
+                      },
+                      "componentList": [],
+                      "_filters": [],
+                      "_entityName": "Suffix",
                       "entityTagData": {
                         "tagPointers": []
                       },
@@ -54889,7 +54980,7 @@
                           },
                           "anchoredPosition": {
                             "x": -65,
-                            "y": -60
+                            "y": -72
                           },
                           "sizeDelta": {
                             "x": 108,
@@ -54980,7 +55071,7 @@
                           },
                           "anchoredPosition": {
                             "x": 1,
-                            "y": -60
+                            "y": -72
                           },
                           "sizeDelta": {
                             "x": 22,
@@ -54991,8 +55082,8 @@
                         "priority": 0,
                         "image": {
                           "source": {
-                            "fileId": "753af8a45252b092c5ca58dd39b2d3ad",
-                            "filePath": "lib://fftextures/WorkshopIconLibrary/HuntingGround_Icon_Coin.png",
+                            "fileId": "bhkhp9896ra-mnczc7gv-psgdna4tvh",
+                            "filePath": "Assets\\Resources\\Texture\\Menu\\icon_coin.png",
                             "_tag": {
                               "type": "GFileRefer"
                             },
@@ -55085,7 +55176,7 @@
                           },
                           "anchoredPosition": {
                             "x": 66,
-                            "y": -60
+                            "y": -72
                           },
                           "sizeDelta": {
                             "x": 106,
@@ -55095,7 +55186,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "8000",
+                          "value": "",
                           "key": "",
                           "font": "Default",
                           "fontSize": 22,
@@ -55176,7 +55267,7 @@
                           },
                           "anchoredPosition": {
                             "x": -60,
-                            "y": -88
+                            "y": -100
                           },
                           "sizeDelta": {
                             "x": 122,
@@ -55267,7 +55358,7 @@
                           },
                           "anchoredPosition": {
                             "x": 56,
-                            "y": -88
+                            "y": -100
                           },
                           "sizeDelta": {
                             "x": 102,
@@ -55277,7 +55368,7 @@
                         "alpha": 100,
                         "priority": 0,
                         "text": {
-                          "value": "2.5kg",
+                          "value": "",
                           "key": "",
                           "font": "Default",
                           "fontSize": 22,
@@ -55358,7 +55449,7 @@
                           },
                           "anchoredPosition": {
                             "x": 0,
-                            "y": -130
+                            "y": -142
                           },
                           "sizeDelta": {
                             "x": 240,
@@ -55781,8 +55872,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": -14,
-                            "y": -5
+                            "x": -71,
+                            "y": -28
                           },
                           "sizeDelta": {
                             "x": 50,
@@ -55842,7 +55933,7 @@
                   ],
                   "prefabVariant": null,
                   "activeValue": {
-                    "selfValue": true,
+                    "selfValue": false,
                     "valueTag": "activeValue"
                   },
                   "unlockedValue": {
@@ -55850,7 +55941,7 @@
                     "valueTag": "unlockedValue"
                   },
                   "propsData": {
-                    "activeSelf": true,
+                    "activeSelf": false,
                     "transform": {
                       "rotate": 0,
                       "anchorMin": {
@@ -56039,7 +56130,7 @@
           ],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": false,
+            "selfValue": true,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -56047,7 +56138,7 @@
             "valueTag": "unlockedValue"
           },
           "propsData": {
-            "activeSelf": false,
+            "activeSelf": true,
             "transform": {
               "rotate": 0,
               "anchorMin": {
@@ -61165,4 +61256,4 @@
   "discriminator": "ISceneLike",
   "version": 3
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

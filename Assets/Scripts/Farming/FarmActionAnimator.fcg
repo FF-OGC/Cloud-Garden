@@ -58,7 +58,7 @@ static graph FarmActionAnimator {
 
         if hasPotion && state != gen.EFarmSlotState.Tilled {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: potion can only be used on Tilled soil, current state=" + state) }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POTION_WRONG_STATE"})
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
             player<playerFarmingData>._IsPerformingAction = false
             return
         }
@@ -134,8 +134,8 @@ static graph FarmActionAnimator {
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Sprint, PlayerBehaviorStatusType.Disable)
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Attack, PlayerBehaviorStatusType.Disable)
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Jump, PlayerBehaviorStatusType.Disable)
-        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Crouch, CommonUISwitchValue.Close)
-        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Prone, CommonUISwitchValue.Close)
+        SetDefaultUIStatus(player<Player>, DefaultUIType.Crouch, ThreeStatusSwitch.Close)
+        SetDefaultUIStatus(player<Player>, DefaultUIType.Prone, ThreeStatusSwitch.Close)
     }
 
     func EnableActions(player entity<Entity>) {
@@ -143,7 +143,7 @@ static graph FarmActionAnimator {
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Sprint, PlayerBehaviorStatusType.Enable)
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Attack, PlayerBehaviorStatusType.Enable)
         SetBehaviorStatus(player<Player>, PlayerBehaviorType.Jump, PlayerBehaviorStatusType.Enable)
-        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Crouch, CommonUISwitchValue.Show)
-        SetDefaultUIStatus(player<Player>, PlayerUISwitchType.Prone, CommonUISwitchValue.Show)
+        SetDefaultUIStatus(player<Player>, DefaultUIType.Crouch, ThreeStatusSwitch.Show)
+        SetDefaultUIStatus(player<Player>, DefaultUIType.Prone, ThreeStatusSwitch.Show)
     }
 }

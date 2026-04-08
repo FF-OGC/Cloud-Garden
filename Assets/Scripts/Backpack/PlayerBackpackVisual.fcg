@@ -22,6 +22,7 @@ graph PlayerBackpackVisual {
     _ToggleBtn entity<UIWidget>
 
     _IsOpen bool = false
+    _SelectedSlotIndex int = -1
     
     event OnAwake() {
         CreateCustomUI(out var uiInstance, thisEntity<Player>, EResUI.backpack)
@@ -56,7 +57,7 @@ graph PlayerBackpackVisual {
         if _MainPanel == nil { return }
         _IsOpen = !_IsOpen
         _MainPanel<UIWidget>.IsVisible = _IsOpen
-        // if _IsOpen { RefreshVisuals() }
+        if !_IsOpen { _HideInspector() }
     }
 
     func RefreshVisuals() {
@@ -125,15 +126,23 @@ graph PlayerBackpackVisual {
         }
     }
 
-    // Handle UI Clicks: Delegate logic to BackpackService
     func HandleSlotPressed(btnType string, slotIndex int) {
         if btnType == "backpack_slot" {
             if !_IsOpen { return }
-            // Let the service handle the equip logic
             backpackService.ToggleEquipItem(thisEntity<Entity>, slotIndex)
-            
+            _ShowInspector(slotIndex)
+
+        } else if btnType == "backpack_interact" {
+            if _SelectedSlotIndex < 0 { return }
+            backpackService.ToggleEquipItem(thisEntity<Entity>, _SelectedSlotIndex)
+
+        } else if btnType == "backpack_lock" {
+            if _SelectedSlotIndex < 0 { return }
+
+        } else if btnType == "backpack_close" {
+            _HideInspector()
+
         } else if btnType == "quick_slot" {
-            // Let the service handle the active slot selection
             backpackService.SetActiveQuickSlot(thisEntity<Entity>, slotIndex)
         }
     }
@@ -175,8 +184,7 @@ graph PlayerBackpackVisual {
         } else {
             var nameObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_name")
             if nameObj != nil {
-                nameObj<UIWidgetLabel>.Alpha = 1.0
-                nameObj<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
+                nameObj<UIWidgetLabel>.Alpha = 0.0
             }
 
             var itemPrefixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_prefix")
@@ -237,5 +245,98 @@ graph PlayerBackpackVisual {
             var amountObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_amount")
             if amountObj != nil { amountObj<UIWidgetLabel>.Alpha = 0.0 }
         }
+    }
+
+// --- INSPECTOR PANEL ---
+
+    func _ShowInspector(slotIndex int) {
+        _SelectedSlotIndex = slotIndex
+        var handle = thisEntity<backpackData>._BackpackRefs[slotIndex]
+
+        var inspectorBg = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector")
+        if inspectorBg != nil { inspectorBg<UIWidget>.IsVisible = true }
+
+        var noneObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/none")
+        var type2Obj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2")
+        var type1Obj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type1")
+        var rarityObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/rarity")
+
+        if handle == -1 || !map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
+            if noneObj != nil { noneObj<UIWidget>.IsVisible = true }
+            if type2Obj != nil { type2Obj<UIWidget>.IsVisible = false }
+            if type1Obj != nil { type1Obj<UIWidget>.IsVisible = false }
+            if rarityObj != nil { rarityObj<UIWidget>.IsVisible = false }
+            return
+        }
+
+        var itemId = thisEntity<backpackData>._ItemIDs[handle] as string
+        var amount = thisEntity<backpackData>._ItemAmounts[handle] as int
+        var mutStr = ""
+        if map.ContainKey(thisEntity<backpackData>._ItemMutations, handle) {
+            mutStr = thisEntity<backpackData>._ItemMutations[handle] as string
+        }
+
+        if noneObj != nil { noneObj<UIWidget>.IsVisible = false }
+        if rarityObj != nil { rarityObj<UIWidgetImage>.Alpha = 1.0 }
+
+        var iconObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/rarity/icon")
+        if iconObj != nil {
+            iconObj<UIWidgetImage>.Alpha = 1.0
+            iconObj<UIWidgetImage>.SpriteName = itemCfg.GetIconKey(itemId)
+        }
+
+        var isCrop = itemCfg.GetType(itemId) == 2
+
+        if type2Obj != nil { type2Obj<UIWidget>.IsVisible = true }
+        if type1Obj != nil { type1Obj<UIWidget>.IsVisible = false }
+
+        var nameObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/name")
+        if nameObj != nil { nameObj<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId) }
+
+        var prefixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/Prefix")
+        var suffixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/Suffix")
+
+        if isCrop {
+            if prefixObj != nil {
+                var prefixId = itemCfg.ParseMutationPrefix(mutStr)
+                prefixObj<UIWidgetLabel>.Alpha = 1.0
+                prefixObj<UIWidgetLabel>.Content = itemCfg.GetPrefixText(mutStr)
+                prefixObj<UIWidgetLabel>.Color = mutCfg.GetPrefixColor(prefixId)
+            }
+            if suffixObj != nil {
+                suffixObj<UIWidgetLabel>.Alpha = 1.0
+                suffixObj<UIWidgetLabel>.Content = itemCfg.GetSuffixText(mutStr)
+            }
+        } else {
+            if prefixObj != nil { prefixObj<UIWidgetLabel>.Alpha = 0.0 }
+            if suffixObj != nil { suffixObj<UIWidgetLabel>.Alpha = 0.0 }
+        }
+
+        var prePriceObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/pre_price")
+        if prePriceObj != nil { prePriceObj<UIWidgetLabel>.Content = "Sell Price:" }
+
+        var priceObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/price")
+        if priceObj != nil {
+            if isCrop {
+                priceObj<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetMutationSellPrice(itemId, mutStr))
+            } else {
+                priceObj<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetBuyPrice(itemId))
+            }
+        }
+
+        var preWeightObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/pre_weight")
+        if preWeightObj != nil { preWeightObj<UIWidgetLabel>.Content = "Amount:" }
+
+        var weightObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/weight")
+        if weightObj != nil { weightObj<UIWidgetLabel>.Content = convert.ToString(amount) }
+
+        var introObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/introduce")
+        if introObj != nil { introObj<UIWidgetLabel>.Content = itemCfg.GetItemDescription(itemId) }
+    }
+
+    func _HideInspector() {
+        _SelectedSlotIndex = -1
+        var inspectorBg = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector")
+        if inspectorBg != nil { inspectorBg<UIWidget>.IsVisible = false }
     }
 }

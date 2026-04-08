@@ -100,8 +100,8 @@ graph HUDMenuFarmAction {
 
         if !_IsOnFloor {
             if hasPotion {
-                if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR_POTION") }
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_POTION"})
+                if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR_ITEM") }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
             } else {
                 if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NOT_ON_FLOOR") }
                 DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
@@ -114,7 +114,7 @@ graph HUDMenuFarmAction {
             _IsOnFloor = false
             if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandleHarvestTap DESYNC CAUGHT | _IsOnFloor was true but CurrentFloor is nil, correcting") }
             if hasPotion {
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_POTION"})
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
             } else {
                 DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             }
@@ -160,8 +160,8 @@ graph HUDMenuFarmAction {
         }
 
         if !IsHoldingSeed(player) {
-            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NO_SEED") }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_SEED"})
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NO_EQUIP") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_EQUIP"})
             return
         }
 
@@ -175,8 +175,8 @@ graph HUDMenuFarmAction {
         if debugCfg.Farming() { LogInfo("[HUDFarmAction] HandlePlantTap | gridPos=" + gridPos + " key=" + key + " state=" + state) }
 
         if state != gen.EFarmSlotState.Tilled {
-            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NEED_HOE_FIRST") }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NEED_HOE_FIRST"})
+            if debugCfg.Farming() { LogInfo("[HUDFarmAction] -> PROMPT_NEED_PREPARE_FIRST") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NEED_PREPARE_FIRST"})
             return
         }
 
