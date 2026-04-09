@@ -63,6 +63,13 @@ static graph FarmActionAnimator {
             return
         }
 
+        if hasPotion && floor<floorData>.IsFertilized(key) {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell already fertilized, key=" + key) }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+            player<playerFarmingData>._IsPerformingAction = false
+            return
+        }
+
         if state == gen.EFarmSlotState.Growing {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
             player<playerFarmingData>._IsPerformingAction = false

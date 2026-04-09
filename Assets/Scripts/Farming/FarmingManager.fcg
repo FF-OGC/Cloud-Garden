@@ -113,6 +113,12 @@ static graph FarmingManager {
 
                 if hasPotion {
                     // ---- FERTILIZE: apply potion to tilled dirt ----
+                    if floorObj<floorData>.IsFertilized(key) {
+                        if debugCfg.Farming() { LogInfo("[FarmingMgr] STEP2-FERTILIZE ABORT: cell already fertilized, key=" + key) }
+                        DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+                        return
+                    }
+
                     if debugCfg.Farming() { LogInfo("[FarmingMgr] STEP2-FERTILIZE: Applying potion, count=" + validCount) }
                     
                     var activeSlot = player<backpackData>._ActiveQuickbarSlot
