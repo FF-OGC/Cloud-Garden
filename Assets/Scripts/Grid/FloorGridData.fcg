@@ -129,6 +129,14 @@ graph FloorGridData {
         return false
     }
 
+    func GetFertilizerLuckBonus(key string) int {
+        if !IsFertilized(key) { return 0 }
+        if map.ContainKey(FertilizerLuckBonus, key) {
+            return FertilizerLuckBonus[key] as int
+        }
+        return 0
+    }
+
     func TrySetFertilized(key string, luckBonus int, growthReduction float, player entity<Entity>) bool {
         if !IsOwner(player) { return false }
         FertilizedCells[key] = true

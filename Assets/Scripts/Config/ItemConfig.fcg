@@ -66,9 +66,9 @@ static graph ItemConfig {
     }
 
     func GetSellPrice(itemId string) int {
-        if itemId == "crop_apple" { return 30 }
-        if itemId == "crop_carrot" { return 40 }
-        if itemId == "crop_tomato" { return 55 }
+        if itemId == "crop_apple" { return 50 }
+        if itemId == "crop_carrot" { return 55 }
+        if itemId == "crop_tomato" { return 60 }
         return 10
     }
 
@@ -139,14 +139,25 @@ static graph ItemConfig {
     // ==========================================
     // 3. POTION / SPECIAL ITEM CONFIG
     // ==========================================
-    func GetPotionLuckBonus() int { return 20 }
+    func GetPotionLuckBonus() int { return 90 }
     func GetPotionGrowthReduction() float { return 0.3 }
+
+    // Extra roll weight on Golden vs base Golden weight when soil is fertilized (matches GachaManager weight math at full potion luck).
+    func GetPotionGoldWeightBonusPercent() int {
+        var baseW = mutCfg.GetPrefixBaseWeight(2)
+        var add = mutCfg.GetEnhancementWeightBonus(2)
+        if baseW < 1 { return 0 }
+        return ((add * 100) / baseW) as int
+    }
 
     func GetItemDescription(itemId string) string {
         if itemId == "seed_apple" { return "Plant to grow Apples" }
         if itemId == "seed_carrot" { return "Plant to grow Carrots" }
         if itemId == "seed_tomato" { return "Plant to grow Tomatoes" }
-        if itemId == "potion" { return "+20% Mutation Luck\n-30% Growth Time" }
+        if itemId == "potion" {
+            var gPct = GetPotionGoldWeightBonusPercent()
+            return "+90% prefix | -30% growth | Golden +" + convert.ToString(gPct) + "%"
+        }
         return ""
     }
 
@@ -232,7 +243,7 @@ static graph ItemConfig {
         var suffixMult = mutCfg.GetSuffixSellMultiplier(suffixTier)
 
         var result = math.Floor(basePrice * prefixMult * suffixMult)
-        if result < 1.0 { return 1 }
+        if result < 50.0 { return 50 }
         return result as int
     }
 }

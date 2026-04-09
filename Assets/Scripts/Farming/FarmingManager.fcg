@@ -18,6 +18,7 @@ import "../Config/ItemConfig.fcg" as itemCfg
 
 //Gacha
 import "../Gacha/GachaManager.fcg" as gachaManager
+import "../Gacha/GachaData.fcg" as gachaData
 
 //Services
 import "../Services/Utils/GridUtil.fcg" as gridUtil
@@ -79,6 +80,8 @@ static graph FarmingManager {
             // ==========================================
             if intentState == gen.EFarmSlotState.Grass {
                 if debugCfg.Farming() { LogInfo("[FarmingMgr] STEP1: Grass->Tilled, count=" + validCount) }
+                var digActionIndex = gachaData.IncrementLuckyDirtDigAction(player)
+                var forceLuckyDirt = gachaData.ShouldForceTutorialLuckyDirtOnce(digActionIndex)
                 for i = 0, validCount, 1 {
                     var k = validKeys[i]
                     var p = validPositions[i]
@@ -86,6 +89,9 @@ static graph FarmingManager {
                     if !floorObj<floorData>.TryModifyCell(k, gen.EFarmSlotState.Tilled, player) { continue }
                     floorObj<floorData>.TrySetSoilTier(k, 1, player)
 
+                    if forceLuckyDirt {
+                        gachaData.MarkNextLuckyDirtRollGuaranteed(player)
+                    }
                     var isLucky = gachaManager.RollForLuckyDirt(player)
                     if isLucky {
                         floorObj<floorData>.TrySetLuckyDirt(k, true)
@@ -149,12 +155,17 @@ static graph FarmingManager {
                 } else {
                     // ---- RE-HOE: re-roll lucky dirt ----
                     if debugCfg.Farming() { LogInfo("[FarmingMgr] STEP2-REHOE: Re-rolling lucky dirt, count=" + validCount) }
+                    var digActionIndex = gachaData.IncrementLuckyDirtDigAction(player)
+                    var forceLuckyDirt = gachaData.ShouldForceTutorialLuckyDirtOnce(digActionIndex)
                     for i = 0, validCount, 1 {
                         var k = validKeys[i]
                         var p = validPositions[i]
 
                         floorObj<floorData>.TryClearSoilVisual(k)
 
+                        if forceLuckyDirt {
+                            gachaData.MarkNextLuckyDirtRollGuaranteed(player)
+                        }
                         var isLucky = gachaManager.RollForLuckyDirt(player)
                         if isLucky {
                             floorObj<floorData>.TrySetLuckyDirt(k, true)

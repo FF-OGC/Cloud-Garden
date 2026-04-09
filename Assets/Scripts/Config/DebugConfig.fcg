@@ -5,16 +5,16 @@ static graph DebugConfig {
     _DebugAll bool = false
 
     _DebugCore bool = false
-    _DebugFarming bool = true
+    _DebugFarming bool = false
     _DebugMarket bool = false
     _DebugStore bool = false
     _DebugBackpack bool = false
-    _DebugGrid bool = true
+    _DebugGrid bool = false
     _DebugCurrency bool = false
     _DebugGacha bool = false
     _DebugMutation bool = true
     _DebugMoneyDrop bool = false
-    _DebugPrompt bool = true
+    _DebugPrompt bool = false
 
     func All() bool { return _DebugAll }
     func Core() bool { return _DebugAll || _DebugCore }

@@ -360,9 +360,16 @@ graph PlayerStoreVisual {
             fruitIntroduce<UIWidgetLabel>.Content = itemCfg.GetItemDescription(itemId)
         }
 
+        var seedIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/introduce")
+        if seedIntroduce != nil {
+            seedIntroduce<UIWidgetLabel>.Alpha = 1.0
+            seedIntroduce<UIWidgetLabel>.Content = itemCfg.GetItemDescription(itemId)
+        }
+
         // seed panel: name + count
         var seedName = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/name")
         if seedName != nil {
+            seedName<UIWidgetLabel>.Alpha = 1.0
             seedName<UIWidgetLabel>.Content = itemCfg.GetItemName(itemId)
         }
 
@@ -412,6 +419,9 @@ graph PlayerStoreVisual {
 
         var fruitIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, fruitBase + "/introduce")
         if fruitIntroduce != nil { fruitIntroduce<UIWidgetLabel>.Alpha = 0.0 }
+
+        var seedIntroduce = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/introduce")
+        if seedIntroduce != nil { seedIntroduce<UIWidgetLabel>.Alpha = 0.0 }
 
         // seed panel
         var seedName = GetWidgetByPath(thisEntity<Player>, _StoreUI, seedBase + "/name")

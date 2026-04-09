@@ -126,7 +126,7 @@
     "move_speed": 100,
     "jump_height": 100,
     "enable_active_skill": true,
-    "enable_passive_skill": true,
+    "enable_passive_skill": false,
     "global_active_skill_cd_percent": 100,
     "playerskill_transform_cd_percent": 100,
     "playerskill_epchangetohp_cd_percent": 100,

@@ -50,14 +50,14 @@ static graph CropGrowthManager {
                                         if map.ContainKey(floor<floorData>.SoilTiers, key) {
                                             soilTier = floor<floorData>.SoilTiers[key] as int
                                         }
-                                        var isFert = floor<floorData>.IsFertilized(key)
+                                        var fertLuckPct = floor<floorData>.GetFertilizerLuckBonus(key)
                                         var isLucky = floor<floorData>.IsLuckyDirt(key)
 
                                         var suffixTier = gachaManager.RollSuffixTier()
-                                        var prefixId = gachaManager.RollMutationPrefix(owner, seedId, soilTier, isFert, isLucky)
+                                        var prefixId = gachaManager.RollMutationPrefix(owner, seedId, soilTier, fertLuckPct, isLucky)
                                         var mutStr = itemCfg.BuildMutationStr(prefixId, suffixTier)
                                         floor<floorData>.TrySetMutationResult(key, mutStr)
-                                        if debugCfg.Mutation() { LogInfo("[MUTATION] key=" + key + " seed=" + seedId + " soilTier=" + convert.ToString(soilTier) + " fert=" + convert.ToString(isFert) + " lucky=" + convert.ToString(isLucky) + " -> mutStr=" + mutStr) }
+                                        if debugCfg.Mutation() { LogInfo("[MUTATION] key=" + key + " seed=" + seedId + " soilTier=" + convert.ToString(soilTier) + " fertLuck%=" + convert.ToString(fertLuckPct) + " lucky=" + convert.ToString(isLucky) + " -> mutStr=" + mutStr) }
                                     }
                                 }
 

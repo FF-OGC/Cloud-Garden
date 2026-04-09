@@ -26,6 +26,7 @@ graph MarketRuntimeData {
     _SlotNPCs List<entity<Entity>> = nil
     _ActiveProduceModels List<entity<Entity>> = nil
     _ActiveProduceItemIDs List<string> = nil
+    _ActiveProduceMutStrs List<string> = nil
 
     _InfoBoard entity<Entity> = nil
 
@@ -51,6 +52,7 @@ graph MarketRuntimeData {
         _SlotNPCs = List<entity<Entity>>{}
         _ActiveProduceModels = List<entity<Entity>>{}
         _ActiveProduceItemIDs = List<string>{}
+        _ActiveProduceMutStrs = List<string>{}
 
         for i = 0, 5, 1 {
             list.Append(_QueueCustomerIDs, -1)

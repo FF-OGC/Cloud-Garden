@@ -44,6 +44,15 @@ static graph MarketConfig {
         return Vector3{1.8, 1, 0}
     }
 
+    // Extra offset when the same crop type has multiple mutation stacks on the table (local X spread)
+    func GetMutationSpreadOffset(slotInGroup int, groupSize int) Vector3 {
+        if groupSize <= 1 { return Vector3{0, 0, 0} }
+        var spacing = 0.32
+        var half = (groupSize - 1) * spacing * 0.5
+        var x = -half + slotInGroup * spacing
+        return Vector3{x, 0, 0}
+    }
+
     func GetMaxTableSlots() int { return 5 }
 
     func GetProducePrefab(itemId string) PrefabID {
@@ -58,7 +67,8 @@ static graph MarketConfig {
     }
 
     func GetCustomerMinAmount() int { return 1 }
-    func GetCustomerMaxAmount() int { return 5 }
+    // TEMP: 1 fruit per customer per sale (was 5); types still rotate via MarketManager FillSlot.
+    func GetCustomerMaxAmount() int { return 1 }
 
     func GetNPCTweenTimeMs() int { return 2000 }
 

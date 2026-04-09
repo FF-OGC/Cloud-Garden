@@ -290,7 +290,7 @@
           "prefabVariant": null
         },
         {
-          "_entityName": "Text object",
+          "_entityName": "Text object_frontside",
           "_tag": {
             "type": "SceneEditEntity",
             "resourceId": "Primitive/Empty"
@@ -341,7 +341,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 25,
+          "tempIndex": 6,
           "itemID": 222,
           "seParent": null,
           "ecaScripts": [
@@ -383,7 +383,127 @@
           },
           "editorLockValue": false,
           "editorVisibleValue": true,
-          "prefabVariant": null
+          "prefabVariant": null,
+          "_performanceConfigData": {
+            "ItemID": 222,
+            "MeshCount": 0,
+            "MaterialCount": 0,
+            "AnimationCount": 0,
+            "BoneCount": 0,
+            "ParticleEmitterCount": 0,
+            "ParticleCount": 0,
+            "TextureMemory": 0,
+            "ModelMemory": 0,
+            "AudioMemory": 0
+          }
+        },
+        {
+          "_entityName": "Text object_backside",
+          "_tag": {
+            "type": "SceneEditEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "_entityId": "d6EyunTk",
+          "children": [],
+          "activeValue": {
+            "selfValue": true,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "position": {
+            "x": 0.0010000865440815687,
+            "y": 0.1210000142455101,
+            "z": -0.07011795043945312
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "tempIndex": 7,
+          "itemID": 222,
+          "seParent": null,
+          "ecaScripts": [
+            null
+          ],
+          "ecaProps": {
+            "TextEntity": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Entity": {},
+            "Visibility": {}
+          },
+          "propsData": {
+            "TextKey": "Name\nLevel: ??\nSlot: ??/100",
+            "fontColor": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 1
+            },
+            "IsBillboard": false,
+            "fontStyleRef": {
+              "bold": false,
+              "italic": false,
+              "underline": false
+            },
+            "FontSize": 45,
+            "IgnoreDepth": false,
+            "AlwaysInScreen": false,
+            "Depth": 0,
+            "Width": 200,
+            "Height": 120,
+            "FondOverFlowMod": 0,
+            "fontType": "UIFONT_LATIN",
+            "fontStyle": 0,
+            "_levelObjectID": 138,
+            "TextDisplay": "Name\nLevel: ??\nSlot: ??/100",
+            "fontTypeRef": "UIFONT_LATIN"
+          },
+          "prefabVariant": null,
+          "_performanceConfigData": {
+            "ItemID": 222,
+            "MeshCount": 0,
+            "MaterialCount": 0,
+            "AnimationCount": 0,
+            "BoneCount": 0,
+            "ParticleEmitterCount": 0,
+            "ParticleCount": 0,
+            "TextureMemory": 0,
+            "ModelMemory": 0,
+            "AudioMemory": 0
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true
         }
       ],
       "activeValue": {
@@ -483,4 +603,4 @@
   "editorVisibleValue": true,
   "discriminator": "ISceneLike"
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

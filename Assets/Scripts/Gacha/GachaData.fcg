@@ -10,10 +10,14 @@ static graph GachaData {
 
     _PityCounters Map<string, int> = nil
     _FirstRollUsed Map<string, bool> = nil
+    _LuckyDirtDigActionCount Map<string, int> = nil
+    _NextLuckyDirtRollGuaranteed Map<string, bool> = nil
 
     event OnAwake() {
         _PityCounters = map.New() as Map<string, int>
         _FirstRollUsed = map.New() as Map<string, bool>
+        _LuckyDirtDigActionCount = map.New() as Map<string, int>
+        _NextLuckyDirtRollGuaranteed = map.New() as Map<string, bool>
     }
 
     func _MakeKey(player entity<Entity>, gachaId string) string {
@@ -34,6 +38,42 @@ static graph GachaData {
         var key = _MakePlayerKey(player)
         _FirstRollUsed[key] = true
         if debugCfg.Gacha() { LogInfo("[GachaData] First roll used for player key=" + key) }
+    }
+
+    // Counts Grass->Tilled and Re-hoe actions (not potion). Monotonic per account: 1, 2, 3, ...
+    func IncrementLuckyDirtDigAction(player entity<Entity>) int {
+        var key = _MakePlayerKey(player)
+        var cur = 0
+        if map.ContainKey(_LuckyDirtDigActionCount, key) {
+            cur = _LuckyDirtDigActionCount[key] as int
+        }
+        cur = cur + 1
+        _LuckyDirtDigActionCount[key] = cur
+        if debugCfg.Gacha() { LogInfo("[GachaData] LuckyDirtDigAction count=" + convert.ToString(cur) + " key=" + key) }
+        return cur
+    }
+
+    // True only once per account: the 2nd dig ever (not 4th, 6th…). Dig 3+ always false => normal gacha.
+    func ShouldForceTutorialLuckyDirtOnce(digCountAfterThisAction int) bool {
+        return digCountAfterThisAction == 2
+    }
+
+    // FarmingManager calls this before RollForLuckyDirt(player) when 2nd-dig tutorial applies (FC static graph: 1-arg roll only).
+    func MarkNextLuckyDirtRollGuaranteed(player entity<Entity>) {
+        var key = _MakePlayerKey(player)
+        _NextLuckyDirtRollGuaranteed[key] = true
+    }
+
+    func ConsumeNextLuckyDirtRollGuaranteed(player entity<Entity>) bool {
+        var key = _MakePlayerKey(player)
+        if map.ContainKey(_NextLuckyDirtRollGuaranteed, key) {
+            var v = _NextLuckyDirtRollGuaranteed[key] as bool
+            if v {
+                map.Remove(_NextLuckyDirtRollGuaranteed, key)
+                return true
+            }
+        }
+        return false
     }
 
     func GetPityCounter(player entity<Entity>, gachaId string) int {

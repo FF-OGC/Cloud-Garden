@@ -67378,8 +67378,8 @@
                         "y": 0.5
                       },
                       "anchoredPosition": {
-                        "x": 0,
-                        "y": 85
+                        "x": -2,
+                        "y": 126
                       },
                       "sizeDelta": {
                         "x": 94,
@@ -67491,7 +67491,7 @@
                           },
                           "anchoredPosition": {
                             "x": 0,
-                            "y": 195
+                            "y": 228
                           },
                           "sizeDelta": {
                             "x": 240,
@@ -67581,8 +67581,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 0,
-                            "y": -18
+                            "x": 4,
+                            "y": 17
                           },
                           "sizeDelta": {
                             "x": 240,
@@ -67672,8 +67672,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 64,
-                            "y": -60
+                            "x": 72,
+                            "y": -30
                           },
                           "sizeDelta": {
                             "x": 110,
@@ -67763,8 +67763,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 1,
-                            "y": -60
+                            "x": 9,
+                            "y": -30
                           },
                           "sizeDelta": {
                             "x": 22,
@@ -67868,8 +67868,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 66,
-                            "y": -60
+                            "x": 74,
+                            "y": -30
                           },
                           "sizeDelta": {
                             "x": 106,
@@ -67960,7 +67960,7 @@
                           },
                           "anchoredPosition": {
                             "x": 68,
-                            "y": -88
+                            "y": -62
                           },
                           "sizeDelta": {
                             "x": 126,
@@ -68051,7 +68051,7 @@
                           },
                           "anchoredPosition": {
                             "x": 56,
-                            "y": -88
+                            "y": -62
                           },
                           "sizeDelta": {
                             "x": 102,
@@ -68117,7 +68117,7 @@
                       "children": [],
                       "prefabVariant": null,
                       "activeValue": {
-                        "selfValue": false,
+                        "selfValue": true,
                         "valueTag": "activeValue"
                       },
                       "unlockedValue": {
@@ -68125,7 +68125,7 @@
                         "valueTag": "unlockedValue"
                       },
                       "propsData": {
-                        "activeSelf": false,
+                        "activeSelf": true,
                         "transform": {
                           "rotate": 0,
                           "anchorMin": {
@@ -68142,14 +68142,14 @@
                           },
                           "anchoredPosition": {
                             "x": 0,
-                            "y": -124
+                            "y": -120
                           },
                           "sizeDelta": {
                             "x": 240,
-                            "y": 36
+                            "y": 92
                           }
                         },
-                        "alpha": 0,
+                        "alpha": 100,
                         "priority": 0,
                         "text": {
                           "value": "",

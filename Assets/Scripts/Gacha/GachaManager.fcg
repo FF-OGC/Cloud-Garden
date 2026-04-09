@@ -37,7 +37,7 @@ static graph GachaManager {
     // MUTATION: PREFIX ROLL (chance-based gacha)
     // =====================
 
-    func RollMutationPrefix(owner entity<Entity>, seedId string, soilTier int, isFertilized bool, isLuckyDirt bool) int {
+    func RollMutationPrefix(owner entity<Entity>, seedId string, soilTier int, fertilizerLuckPercent int, isLuckyDirt bool) int {
         if gachaData.IsFirstEverRoll(owner) {
             gachaData.MarkFirstRollUsed(owner)
             if debugCfg.Mutation() { LogInfo("[MUTATION] " + owner<Player>.NickName + " | FIRST EVER ROLL -> GUARANTEED Rainbow prefix") }
@@ -46,8 +46,7 @@ static graph GachaManager {
 
         var baseChance = mutCfg.GetBasePrefixChance(seedId)
         var soilBonus = mutCfg.GetSoilChanceBonus(soilTier)
-        var enhanceBonus = 0
-        if isFertilized { enhanceBonus = mutCfg.GetEnhancementChanceBonus() }
+        var enhanceBonus = fertilizerLuckPercent
 
         var pityId = "prefix_" + seedId
         var pityCount = gachaData.GetPityCounter(owner, pityId)
@@ -59,21 +58,25 @@ static graph GachaManager {
 
         var chanceRoll = math.RandomInt(1, 100)
 
-        if debugCfg.Mutation() {
-            var playerName = owner<Player>.NickName
-            LogInfo("[MUTATION] " + playerName + " | PREFIX ROLL | seed=" + seedId + " base=" + convert.ToString(baseChance) + " soil=+" + convert.ToString(soilBonus) + " fert=+" + convert.ToString(enhanceBonus) + " pity=+" + convert.ToString(pityBonus) + " total=" + convert.ToString(totalChance) + "% roll=" + convert.ToString(chanceRoll))
-        }
+        if debugCfg.Mutation() { LogInfo("[MUTATION] " + owner<Player>.NickName + " | PREFIX ROLL | seed=" + seedId + " base=" + convert.ToString(baseChance) + " soil=+" + convert.ToString(soilBonus) + " fertLuck=+" + convert.ToString(enhanceBonus) + " pity=+" + convert.ToString(pityBonus) + " total=" + convert.ToString(totalChance) + "% roll=" + convert.ToString(chanceRoll)) }
 
         if chanceRoll <= totalChance {
             gachaData.ResetPity(owner, pityId)
 
             var prefixCount = mutCfg.GetPrefixCount()
+            var potionRef = itemCfg.GetPotionLuckBonus()
+            if potionRef < 1 { potionRef = 1 }
 
             var totalWeight = 0
             for p = 1, prefixCount + 1, 1 {
                 var w = mutCfg.GetPrefixBaseWeight(p)
                 if isLuckyDirt { w = w + mutCfg.GetLuckyDirtWeightBonus(p) }
-                if isFertilized { w = w + mutCfg.GetEnhancementWeightBonus(p) }
+                if fertilizerLuckPercent > 0 {
+                    var goldBase = mutCfg.GetEnhancementWeightBonus(p)
+                    if goldBase > 0 {
+                        w = w + (goldBase * fertilizerLuckPercent) / potionRef
+                    }
+                }
                 totalWeight = totalWeight + w
             }
 
@@ -83,10 +86,15 @@ static graph GachaManager {
             for p = 1, prefixCount + 1, 1 {
                 var w = mutCfg.GetPrefixBaseWeight(p)
                 if isLuckyDirt { w = w + mutCfg.GetLuckyDirtWeightBonus(p) }
-                if isFertilized { w = w + mutCfg.GetEnhancementWeightBonus(p) }
+                if fertilizerLuckPercent > 0 {
+                    var goldBase = mutCfg.GetEnhancementWeightBonus(p)
+                    if goldBase > 0 {
+                        w = w + (goldBase * fertilizerLuckPercent) / potionRef
+                    }
+                }
                 cumulative = cumulative + w
                 if prefixRoll <= cumulative {
-                    if debugCfg.Mutation() { LogInfo("[MUTATION] PREFIX HIT -> " + mutCfg.GetPrefixName(p) + " (id=" + convert.ToString(p) + ") | finalWeight=" + convert.ToString(w) + "/" + convert.ToString(totalWeight) + " dirt=" + convert.ToString(isLuckyDirt) + " fert=" + convert.ToString(isFertilized)) }
+                    if debugCfg.Mutation() { LogInfo("[MUTATION] PREFIX HIT -> " + mutCfg.GetPrefixName(p) + " (id=" + convert.ToString(p) + ") | finalWeight=" + convert.ToString(w) + "/" + convert.ToString(totalWeight) + " dirt=" + convert.ToString(isLuckyDirt) + " fertLuck%=" + convert.ToString(fertilizerLuckPercent)) }
                     return p
                 }
             }
@@ -100,6 +108,12 @@ static graph GachaManager {
 
     func RollForLuckyDirt(owner entity<Entity>) bool {
         var gachaId = "gacha_lucky_dirt"
+
+        if gachaData.ConsumeNextLuckyDirtRollGuaranteed(owner) {
+            gachaData.ResetPity(owner, gachaId)
+            if debugCfg.Gacha() { LogInfo("[GACHA] " + owner<Player>.NickName + " | LUCKY DIRT | GUARANTEED (2nd dig tutorial)") }
+            return true
+        }
 
         if !gachaCfg.HasGacha(gachaId) {
             return false

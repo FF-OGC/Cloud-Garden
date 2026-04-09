@@ -54507,8 +54507,8 @@
                         "priority": 0,
                         "image": {
                           "source": {
-                            "fileId": "wg8w35orkop-mf0wxh1k-jecdb1g3i9",
-                            "filePath": "Assets\\Resources\\Texture\\Menu\\icon_Fruit_n.png",
+                            "fileId": "bpsnh2zwc1-mn6zthn5-ywmqtu1wsfr",
+                            "filePath": "Assets\\Resources\\Sprites\\Plants\\fruit_apple.png",
                             "_tag": {
                               "type": "GFileRefer"
                             },
@@ -54602,7 +54602,7 @@
                         "y": 94
                       }
                     },
-                    "alpha": 0,
+                    "alpha": 100,
                     "priority": 0,
                     "image": {
                       "source": {
@@ -54797,8 +54797,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 54,
-                            "y": -39
+                            "x": 58,
+                            "y": -2
                           },
                           "sizeDelta": {
                             "x": 92,
@@ -54888,8 +54888,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 193,
-                            "y": -38
+                            "x": 197,
+                            "y": -1
                           },
                           "sizeDelta": {
                             "x": 92,
@@ -54980,7 +54980,7 @@
                           },
                           "anchoredPosition": {
                             "x": -65,
-                            "y": -72
+                            "y": -53
                           },
                           "sizeDelta": {
                             "x": 108,
@@ -55071,7 +55071,7 @@
                           },
                           "anchoredPosition": {
                             "x": 1,
-                            "y": -72
+                            "y": -53
                           },
                           "sizeDelta": {
                             "x": 22,
@@ -55176,7 +55176,7 @@
                           },
                           "anchoredPosition": {
                             "x": 66,
-                            "y": -72
+                            "y": -53
                           },
                           "sizeDelta": {
                             "x": 106,
@@ -55266,8 +55266,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": -60,
-                            "y": -100
+                            "x": -53,
+                            "y": -81
                           },
                           "sizeDelta": {
                             "x": 122,
@@ -55357,8 +55357,8 @@
                             "y": 0.5
                           },
                           "anchoredPosition": {
-                            "x": 56,
-                            "y": -100
+                            "x": 63,
+                            "y": -81
                           },
                           "sizeDelta": {
                             "x": 102,
@@ -55449,11 +55449,11 @@
                           },
                           "anchoredPosition": {
                             "x": 0,
-                            "y": -142
+                            "y": -131
                           },
                           "sizeDelta": {
                             "x": 240,
-                            "y": 48
+                            "y": 70
                           }
                         },
                         "alpha": 100,

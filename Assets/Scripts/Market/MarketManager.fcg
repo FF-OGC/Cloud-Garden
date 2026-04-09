@@ -121,18 +121,19 @@ static graph MarketManager {
         infoBoard<Transform>.Position = Vector3{marketPos.X + ox, marketPos.Y + rawOffset.Y, marketPos.Z + oz}
         infoBoard<Transform>.Rotation = Vector3{0, rotY + 180.0, 0}
 
-        var textObj = GetChildByName(infoBoard, "Text object")
-        if textObj != nil {
-            if owner != nil {
-                var ownerName = owner<Player>.NickName
-                textObj<Text>.Content = ownerName
-                if debugCfg.Market() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + ownerName) }
-            } else {
-                textObj<Text>.Content = "X"
-                if debugCfg.Market() { LogInfo("[MarketManager] SpawnInfoBoard | no owner, set text to 'X'") }
-            }
+        var displayName = "X"
+        if owner != nil { displayName = owner<Player>.NickName }
+
+        var textFront = GetChildByName(infoBoard, "Text object_frontside")
+        var textBack = GetChildByName(infoBoard, "Text object_backside")
+
+        if textFront != nil { textFront<Text>.Content = displayName }
+        if textBack != nil { textBack<Text>.Content = displayName }
+
+        if textFront == nil && textBack == nil {
+            if debugCfg.Market() { LogWarning("[MarketManager] SpawnInfoBoard | no text children found (frontside/backside)") }
         } else {
-            if debugCfg.Market() { LogWarning("[MarketManager] SpawnInfoBoard | 'Text object' child not found in farm_slot_info prefab") }
+            if debugCfg.Market() { LogInfo("[MarketManager] SpawnInfoBoard | set text to: " + displayName) }
         }
 
         market<marketData>._InfoBoard = infoBoard

@@ -23,7 +23,10 @@ graph GridTrigger {
         
         if player == nil || _Floor == nil { return }
         
-        if player<playerFarmingData> == nil { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData."); return }
+        if player<playerFarmingData> == nil {
+            if debugCfg.Grid() { LogInfo("[GridTrigger] Player is not have component PlayerFarmingData.") }
+            return
+        }
 
         player<playerFarmingData>.CurrentFloor = _Floor
         if debugCfg.Grid() { LogInfo("[GridTrigger] Player entered floor: " + _Floor<Entity>.Name) }
