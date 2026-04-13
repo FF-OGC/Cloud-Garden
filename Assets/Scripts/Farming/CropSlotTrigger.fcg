@@ -1,0 +1,52 @@
+import "StdLibrary.fcc" as std
+import "Physics.fcc" as physics
+import "EditorGenLib.fcc" as gen
+
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Farming/PlayerCropData.fcg" as playerCropData
+
+[platform_server]
+graph CropSlotTrigger {
+    // Editor: Custom Component CropSlotTrigger — set Garden (entity có GardenData) + SlotIndex 0..5. HydrateRefsFromCustomComponent copies into graph fields.
+    Garden entity<GardenData> = nil
+    SlotIndex int = -1
+
+    func HydrateRefsFromCustomComponent() {
+        var ser = thisEntity as entity<gen.CropSlotTrigger>
+        if ser == nil { return }
+        var g = ser<gen.CropSlotTrigger>.Garden
+        if g != nil {
+            Garden = g as entity<GardenData>
+        }
+        SlotIndex = ser<gen.CropSlotTrigger>.SlotIndex
+    }
+
+    event OnAwake() {
+        HydrateRefsFromCustomComponent()
+    }
+
+    event OnTriggerEnter(target entity<Entity>) {
+        var player = target as entity<Player>
+        if player == nil || Garden == nil || SlotIndex < 0 { return }
+
+        if player<playerCropData> == nil { return }
+
+        player<playerCropData>.CurrentGarden = Garden
+        player<playerCropData>.CurrentFarmSlotIndex = SlotIndex
+        player<playerCropData>.InFarmPotTrigger = true
+        if debugCfg.Farming() { LogInfo("[CropSlotTrigger] Enter slot " + SlotIndex) }
+    }
+
+    event OnTriggerLeave(target entity<Entity>) {
+        var player = target as entity<Player>
+        if player == nil || Garden == nil || SlotIndex < 0 { return }
+
+        if player<playerCropData> == nil { return }
+
+        if player<playerCropData>.CurrentGarden != Garden { return }
+
+        player<playerCropData>.InFarmPotTrigger = false
+        player<playerCropData>.CurrentFarmSlotIndex = -1
+        if debugCfg.Farming() { LogInfo("[CropSlotTrigger] Leave slot") }
+    }
+}

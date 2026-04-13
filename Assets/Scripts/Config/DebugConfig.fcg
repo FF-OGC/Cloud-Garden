@@ -2,17 +2,20 @@ import "StdLibrary.fcc" as std
 
 [platform_server]
 static graph DebugConfig {
+    // Master: enables every category below.
     _DebugAll bool = false
 
+    // Zone register, player join/init, teleport, market poll — needed to verify GameManager + ownership before farming.
     _DebugCore bool = false
-    _DebugFarming bool = false
+    // GardenData wire, triggers, FarmingManager, HUD farm taps, growth tick, visuals — main switch for the new garden flow.
+    _DebugFarming bool = true
     _DebugMarket bool = false
     _DebugStore bool = false
     _DebugBackpack bool = false
     _DebugGrid bool = false
     _DebugCurrency bool = false
     _DebugGacha bool = false
-    _DebugMutation bool = true
+    _DebugMutation bool = false
     _DebugMoneyDrop bool = false
     _DebugPrompt bool = false
 

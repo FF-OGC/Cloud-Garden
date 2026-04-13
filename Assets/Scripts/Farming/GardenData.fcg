@@ -1,0 +1,264 @@
+import "StdLibrary.fcc" as std
+import "Map.fcc" as map
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+import "Convert.fcc" as convert
+
+import "../Config/DebugConfig.fcg" as debugCfg
+import "./CropSlot.fcg" as cropSlot
+
+// One garden bed: Owner + exactly 6 CropSlot entities.
+// Craftland serializes entity refs on the Custom Component (EditorGenLib `component GardenData`: Owner, CropSlot),
+// not on graph fields — HydrateRefsFromCustomComponent copies into Owner + CropSlots at runtime.
+// CropSlotTrigger / GardenTrigger: assign Garden + SlotIndex in editor (see those scripts); no DFS wiring here.
+// OnAwake: hydrate only. InitFarmRuntimeDefaults (slot defaults) runs on player join from GameManager → InitGardenFarmRuntimeInZone.
+[platform_server]
+graph GardenData {
+    Owner entity<Entity> 
+
+    // Order index 0..5 matches slot keys "0".."5"
+    CropSlots List<entity<CropSlot>>
+    
+    GrowingKeys List<string>
+
+    // Copies serialized Custom Component fields into graph fields (see EditorGenLib `component GardenData`).
+    func HydrateRefsFromCustomComponent() {
+        var gd = thisEntity as entity<gen.GardenData>
+        if gd == nil { return }
+        var ser = gd<gen.GardenData>.CropSlot
+        if ser != nil && list.Length(ser) > 0 {
+            CropSlots = list.New(0, 8) as List<entity<CropSlot>>
+            for idx, e in ser {
+                var ent = e as entity<Entity>
+                if ent != nil {
+                    list.Append(CropSlots, ent as entity<CropSlot>)
+                }
+            }
+            if debugCfg.Farming() {
+                LogInfo("[GardenData] Hydrate: CropSlots from Custom Component CropSlot count=" + convert.ToString(list.Length(CropSlots)))
+            }
+        } else {
+            if debugCfg.Farming() {
+                LogWarning("[GardenData] Hydrate: Custom Component CropSlot nil/empty — assign 6 CropSlot refs in editor")
+            }
+        }
+        if Owner == nil {
+            var o = gd<gen.GardenData>.Owner
+            if o != nil {
+                Owner = o
+                if debugCfg.Farming() { LogInfo("[GardenData] Hydrate: Owner from Custom Component") }
+            }
+        }
+    }
+
+    event OnAwake() {
+        HydrateRefsFromCustomComponent()
+    }
+
+    func SlotKeyFromIndex(idx int) string {
+        if idx == 0 { return "0" }
+        if idx == 1 { return "1" }
+        if idx == 2 { return "2" }
+        if idx == 3 { return "3" }
+        if idx == 4 { return "4" }
+        if idx == 5 { return "5" }
+        return "0"
+    }
+
+    func SlotIndexFromKey(key string) int {
+        if key == "0" { return 0 }
+        if key == "1" { return 1 }
+        if key == "2" { return 2 }
+        if key == "3" { return 3 }
+        if key == "4" { return 4 }
+        if key == "5" { return 5 }
+        return -1
+    }
+
+    func GetCropSlotAtIndex(idx int) entity<gen.CropSlot> {
+        if CropSlots == nil { return nil }
+        var len = list.Length(CropSlots)
+        if idx < 0 || idx >= len { return nil }
+        return CropSlots[idx] as entity<CropSlot>
+    }
+
+    func GetCropSlotByKey(key string) entity<gen.CropSlot> {
+        return GetCropSlotAtIndex(SlotIndexFromKey(key))
+    }
+
+    func GetSpawnWorldPositionForSlotKey(key string) Vector3 {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return thisEntity<Transform>.Position }
+        return cs<cropSlot>.GetSpawnWorldPosition(thisEntity as entity<Entity>)
+    }
+
+    func InitFarmRuntimeDefaults() {
+        if debugCfg.Farming() { LogInfo("[GardenData] InitFarmRuntimeDefaults '" + thisEntity<Entity>.Name + "'") }
+        HydrateRefsFromCustomComponent()
+        InitGrowingKeys()
+        var i = 0
+        while i < 6 {
+            var cs = GetCropSlotAtIndex(i)
+            if cs != nil { cs<cropSlot>.InitSlotDefaults() }
+            i = i + 1
+        }
+    }
+
+    func InitGrowingKeys() {
+        if GrowingKeys == nil {
+            GrowingKeys = list.New(0, 100) as List<string>
+        }
+    }
+
+    func IsOwner(player entity<Entity>) bool {
+        if Owner == nil { return false }
+        return Owner == player
+    }
+
+    func GetCellState(key string) int {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return gen.EFarmSlotState.Cloud as int }
+        return cs<cropSlot>.CellState
+    }
+
+    func GetPlantedSeed(key string) string {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return "" }
+        return cs<cropSlot>.PlantedSeed
+    }
+
+    func GetMutationResult(key string) string {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return "" }
+        return cs<cropSlot>.MutationResult
+    }
+
+    func TryModifyCell(key string, newState int, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.CellState = newState
+        return true
+    }
+
+    func TrySetPotTier(key string, tier int, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.PotTier = tier
+        return true
+    }
+
+    func TrySetPotSkinTier(key string, skinTier int, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.PotSkinTier = skinTier
+        return true
+    }
+
+    func GetPotSkinTier(key string) int {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return 1 }
+        return cs<cropSlot>.PotSkinTier
+    }
+
+    func TryPlantCrop(key string, seedId string, harvestTime float, cropPos Vector3, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.PlantedSeed = seedId
+        cs<cropSlot>.HarvestTime = harvestTime
+        cs<cropSlot>.CropPosition = cropPos
+        list.Append(GrowingKeys, key)
+        return true
+    }
+
+    func TryUpdateHarvestTime(key string, newTime float, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.HarvestTime = newTime
+        return true
+    }
+
+    func TrySetMutationResult(key string, mutStr string) {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return }
+        cs<cropSlot>.MutationResult = mutStr
+    }
+
+    func TrySetLuckyPot(key string, isLucky bool) {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return }
+        cs<cropSlot>.IsLuckyPot = isLucky
+    }
+
+    func IsLuckyPot(key string) bool {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        return cs<cropSlot>.IsLuckyPot
+    }
+
+    func TryClearPotVisual(key string) {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return }
+        if cs<cropSlot>.PotVisual != nil {
+            var oldPot = cs<cropSlot>.PotVisual as entity
+            if oldPot != nil { Destroy(oldPot) }
+            cs<cropSlot>.PotVisual = nil
+        }
+        cs<cropSlot>.IsLuckyPot = false
+        cs<cropSlot>.PotSkinTier = 1
+    }
+
+    func TryClearCrop(key string, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.HarvestTime = 0.0
+        cs<cropSlot>.CropPosition = Vector3{0.0, 0.0, 0.0}
+        cs<cropSlot>.PlantedSeed = ""
+        cs<cropSlot>.MutationResult = ""
+        cs<cropSlot>.PlantPrefabKey = ""
+        ClearFertilizerOnSlot(cs)
+        var gkIdx = list.IndexOf(GrowingKeys, key)
+        if gkIdx != -1 { list.RemoveAt(GrowingKeys, gkIdx) }
+        return true
+    }
+
+    func ClearFertilizerOnSlot(cs entity<gen.CropSlot>) {
+        if cs == nil { return }
+        cs<cropSlot>.IsFertilized = false
+        cs<cropSlot>.FertilizerLuckBonus = 0
+        cs<cropSlot>.FertilizerGrowthReduction = 0.0
+    }
+
+    func IsFertilized(key string) bool {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        return cs<cropSlot>.IsFertilized
+    }
+
+    func GetFertilizerLuckBonus(key string) int {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return 0 }
+        if !cs<cropSlot>.IsFertilized { return 0 }
+        return cs<cropSlot>.FertilizerLuckBonus
+    }
+
+    func TrySetFertilized(key string, luckBonus int, growthReduction float, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        cs<cropSlot>.IsFertilized = true
+        cs<cropSlot>.FertilizerLuckBonus = luckBonus
+        cs<cropSlot>.FertilizerGrowthReduction = growthReduction
+        return true
+    }
+
+    func ClearFertilizer(key string) {
+        var cs = GetCropSlotByKey(key)
+        ClearFertilizerOnSlot(cs)
+    }
+}

@@ -1,0 +1,17 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+
+[platform_server]
+graph PlayerCropData {
+    CurrentGarden entity<GardenData>
+    CurrentFarmSlotIndex int = -1
+    InFarmPotTrigger bool = false
+    _IsPerformingAction bool = false
+
+    event OnAwake() {
+        CurrentGarden = nil
+        CurrentFarmSlotIndex = -1
+        InFarmPotTrigger = false
+        _IsPerformingAction = false
+    }
+}

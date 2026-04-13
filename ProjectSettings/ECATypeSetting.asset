@@ -83,7 +83,7 @@
         "Component"
       ],
       "ecaScripts": [],
-      "typeID": 100000,
+      "typeID": 100005,
       "PropDefines": [
         {
           "propID": 100001,
@@ -108,7 +108,111 @@
           }
         }
       ]
+    },
+    "CustomComponent23932677": {
+      "label": "GardenData",
+      "name": "CustomComponent23932677",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100035,
+      "PropDefines": [
+        {
+          "propID": 100037,
+          "name": "PROP_82443757",
+          "label": "Owner",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        },
+        {
+          "propID": 100046,
+          "name": "PROP_20669078",
+          "label": "CropSlot",
+          "type": "ListT_Entity",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        }
+      ]
+    },
+    "CustomComponent13205986": {
+      "label": "GardenTrigger",
+      "name": "CustomComponent13205986",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100040,
+      "PropDefines": [
+        {
+          "propID": 100041,
+          "name": "PROP_43905715",
+          "label": "GardenData",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        }
+      ]
+    },
+    "CustomComponent38147736": {
+      "label": "CropSlotTrigger",
+      "name": "CustomComponent38147736",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100042,
+      "PropDefines": [
+        {
+          "propID": 100043,
+          "name": "PROP_20039778",
+          "label": "Garden",
+          "type": "Entity",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        },
+        {
+          "propID": 100044,
+          "name": "PROP_28856728",
+          "label": "SlotIndex",
+          "type": "Int",
+          "value": 0,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        }
+      ]
+    },
+    "CustomComponent79785444": {
+      "label": "CropSlot",
+      "name": "CustomComponent79785444",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100047,
+      "PropDefines": [
+        {
+          "propID": 100048,
+          "name": "PROP_23959395",
+          "label": "VisualAnchor",
+          "type": "Transform",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        }
+      ]
     }
   }
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

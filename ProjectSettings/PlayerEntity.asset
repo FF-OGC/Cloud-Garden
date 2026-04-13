@@ -76,7 +76,7 @@
     },
     {
       "fileId": "xjgzlb8rg9d-mmoeqpfa-xwekt0hkgik",
-      "filePath": "Assets\\Scripts\\Farming\\PlayerFarmingData.fcg",
+      "filePath": "Assets\\Scripts\\Farming\\PlayerCropData.fcg",
       "_tag": {
         "type": "GFileRefer"
       },

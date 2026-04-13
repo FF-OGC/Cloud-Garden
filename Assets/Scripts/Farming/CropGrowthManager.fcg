@@ -1,78 +1,69 @@
 import "StdLibrary.fcc" as std
-import "Map.fcc" as map
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
 import "Convert.fcc" as convert
 
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
-import "../Grid/FloorGridData.fcg" as floorData
+import "./GardenData.fcg" as gardenData
+import "./CropSlot.fcg" as cropSlot
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Gacha/GachaManager.fcg" as gachaManager
 
 [platform_server]
 static graph CropGrowthManager {
-    
+
     async func StartBackgroundTick(floors List<entity<Entity>>) {
         if debugCfg.Farming() { LogInfo("[CropGrowthManager] Background Tick Started...") }
-        
+
         while true {
             WaitForMillisecond(3000)
             var currentTime = gameMgr.GetGameTime()
 
             var floorCount = list.Length(floors)
             for i = 0, floorCount, 1 {
-                var floor = floors[i]
-                if floor == nil || floor<floorData> == nil { continue }
-                
-                var cellStates = floor<floorData>.CellStates
-                var harvestTimes = floor<floorData>.HarvestTimes
-                var cropPositions = floor<floorData>.CropPositions
-                
+                var gardenEnt = floors[i]
+                if gardenEnt == nil || gardenEnt<gardenData> == nil { continue }
+
                 var k = 0
-                var keyCount = list.Length(floor<floorData>.GrowingKeys)
+                var keyCount = list.Length(gardenEnt<gardenData>.GrowingKeys)
                 while k < keyCount {
-                    var key = floor<floorData>.GrowingKeys[k] as string
+                    var key = gardenEnt<gardenData>.GrowingKeys[k] as string
                     var shouldRemove = false
-                    
-                    if map.ContainKey(cellStates, key) {
-                        var state = cellStates[key] as int
-                        
-                        if state == gen.EFarmSlotState.NeedWatering || state == gen.EFarmSlotState.Growing {
-                            var targetTime = harvestTimes[key] as float
-                            
+
+                    var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
+                    if cs != nil {
+                        var state = cs<cropSlot>.CellState
+
+                        if state == EFarmSlotState.CropGrowing {
+                            var targetTime = cs<cropSlot>.HarvestTime
+
                             if currentTime >= targetTime {
-                                if map.ContainKey(floor<floorData>.PlantedSeeds, key) {
-                                    var seedId = floor<floorData>.PlantedSeeds[key] as string
-                                    var owner = floor<floorData>.Owner
+                                if cs<cropSlot>.PlantedSeed != "" {
+                                    var seedId = cs<cropSlot>.PlantedSeed
+                                    var owner = gardenEnt<gardenData>.Owner
                                     if owner != nil {
-                                        var soilTier = 1
-                                        if map.ContainKey(floor<floorData>.SoilTiers, key) {
-                                            soilTier = floor<floorData>.SoilTiers[key] as int
-                                        }
-                                        var fertLuckPct = floor<floorData>.GetFertilizerLuckBonus(key)
-                                        var isLucky = floor<floorData>.IsLuckyDirt(key)
+                                        var potTier = cs<cropSlot>.PotTier
+                                        var fertLuckPct = gardenEnt<gardenData>.GetFertilizerLuckBonus(key)
+                                        var isLucky = gardenEnt<gardenData>.IsLuckyPot(key)
 
                                         var suffixTier = gachaManager.RollSuffixTier()
-                                        var prefixId = gachaManager.RollMutationPrefix(owner, seedId, soilTier, fertLuckPct, isLucky)
+                                        var prefixId = gachaManager.RollMutationPrefix(owner, seedId, potTier, fertLuckPct, isLucky)
                                         var mutStr = itemCfg.BuildMutationStr(prefixId, suffixTier)
-                                        floor<floorData>.TrySetMutationResult(key, mutStr)
-                                        if debugCfg.Mutation() { LogInfo("[MUTATION] key=" + key + " seed=" + seedId + " soilTier=" + convert.ToString(soilTier) + " fertLuck%=" + convert.ToString(fertLuckPct) + " lucky=" + convert.ToString(isLucky) + " -> mutStr=" + mutStr) }
+                                        gardenEnt<gardenData>.TrySetMutationResult(key, mutStr)
+                                        if debugCfg.Mutation() { LogInfo("[MUTATION] key=" + key + " seed=" + seedId + " potTier=" + convert.ToString(potTier) + " fertLuck%=" + convert.ToString(fertLuckPct) + " luckyPot=" + convert.ToString(isLucky) + " -> mutStr=" + mutStr) }
                                     }
                                 }
 
-                                cellStates[key] = gen.EFarmSlotState.ReadyToHarvest
-                                
-                                if map.ContainKey(cropPositions, key) {
-                                    var gridPos = cropPositions[key] as Vector3
-                                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, gridPos, gen.EFarmSlotState.ReadyToHarvest})
-                                }
-                                
-                                map.Remove(harvestTimes, key)
-                                map.Remove(cropPositions, key)
+                                cs<cropSlot>.CellState = EFarmSlotState.CropReady
+
+                                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropReady})
+
+                                cs<cropSlot>.HarvestTime = 0.0
+                                cs<cropSlot>.CropPosition = Vector3{0.0, 0.0, 0.0}
                                 shouldRemove = true
-                                
-                                if debugCfg.Farming() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at grid key: " + key) }
+
+                                if debugCfg.Farming() { LogInfo("[CropGrowthManager] Crop is Ready To Harvest at key: " + key) }
                             }
                         } else {
                             shouldRemove = true
@@ -82,7 +73,7 @@ static graph CropGrowthManager {
                     }
 
                     if shouldRemove {
-                        list.RemoveAt(floor<floorData>.GrowingKeys, k)
+                        list.RemoveAt(gardenEnt<gardenData>.GrowingKeys, k)
                         keyCount = keyCount - 1
                     } else {
                         k = k + 1

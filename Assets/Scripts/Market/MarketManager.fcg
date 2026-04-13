@@ -51,8 +51,8 @@ static graph MarketManager {
             marketEntity<marketData>._FarmZone = farmZone
             _ZoneToMarket[farmZone] = marketEntity
 
-            if farmZone<gen.FarmZoneData> != nil && farmZone<gen.FarmZoneData>.Owner != nil {
-                marketEntity<marketData>._Owner = farmZone<gen.FarmZoneData>.Owner as entity<Player>
+            if farmZone<FarmZoneData> != nil && farmZone<FarmZoneData>.Owner != nil {
+                marketEntity<marketData>._Owner = farmZone<FarmZoneData>.Owner as entity<Player>
             }
         }
 
@@ -105,7 +105,7 @@ static graph MarketManager {
             market<marketData>._InfoBoard = nil
         }
 
-        CreateFromPrefab(out var infoBoard, gen.EResPrefab.farm_slot_info)
+        CreateFromPrefab(out var infoBoard, EResPrefab.farm_slot_info)
         if infoBoard == nil {
             if debugCfg.Market() { LogWarning("[MarketManager] SpawnInfoBoard FAILED | could not create farm_slot_info prefab") }
             return

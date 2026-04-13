@@ -12,16 +12,18 @@ graph HudPrompt {
     PROMPT_DURATION = 3000
 
     PROMPT_MESSAGES Map<string, string> = Map<string, string>{
-        "PROMPT_ITEM_WRONG": "Potion can only be used on tilled soil!",
+        "PROMPT_ITEM_WRONG": "Potion can only be used on a pot!",
         "PROMPT_NOT_ON_FLOOR": "Go to your garden to start farming!",
         "PROMPT_NOT_ON_FLOOR_PLANT": "Go to your garden to plant seeds!",
         "PROMPT_NO_EQUIP": "Equip a seed from your backpack to plant!",
-        "PROMPT_NEED_PREPARE_FIRST": "Digging the soil first before planting!",
+        "PROMPT_NEED_PREPARE_FIRST": "Buy a pot on the edge columns before planting!",
         "PROMPT_STILL_GROWING": "Your crops are still growing!",
         "PROMPT_NOT_ON_FLOOR_ITEM": "Go to your garden to use this item!",
         "PROMPT_MARKET_NO_CROP": "Switch to a crop in your quickbar to sell!",
         "PROMPT_MARKET_EMPTY_HAND": "Equip a crop from your backpack to sell!",
-        "PROMPT_ALREADY_FERTILIZED": "This soil is already fertilized!",
+        "PROMPT_ALREADY_FERTILIZED": "This pot is already fertilized!",
+        "PROMPT_WALKWAY_NO_POT": "Walkway — buy pots on the left or right columns only!",
+        "PROMPT_NO_GOLD_POT": "Not enough gold to buy a pot!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
@@ -35,6 +37,8 @@ graph HudPrompt {
         "PROMPT_MARKET_NO_CROP": #FABF00,
         "PROMPT_MARKET_EMPTY_HAND": #FABF00,
         "PROMPT_ALREADY_FERTILIZED": #FABF00,
+        "PROMPT_WALKWAY_NO_POT": #FABF00,
+        "PROMPT_NO_GOLD_POT": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>

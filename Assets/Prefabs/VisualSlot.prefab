@@ -1,35 +1,32 @@
 {
-  "_entityName": "Grid Tracker",
+  "_entityName": "VisualSlot",
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "UOjERkZ3",
+  "_entityId": "malVQ6lC",
   "children": [
     {
-      "_entityName": "Tracker",
+      "_entityName": "VisualSlot",
       "_tag": {
         "type": "UGCSceneEntity",
         "resourceId": ""
       },
-      "_entityId": "u94kPW0L",
+      "_entityId": "QlUMrIo1",
       "children": [],
       "activeValue": {
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": {
-        "selfValue": true,
-        "valueTag": "unlockedValue"
-      },
+      "unlockedValue": null,
       "position": {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "x": -1.5000003576278687,
+        "y": 2.3379886150360107,
+        "z": -0.5000001192092896
       },
       "scale": {
-        "x": 1,
-        "y": 1,
-        "z": 1
+        "x": 0.5,
+        "y": 0.10000000149011612,
+        "z": 0.5
       },
       "rotation": {
         "x": 0,
@@ -47,24 +44,31 @@
         2,
         4
       ],
-      "isTrigger": true,
+      "isTrigger": false,
       "collidable": true,
       "physicalLayer": 0,
-      "physicalMaterial": null,
       "aoiSetting": 0,
       "initialTypes": {},
       "componentList": [
+        "MeshRender",
         "ColliderShape",
-        "Collider",
-        "MeshRender"
+        "Collider"
       ],
       "entityTagData": {
         "tagPointers": []
       },
+      "mesh": {
+        "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+        "filePath": "wehss29x://Meshes/cube.fbx/Box001",
+        "_tag": {
+          "type": "GFileRefer"
+        },
+        "fileType": "mesh"
+      },
       "materials": [
         {
-          "fileId": "4o1ewtuf3kd-mn7a3w8j-93fw7xo1z9n",
-          "filePath": "Assets\\Materials\\ClearGlass.mat",
+          "fileId": "idict9ufajn-lnu4im1o-or3tmw1h1y",
+          "filePath": "Assets\\Materials\\Sand01.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -75,7 +79,6 @@
         {
           "enable": true,
           "colliderType": "Box",
-          "meshUUID": null,
           "position": {
             "x": 0,
             "y": 0,
@@ -123,23 +126,15 @@
         "Transform": {},
         "Entity": {},
         "Visibility": {},
+        "MeshRender": {},
         "ColliderShape": {},
-        "Collider": {},
-        "MeshRender": {}
+        "Collider": {}
       },
       "propsData": {},
       "entityVersion": 3,
       "editorLockValue": false,
       "editorVisibleValue": true,
-      "prefabVariant": null,
-      "mesh": {
-        "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
-        "filePath": "wehss29x://Meshes/cube.fbx/Box001",
-        "_tag": {
-          "type": "GFileRefer"
-        },
-        "fileType": "mesh"
-      }
+      "prefabVariant": null
     }
   ],
   "prefabVariant": null,
@@ -147,13 +142,10 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": {
-    "selfValue": true,
-    "valueTag": "unlockedValue"
-  },
+  "unlockedValue": null,
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,
   "discriminator": "ISceneLike"
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

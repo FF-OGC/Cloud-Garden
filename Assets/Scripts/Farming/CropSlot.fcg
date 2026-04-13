@@ -1,0 +1,48 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+
+// Runtime state for a single crop slot (one garden has 6). Visual spawn position: VisualAnchor.
+[platform_server]
+graph CropSlot {
+    VisualAnchor entity<Transform>
+
+    CellState int
+    PotTier int
+    PotSkinTier int
+    PlantedSeed string
+    HarvestTime float
+    CropPosition Vector3
+
+    PotVisual entity<Entity>
+    PlantVisual entity<Entity>
+    PlantPrefabKey string
+
+    MutationResult string
+    IsLuckyPot bool
+
+    IsFertilized bool
+    FertilizerLuckBonus int
+    FertilizerGrowthReduction float
+
+    func InitSlotDefaults() {
+        CellState = EFarmSlotState.Cloud as int
+        PotTier = 1
+        PotSkinTier = 1
+        PlantedSeed = ""
+        HarvestTime = 0.0
+        CropPosition = Vector3{0.0, 0.0, 0.0}
+        PotVisual = nil
+        PlantVisual = nil
+        PlantPrefabKey = ""
+        MutationResult = ""
+        IsLuckyPot = false
+        IsFertilized = false
+        FertilizerLuckBonus = 0
+        FertilizerGrowthReduction = 0.0
+    }
+
+    func GetSpawnWorldPosition(gardenEntity entity<Entity>) Vector3 {
+        if VisualAnchor != nil { return VisualAnchor<Transform>.Position }
+        return gardenEntity<Transform>.Position
+    }
+}

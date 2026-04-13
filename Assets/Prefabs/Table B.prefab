@@ -1,0 +1,95 @@
+{
+  "_entityName": "Prefab",
+  "_tag": {
+    "type": "Prefab"
+  },
+  "_entityId": "U18gVzt1",
+  "children": [
+    {
+      "_entityName": "Table B",
+      "_tag": {
+        "type": "SceneEditEntity",
+        "resourceId": "Primitive/Empty"
+      },
+      "_entityId": "tgLO97tQ",
+      "children": [],
+      "activeValue": {
+        "selfValue": true,
+        "valueTag": "activeValue"
+      },
+      "unlockedValue": null,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 0.30000001192092896,
+        "y": 0.30000001192092896,
+        "z": 0.10000000149011612
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "BTPath": [
+        null
+      ],
+      "visible": true,
+      "VisibilityLayer": 0,
+      "modelOptimization": 0,
+      "streamingLayer": "",
+      "attributes": [
+        2,
+        4
+      ],
+      "isTrigger": false,
+      "collidable": true,
+      "physicalLayer": 0,
+      "aoiSetting": 0,
+      "initialTypes": {},
+      "componentList": [],
+      "entityTagData": {
+        "tagPointers": []
+      },
+      "tempIndex": 12,
+      "itemID": 169,
+      "seParent": null,
+      "ecaScripts": [
+        null
+      ],
+      "ecaProps": {
+        "DummyLevelObject": {},
+        "LevelObject": {},
+        "Transform": {},
+        "Entity": {},
+        "Visibility": {},
+        "Collider": {}
+      },
+      "_performanceConfigData": {
+        "ItemID": 169,
+        "MeshCount": 52,
+        "MaterialCount": 1,
+        "AnimationCount": 0,
+        "BoneCount": 0,
+        "ParticleEmitterCount": 0,
+        "ParticleCount": 0,
+        "TextureMemory": 306656,
+        "ModelMemory": 6892,
+        "AudioMemory": 0
+      },
+      "editorLockValue": false,
+      "editorVisibleValue": true,
+      "prefabVariant": null
+    }
+  ],
+  "prefabVariant": null,
+  "activeValue": null,
+  "unlockedValue": null,
+  "editorLockValue": false,
+  "editorVisibleValue": true,
+  "HintCraftlandCombineMesh": false,
+  "discriminator": "ISceneLike"
+}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

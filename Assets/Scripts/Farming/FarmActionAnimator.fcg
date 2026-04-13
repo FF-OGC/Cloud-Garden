@@ -3,12 +3,10 @@ import "EditorGenLib.fcc" as gen
 import "Player.fcc" as Player
 import "Map.fcc" as map
 
-import "./PlayerFarmingData.fcg" as playerFarmingData
+import "./PlayerCropData.fcg" as playerCropData
 import "../Services/AnimService.fcg" as animSvc
-import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
-import "../Grid/FloorGridData.fcg" as floorData
-import "../Services/Utils/GridUtil.fcg" as gridUtil
+import "./GardenData.fcg" as gardenData
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Config/ItemConfig.fcg" as itemCfg
 
@@ -17,9 +15,9 @@ static graph FarmActionAnimator {
 
     _ACTION_DELAY int = 1500
 
-    event OnPlayerHoeAction(player entity<Player>) {
+    event OnPlayerPotShopAction (player entity<Player>) {
         if player == nil { return }
-        if player<playerFarmingData>._IsPerformingAction {
+        if player<playerCropData>._IsPerformingAction {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already performing action") }
             return
         }
@@ -27,24 +25,29 @@ static graph FarmActionAnimator {
     }
 
     async func PerformAction(player entity<Entity>) {
-        player<playerFarmingData>._IsPerformingAction = true
+        player<playerCropData>._IsPerformingAction = true
 
-        var floor = player<playerFarmingData>.CurrentFloor
-        if floor == nil || floor<floorData> == nil {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: no valid floor") }
-            player<playerFarmingData>._IsPerformingAction = false
+        var gardenEnt = player<playerCropData>.CurrentGarden
+        if gardenEnt == nil || gardenEnt<gardenData> == nil {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: no valid garden") }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        var gridPos = player<playerFarmingData>.CurrentGridPos
-        var key = gridUtil.GetKeyFromPos(gridPos)
-        if !map.ContainKey(floor<floorData>.CellStates, key) {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: invalid grid key=" + key) }
-            player<playerFarmingData>._IsPerformingAction = false
+        if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: not in farm slot") }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        var state = floor<floorData>.CellStates[key] as int
+        var key = gardenEnt<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
+        var state = gardenEnt<gardenData>.GetCellState(key)
+
+        if state == EFarmSlotState.CropReady {
+            DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
 
         var hasPotion = false
         if player<backpackData> != nil {
@@ -56,23 +59,23 @@ static graph FarmActionAnimator {
             }
         }
 
-        if hasPotion && state != gen.EFarmSlotState.Tilled {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: potion can only be used on Tilled soil, current state=" + state) }
+        if hasPotion && state != EFarmSlotState.PotReady {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: potion only on PotReady") }
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
-            player<playerFarmingData>._IsPerformingAction = false
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        if hasPotion && floor<floorData>.IsFertilized(key) {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell already fertilized, key=" + key) }
+        if hasPotion && gardenEnt<gardenData>.IsFertilized(key) {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
-            player<playerFarmingData>._IsPerformingAction = false
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        if state == gen.EFarmSlotState.Growing {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: cell is Growing, no action") }
-            player<playerFarmingData>._IsPerformingAction = false
+        if state == EFarmSlotState.CropGrowing {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no action") }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
@@ -86,12 +89,12 @@ static graph FarmActionAnimator {
 
         EnableActions(player)
 
-        player<playerFarmingData>._IsPerformingAction = false
+        player<playerCropData>._IsPerformingAction = false
     }
 
     event OnPlayerPlantAction(player entity<Player>) {
         if player == nil { return }
-        if player<playerFarmingData>._IsPerformingAction {
+        if player<playerCropData>._IsPerformingAction {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: already performing action") }
             return
         }
@@ -99,27 +102,26 @@ static graph FarmActionAnimator {
     }
 
     async func PerformPlantAction(player entity<Entity>) {
-        player<playerFarmingData>._IsPerformingAction = true
+        player<playerCropData>._IsPerformingAction = true
 
-        var floor = player<playerFarmingData>.CurrentFloor
-        if floor == nil || floor<floorData> == nil {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: no valid floor") }
-            player<playerFarmingData>._IsPerformingAction = false
+        var gardenEnt = player<playerCropData>.CurrentGarden
+        if gardenEnt == nil || gardenEnt<gardenData> == nil {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: no valid garden") }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        var gridPos = player<playerFarmingData>.CurrentGridPos
-        var key = gridUtil.GetKeyFromPos(gridPos)
-        if !map.ContainKey(floor<floorData>.CellStates, key) {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: invalid grid key=" + key) }
-            player<playerFarmingData>._IsPerformingAction = false
+        if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: not in slot") }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        var state = floor<floorData>.CellStates[key] as int
-        if state != gen.EFarmSlotState.Tilled {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: cell is not Tilled, state=" + state) }
-            player<playerFarmingData>._IsPerformingAction = false
+        var key = gardenEnt<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
+        var state = gardenEnt<gardenData>.GetCellState(key)
+        if state != EFarmSlotState.PotReady {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: not PotReady, state=" + state) }
+            player<playerCropData>._IsPerformingAction = false
             return
         }
 
@@ -133,7 +135,7 @@ static graph FarmActionAnimator {
 
         EnableActions(player)
 
-        player<playerFarmingData>._IsPerformingAction = false
+        player<playerCropData>._IsPerformingAction = false
     }
 
     func DisableActions(player entity<Entity>) {

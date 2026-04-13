@@ -11,13 +11,13 @@
       "type": "Int",
       "info": [
         {
-          "label": "Grass",
+          "label": "Cloud",
           "key": "E95213703",
-          "type": "Int",
-          "value": 0
+          "value": 0,
+          "type": "Int"
         },
         {
-          "label": "Tilled",
+          "label": "PotReady",
           "key": "E11837716",
           "value": 1,
           "type": "Int"
@@ -25,30 +25,25 @@
         {
           "label": "Planted",
           "key": "E17579952",
-          "type": "Int",
-          "value": 2
+          "value": 2,
+          "type": "Int"
         },
         {
-          "label": "NeedWatering",
-          "key": "E84554472",
-          "type": "Int",
-          "value": 3
-        },
-        {
-          "label": "Growing",
+          "label": "CropGrowing",
           "key": "E88344843",
-          "type": "Int",
-          "value": 5
+          "value": 3,
+          "type": "Int"
         },
         {
-          "label": "ReadyToHarvest",
+          "label": "CropReady",
           "key": "E62037973",
-          "type": "Int",
-          "value": 6
+          "value": 4,
+          "type": "Int"
         }
       ],
       "isCustom": true,
-      "isDirty": false
+      "isDirty": false,
+      "typeID": 100008
     }
   },
   "enumNameMap": {
@@ -56,4 +51,4 @@
   },
   "children": []
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

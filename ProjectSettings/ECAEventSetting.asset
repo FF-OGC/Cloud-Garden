@@ -8,7 +8,7 @@
       "name": "OnRequestAddItem",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100000,
+      "typeID": 100023,
       "props": [
         {
           "name": "owner",
@@ -35,7 +35,7 @@
       "name": "OnBackpackDataChanged",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100001,
+      "typeID": 100024,
       "props": [
         {
           "name": "owner",
@@ -52,7 +52,7 @@
       "name": "OnBuyItemResponse",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100006,
+      "typeID": 100025,
       "props": [
         {
           "name": "player",
@@ -89,7 +89,7 @@
       "name": "OnPlayerEnterStore",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100008,
+      "typeID": 100026,
       "props": [
         {
           "name": "player",
@@ -106,7 +106,7 @@
       "name": "OnFarmCellStateChanged",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100002,
+      "typeID": 100027,
       "props": [
         {
           "name": "floor",
@@ -114,8 +114,8 @@
           "key": 1
         },
         {
-          "name": "gridPos",
-          "value": "Vector3",
+          "name": "slotKey",
+          "value": "String",
           "key": 2
         },
         {
@@ -272,7 +272,7 @@
       "name": "OnSyncStoreData",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100007,
+      "typeID": 100028,
       "props": [
         {
           "name": "player",
@@ -304,7 +304,7 @@
       "name": "OnRequestBuyItem",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100005,
+      "typeID": 100029,
       "props": [
         {
           "name": "player",
@@ -336,7 +336,7 @@
       "name": "OnPlayerTapButton",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100004,
+      "typeID": 100030,
       "props": [
         {
           "name": "button",
@@ -484,10 +484,10 @@
       "key": "signal_73553884"
     },
     "signal_86389280": {
-      "name": "OnPlayerHoeAction",
+      "name": "OnPlayerPotShopAction",
       "eventType": 0,
       "enitityType": "Component",
-      "typeID": 100003,
+      "typeID": 100031,
       "props": [
         {
           "name": "player",
@@ -506,7 +506,6 @@
     "OnBackpackDataChanged": "signal_76789303",
     "OnBuyItemResponse": "signal_74145831",
     "OnPlayerEnterStore": "signal_16737112",
-    "OnFarmCellStateChanged": "signal_60093422",
     "OnPlayerExitStore": "signal_98373386",
     "OnPlayerToggleStore": "signal_88875793",
     "OnPlayerEnterMarket": "signal_37131010",
@@ -524,8 +523,9 @@
     "OnPlayerLeaveFloor": "signal_15826077",
     "OnPlayerPlantAction": "signal_22116220",
     "OnExecutePlantAction": "signal_73553884",
-    "OnPlayerHoeAction": "signal_86389280"
+    "OnPlayerPotShopAction": "signal_86389280",
+    "OnFarmCellStateChanged": "signal_60093422"
   },
   "children": []
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

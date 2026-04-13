@@ -134,7 +134,7 @@
             },
             "fileType": "prefab"
           },
-          "scriptName": "dirt_tilled",
+          "scriptName": "pot_tier1",
           "children": []
         },
         {
@@ -146,7 +146,7 @@
             },
             "fileType": "prefab"
           },
-          "scriptName": "farm_slot",
+          "scriptName": "pot_tier2",
           "children": []
         },
         {
@@ -242,7 +242,7 @@
             },
             "fileType": "prefab"
           },
-          "scriptName": "lucky_dirt_tilled",
+          "scriptName": "pot_tier3",
           "children": []
         },
         {
@@ -533,6 +533,18 @@
           },
           "scriptName": "icon_water",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "hmwmg51nz6n-mnsmfx39-lok60ffx1r",
+            "filePath": "Assets\\Resources\\Sprites\\pots.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "icon_pot",
+          "children": []
         }
       ]
     },
@@ -660,8 +672,12 @@
     "skilltype": {
       "id": "skilltype",
       "children": []
+    },
+    "pd": {
+      "id": "pd",
+      "children": []
     }
   },
   "children": []
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

@@ -5,18 +5,15 @@ import "EditorGenLib.fcc" as gen
 import "Math.fcc" as math
 import "Convert.fcc" as convert
 
-import "../Farming/FarmZoneManager.fcg" as zoneManager
-import "../Grid/FloorGridData.fcg" as floorData
-import "../Farming/PlayerFarmingData.fcg" as playerFarmingData
-import "../Grid/TrackerPoolManager.fcg" as trackerPool
+import "../Farming/GardenZoneManager.fcg" as zoneManager
+import "../Farming/GardenData.fcg" as gardenData
+import "../Farming/CropSlot.fcg" as cropSlot
 import "../Farming/CropGrowthManager.fcg" as cropManager
 import "../Farming/CropVisualPool.fcg" as cropPool
 import "../Backpack/BackpackManager.fcg" as backpackManager
 import "../Market/MarketManager.fcg" as marketManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
 import "../Store/StoreManager.fcg" as storeManager
-import "../Config/FarmGridConfig.fcg" as gridCfg
-import "../Services/Utils/GridUtil.fcg" as gridUtil
 import "../Config/DebugConfig.fcg" as debugCfg
 import "LevelObject.fcc" as LevelObject
 [platform_server]
@@ -40,7 +37,6 @@ static graph GameManager {
         _AllFloorsInWorld = list.New(0, 10) as List<entity<Entity>>
         _ConnectedPlayers = list.New(0, 10) as List<entity<Player>>
         
-        start trackerPool.InitPool()
         start cropPool.InitPool()
         start StartGlobalClock()
         start DelayedStoreInit()
@@ -151,7 +147,7 @@ static graph GameManager {
                     if floors != nil {
                         var fCount = list.Length(floors)
                         for j = 0, fCount, 1 { 
-                            if floors[j]<floorData> != nil { floors[j]<floorData>.Owner = player }
+                            if floors[j]<gen.GardenData> != nil { floors[j]<gen.GardenData>.Owner = player }
                         }
                     }
                     assignedZone = zone
@@ -159,6 +155,13 @@ static graph GameManager {
                     if debugCfg.Core() { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
                     break
                 }
+            }
+        }
+
+        if assignedZone != nil {
+            zoneManager.InitGardenFarmRuntimeInZone(assignedZone)
+            if debugCfg.Farming() {
+                LogInfo("[GameManager] InitGardenFarmRuntimeInZone after assign/rejoin | zone='" + assignedZone<Entity>.Name + "'")
             }
         }
         
@@ -319,38 +322,31 @@ static graph GameManager {
         if debugCfg.Core() { LogInfo("[GameManager] === PERFORMANCE TEST START ===") }
 
         var floorCount = list.Length(_AllFloorsInWorld)
-        var tileSize = gridCfg.GetTileSize()
         var totalCells = 0
         var batchCount = 0
 
         for i = 0, floorCount, 1 {
             var floor = _AllFloorsInWorld[i]
-            if floor == nil || floor<floorData> == nil { continue }
+            if floor == nil || floor<gardenData> == nil { continue }
 
-            var scale = floor<Transform>.Scale.X
-            var halfGridCount = math.Floor((scale / tileSize) / 2.0)
+            for s = 0, 6, 1 {
+                var key = floor<gardenData>.SlotKeyFromIndex(s)
+                var cs = floor<gardenData>.GetCropSlotByKey(key)
+                if cs == nil { continue }
 
-            for x = -halfGridCount, halfGridCount + 1, 1 {
-                for z = -halfGridCount, halfGridCount + 1, 1 {
-                    var worldX = convert.IntToFloat(x) * tileSize
-                    var worldZ = convert.IntToFloat(z) * tileSize
-                    var pos = Vector3{worldX, 0.0, worldZ}
-                    var key = gridUtil.GetKeyFromPos(pos)
+                cs<cropSlot>.PlantedSeed = "seed_apple"
+                cs<cropSlot>.PotTier = 1
+                cs<cropSlot>.CellState = gen.EFarmSlotState.CropReady
 
-                    floor<floorData>.CellStates[key] = gen.EFarmSlotState.ReadyToHarvest
-                    floor<floorData>.PlantedSeeds[key] = "seed_apple"
-                    floor<floorData>.SoilTiers[key] = 1
+                DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, key, gen.EFarmSlotState.PotReady})
+                DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, key, gen.EFarmSlotState.CropReady})
 
-                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, pos, gen.EFarmSlotState.Tilled})
-                    DispatchEventToEntity(gen.OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floor, pos, gen.EFarmSlotState.ReadyToHarvest})
+                totalCells = totalCells + 1
+                batchCount = batchCount + 1
 
-                    totalCells = totalCells + 1
-                    batchCount = batchCount + 1
-
-                    if batchCount >= 10 {
-                        WaitForMillisecond(100)
-                        batchCount = 0
-                    }
+                if batchCount >= 10 {
+                    WaitForMillisecond(100)
+                    batchCount = 0
                 }
             }
 

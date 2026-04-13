@@ -1,0 +1,142 @@
+import "StdLibrary.fcc" as std
+
+import "Physics.fcc" as physics
+
+import "EditorGenLib.fcc" as gen
+
+
+
+import "../Config/DebugConfig.fcg" as debugCfg
+
+import "./PlayerCropData.fcg" as playerCropData
+
+
+
+[platform_server]
+
+graph GardenTrigger {
+
+    // Editor: Custom Component GardenTrigger — field GardenData → graph Garden. HydrateRefsFromCustomComponent on awake.
+
+    Garden entity<GardenData> = nil
+
+    func HydrateRefsFromCustomComponent() {
+        var ser = thisEntity as entity<gen.GardenTrigger>
+        if ser == nil { return }
+        var g = ser<gen.GardenTrigger>.GardenData
+        if g != nil {
+            Garden = g as entity<GardenData>
+        }
+    }
+
+    event OnAwake() {
+        HydrateRefsFromCustomComponent()
+    }
+
+    event OnTriggerEnter(target entity<Entity>) {
+
+        if target != nil {
+
+            LogInfo("[GardenTrigger] OnTriggerEnter hit entity='" + target<Entity>.Name + "'")
+
+        } else {
+
+            LogWarning("[GardenTrigger] OnTriggerEnter target is nil")
+
+        }
+
+
+
+        if Garden == nil {
+
+            LogWarning("[GardenTrigger] Garden is nil — assign GardenData ref on this entity's GardenTrigger Custom Component in editor")
+
+            return
+
+        }
+
+
+
+        var player = target as entity<Player>
+
+        if player == nil {
+
+            LogWarning("[GardenTrigger] Overlap is not a Player (wrong layer / cast failed). Fix collision matrix or who enters the trigger.")
+
+            return
+
+        }
+
+
+
+        if player<playerCropData> == nil {
+
+            LogWarning("[GardenTrigger] Player has no PlayerCropData graph — add script to player prefab.")
+
+            return
+
+        }
+
+
+
+        player<playerCropData>.CurrentGarden = Garden
+
+        LogInfo("[GardenTrigger] Enter garden OK: '" + Garden<Entity>.Name + "'")
+
+        if debugCfg.Farming() { LogInfo("[GardenTrigger] (verbose) player + Garden + PlayerCropData validated") }
+
+
+
+        DispatchEventToEntity(OnPlayerEnterFloor, player, PlatformType.Server, List<object>{player, Garden})
+
+    }
+
+
+
+    event OnTriggerLeave(target entity<Entity>) {
+
+        if target != nil {
+
+            LogInfo("[GardenTrigger] OnTriggerLeave hit entity='" + target<Entity>.Name + "'")
+
+        }
+
+
+
+        if Garden == nil { return }
+
+
+
+        var player = target as entity<Player>
+
+        if player == nil { return }
+
+
+
+        if player<playerCropData> == nil { return }
+
+
+
+        if player<playerCropData>.CurrentGarden != Garden { return }
+
+
+
+        player<playerCropData>.CurrentGarden = nil
+
+        player<playerCropData>.CurrentFarmSlotIndex = -1
+
+        player<playerCropData>.InFarmPotTrigger = false
+
+        LogInfo("[GardenTrigger] Leave garden OK: '" + Garden<Entity>.Name + "'")
+
+        if debugCfg.Farming() { LogInfo("[GardenTrigger] (verbose) cleared CurrentGarden") }
+
+
+
+        DispatchEventToEntity(OnPlayerLeaveFloor, player, PlatformType.Server, List<object>{player})
+
+    }
+
+}
+
+

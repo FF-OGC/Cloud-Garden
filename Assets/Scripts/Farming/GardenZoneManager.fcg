@@ -1,0 +1,47 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "EditorGenLib.fcc" as gen
+
+import "../Core/GameManager.fcg" as gameMgr
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Floors/FloorManager.fcg" as floorManager
+import "./GardenData.fcg" as gardenData
+[platform_server]
+static graph GardenZoneManager {
+
+    func InitializeZone(zoneObj entity<Entity>) {
+        if zoneObj == nil || zoneObj<FarmZoneData> == nil { return }
+
+        var floors = zoneObj<FarmZoneData>.Floors
+
+        if floors != nil && list.Length(floors) > 0 {
+            floorManager.SnapFloorsToConfig(zoneObj, floors)
+        }
+
+        // GardenData.InitFarmRuntimeDefaults runs from GameManager.WaitAndInitPlayer (OnPlayerJoin) via InitGardenFarmRuntimeInZone.
+
+        if debugCfg.Farming() { LogInfo("[GardenZoneManager] Zone layout snap done (garden init deferred to player join).") }
+    }
+
+    // Call for one zone: every floor entity with GardenData gets InitFarmRuntimeDefaults (slot defaults; triggers are editor-assigned).
+    func InitGardenFarmRuntimeInZone(zoneObj entity<Entity>) {
+        if zoneObj == nil || zoneObj<FarmZoneData> == nil { return }
+        var floors = zoneObj<FarmZoneData>.Floors
+        if floors == nil { return }
+        var fCount = list.Length(floors)
+        for i = 0, fCount, 1 {
+            var floor = floors[i]
+            if floor != nil && floor<gardenData> != nil {
+                floor<gardenData>.InitFarmRuntimeDefaults()
+            }
+        }
+    }
+
+    func InitGardenFarmRuntimeInAllZones(farmZones List<entity<Entity>>) {
+        if farmZones == nil { return }
+        var zCount = list.Length(farmZones)
+        for i = 0, zCount, 1 {
+            InitGardenFarmRuntimeInZone(farmZones[i])
+        }
+    }
+}

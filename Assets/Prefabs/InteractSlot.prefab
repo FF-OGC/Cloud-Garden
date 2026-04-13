@@ -1,26 +1,27 @@
 {
-  "_entityName": "Floor",
+  "_entityName": "InteractSlot",
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "mkGEmIVn",
+  "_entityId": "kjFOeqAH",
   "children": [
     {
-      "_entityName": "Floor",
+      "_entityName": "InteractSlot",
       "_tag": {
         "type": "UGCSceneEntity",
         "resourceId": ""
       },
-      "_entityId": "djV65D28",
+      "_entityId": "TYWIou0Y",
       "children": [
         {
-          "_entityId": "BlRl794W",
-          "children": [],
-          "_entityName": "Floor Trigger",
+          "_entityName": "Custom trigger",
           "_tag": {
             "type": "UGCSceneEntity",
             "resourceId": ""
           },
+          "_entityId": "UrUttkQi",
+          "children": [],
+          "prefabVariant": null,
           "activeValue": {
             "selfValue": true,
             "valueTag": "activeValue"
@@ -32,14 +33,14 @@
           "editorLockValue": false,
           "editorVisibleValue": true,
           "position": {
-            "x": 0,
-            "y": 0.5,
-            "z": 0
+            "x": -0.5039181709289551,
+            "y": 3.4421169757843018,
+            "z": -1.1920928955078125e-7
           },
           "scale": {
-            "x": 0.98,
-            "y": 1,
-            "z": 0.98
+            "x": 2,
+            "y": 7,
+            "z": 1.2000000476837158
           },
           "rotation": {
             "x": 0,
@@ -60,22 +61,22 @@
           "isTrigger": true,
           "collidable": true,
           "physicalLayer": 0,
-          "physicalMaterial": null,
           "aoiSetting": 0,
           "initialTypes": {},
           "componentList": [
             "ColliderShape",
-            "Collider"
+            "Collider",
+            "CustomComponent38147736"
           ],
           "entityTagData": {
             "tagPointers": []
           },
+          "mesh": null,
           "materials": [],
           "colliders": [
             {
               "enable": true,
               "colliderType": "Box",
-              "meshUUID": null,
               "position": {
                 "x": 0,
                 "y": 0,
@@ -118,8 +119,8 @@
           },
           "ecaScripts": [
             {
-              "fileId": "pbprglc88a8-mmoodrer-ksj9gzyrgy",
-              "filePath": "Assets\\Scripts\\Grid\\GridTrigger.fcg",
+              "fileId": "a3farmpotslot-mmoeflr3-h9r4ss59lr8",
+              "filePath": "Assets\\Scripts\\Farming\\CropSlotTrigger.fcg",
               "_tag": {
                 "type": "GFileRefer"
               },
@@ -134,7 +135,11 @@
             "Visibility": {},
             "ColliderShape": {},
             "Collider": {},
-            "MeshRender": {}
+            "MeshRender": {},
+            "CustomComponent38147736": {
+              "PROP_20039778": null,
+              "PROP_28856728": 0
+            }
           },
           "propsData": {},
           "entityVersion": 3
@@ -149,14 +154,14 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": 3,
-        "y": -0.48,
-        "z": -7
+        "x": -0.4,
+        "y": -0.8,
+        "z": -0.5
       },
       "scale": {
-        "x": 5,
+        "x": 1,
         "y": 1,
-        "z": 5
+        "z": 1
       },
       "rotation": {
         "x": 0,
@@ -175,7 +180,7 @@
         4
       ],
       "isTrigger": false,
-      "collidable": true,
+      "collidable": false,
       "physicalLayer": 0,
       "physicalMaterial": null,
       "aoiSetting": 0,
@@ -189,27 +194,13 @@
         "tagPointers": []
       },
       "materials": [
-        {
-          "fileId": "mabcfd7gpcq-lnu4gy1v-b4hlectmfu",
-          "filePath": "Assets\\SampleMaterials\\GrassLand01.mat",
-          "_tag": {
-            "type": "GFileRefer"
-          },
-          "fileType": "material"
-        }
+        null
       ],
       "colliders": [
         {
           "enable": true,
-          "colliderType": "MeshCollider",
-          "meshUUID": {
-            "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-            "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
-            "_tag": {
-              "type": "GFileRefer"
-            },
-            "fileType": "mesh"
-          },
+          "colliderType": "Box",
+          "meshUUID": null,
           "position": {
             "x": 0,
             "y": 0,
@@ -250,16 +241,7 @@
         "FreezePosZ": false,
         "FreezeRotZ": false
       },
-      "ecaScripts": [
-        {
-          "fileId": "tsjc3x0flke-mmoeorln-qx9ozqxgyvb",
-          "filePath": "Assets\\Scripts\\Grid\\FloorGridData.fcg",
-          "_tag": {
-            "type": "GFileRefer"
-          },
-          "fileType": "ugcscript"
-        }
-      ],
+      "ecaScripts": [],
       "ecaProps": {
         "CustomLevelObject": {},
         "LevelObject": {},
@@ -299,4 +281,4 @@
   "HintCraftlandCombineMesh": false,
   "discriminator": "ISceneLike"
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

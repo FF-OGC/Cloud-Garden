@@ -56,14 +56,14 @@ static graph MarketConfig {
     func GetMaxTableSlots() int { return 5 }
 
     func GetProducePrefab(itemId string) PrefabID {
-        if itemId == "crop_apple" { return gen.EResPrefab.crop_apple }
-        if itemId == "crop_carrot" { return gen.EResPrefab.crop_carrot }
-        if itemId == "crop_tomato" { return gen.EResPrefab.crop_tomato }
-        return gen.EResPrefab.seed_growed
+        if itemId == "crop_apple" { return EResPrefab.crop_apple }
+        if itemId == "crop_carrot" { return EResPrefab.crop_carrot }
+        if itemId == "crop_tomato" { return EResPrefab.crop_tomato }
+        return EResPrefab.seed_growed
     }
 
     func GetNPCPrefab() PrefabID {
-        return gen.EResPrefab.npc_customer
+        return EResPrefab.npc_customer
     }
 
     func GetCustomerMinAmount() int { return 1 }
@@ -86,8 +86,8 @@ static graph MarketConfig {
     // ===== MONEY DROP CONFIG =====
 
     func GetMoneyDropOffset() Vector3 { return Vector3{-3.5, 0.0, 0.0} }
-    func GetMoneyLayerPrefab() PrefabID { return gen.EResPrefab.money }
-    func GetMoneyTriggerPrefab() PrefabID { return gen.EResPrefab.money_trigger }
+    func GetMoneyLayerPrefab() PrefabID { return EResPrefab.money }
+    func GetMoneyTriggerPrefab() PrefabID { return EResPrefab.money_trigger }
     func GetMoneyPerLayer() int { return 50 }
     func GetMoneyLayerHeight() float { return 0.15 }
     func GetMoneyMaxLayers() int { return 999 }

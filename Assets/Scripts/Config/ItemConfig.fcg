@@ -58,6 +58,7 @@ static graph ItemConfig {
     }
 
     func GetBuyPrice(itemId string) int {
+        if itemId == "pot_purchase" { return 100 }
         if itemId == "seed_apple" { return 20 }
         if itemId == "seed_carrot" { return 25 }
         if itemId == "seed_tomato" { return 35 }
@@ -92,42 +93,38 @@ static graph ItemConfig {
     // ==========================================
     func GetPlantPrefab(seedId string, state int) PrefabID {
         
-        // STAGE 1: JUST PLANTED / NEED WATERING (Usually a tiny sprout or dry dirt)
-        if state == gen.EFarmSlotState.NeedWatering {
-            return gen.EResPrefab.seed_needwatering 
+        if state == EFarmSlotState.CropGrowing {
+            if seedId == "seed_apple" { return EResPrefab.seed_apple }
+            if seedId == "seed_carrot" { return EResPrefab.seed_carrot }
+            if seedId == "seed_tomato" { return EResPrefab.seed_tomato }
+            return EResPrefab.seed_model
         }
         
-        // STAGE 2: GROWING (Differentiate by plant type)
-        if state == gen.EFarmSlotState.Growing {
-            if seedId == "seed_apple" { return gen.EResPrefab.seed_apple }
-            if seedId == "seed_carrot" { return gen.EResPrefab.seed_carrot }
-            if seedId == "seed_tomato" { return gen.EResPrefab.seed_tomato }
-            return gen.EResPrefab.seed_model
-        }
-        
-        // STAGE 3: READY TO HARVEST (Differentiate by plant type)
-        if state == gen.EFarmSlotState.ReadyToHarvest {
-            if seedId == "seed_apple" { return gen.EResPrefab.crop_apple }
-            if seedId == "seed_carrot" { return gen.EResPrefab.crop_carrot }
-            if seedId == "seed_tomato" { return gen.EResPrefab.crop_tomato }
-            return gen.EResPrefab.seed_growed
+        if state == EFarmSlotState.CropReady {
+            if seedId == "seed_apple" { return EResPrefab.crop_apple }
+            if seedId == "seed_carrot" { return EResPrefab.crop_carrot }
+            if seedId == "seed_tomato" { return EResPrefab.crop_tomato }
+            return EResPrefab.seed_growed
         }
 
-        return gen.EResPrefab.dirt_tilled // Fallback
+        return EResPrefab.seed_model
+    }
+
+    func GetPotPrefabForSkinTier(skinTier int) PrefabID {
+        if skinTier == 3 { return EResPrefab.pot_tier3 }
+        if skinTier == 2 { return EResPrefab.pot_tier2 }
+        return EResPrefab.pot_tier1
     }
 
     // Pool key mirrors for CropVisualPool lookups
     func GetPlantPrefabKey(seedId string, state int) string {
-        if state == gen.EFarmSlotState.NeedWatering {
-            return "seed_needwatering"
-        }
-        if state == gen.EFarmSlotState.Growing {
+        if state == EFarmSlotState.CropGrowing {
             if seedId == "seed_apple" { return "seed_apple" }
             if seedId == "seed_carrot" { return "seed_carrot" }
             if seedId == "seed_tomato" { return "seed_tomato" }
             return "seed_model"
         }
-        if state == gen.EFarmSlotState.ReadyToHarvest {
+        if state == EFarmSlotState.CropReady {
             if seedId == "seed_apple" { return "crop_apple" }
             if seedId == "seed_carrot" { return "crop_carrot" }
             if seedId == "seed_tomato" { return "crop_tomato" }
@@ -246,4 +243,8 @@ static graph ItemConfig {
         if result < 50.0 { return 50 }
         return result as int
     }
+
+    func GetPotPurchaseItemId() string { return "pot_purchase" }
+
+    func IsConsumableItem(itemId string) bool { return GetType(itemId) == 4 }
 }

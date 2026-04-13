@@ -1,120 +1,113 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
-import "Map.fcc" as map
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 
-import "../Grid/FloorGridData.fcg" as floorData
+import "./GardenData.fcg" as gardenData
+import "./CropSlot.fcg" as cropSlot
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Config/MutationConfig.fcg" as mutCfg
-import "../Services/Utils/GridUtil.fcg" as gridUtil
 import "./CropVisualPool.fcg" as cropPool
 
 [platform_server]
 static graph FarmVisualManager {
-    
-    event OnFarmCellStateChanged(floor entity<Entity>, gridPos Vector3, newState int) {
-        var key = gridUtil.GetKeyFromPos(gridPos)
-        var floorPos = floor<Transform>.Position
-        var surfaceY = floorPos.Y + (floor<Transform>.Scale.Y / 2.0)
-        
+
+    event OnFarmCellStateChanged(floor entity<Entity>, slotKey string, newState int) {
+        if floor == nil || floor<gardenData> == nil { return }
+
+        var key = slotKey
+        var spawnPos = floor<gardenData>.GetSpawnWorldPositionForSlotKey(key)
+        var surfaceY = spawnPos.Y
+
         if debugCfg.Farming() { LogInfo("[FarmVisualMgr] >>> OnFarmCellStateChanged key=" + key + " newState=" + newState) }
 
-        // --- CASE 1: TILLED DIRT (Grass -> Tilled OR Harvest -> Tilled) ---
-        if (newState == gen.EFarmSlotState.Tilled) {
-            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE1: Tilled state") }
+        var cs = floor<gardenData>.GetCropSlotByKey(key)
+        if cs == nil { return }
+
+        if (newState == EFarmSlotState.PotReady) {
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE1: PotReady") }
 
             ReturnPlantToPool(floor, key)
 
-            if !map.ContainKey(floor<floorData>.SoilVisuals, key) {
-                var soilPrefab = gen.EResPrefab.dirt_tilled
-                if floor<floorData>.IsLuckyDirt(key) {
-                    soilPrefab = gen.EResPrefab.lucky_dirt_tilled
-                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Using LUCKY DIRT prefab for key=" + key) }
-                }
+            if cs<cropSlot>.PotVisual == nil {
+                var skinTier = floor<gardenData>.GetPotSkinTier(key)
+                var potPrefab = itemCfg.GetPotPrefabForSkinTier(skinTier)
 
-                CreateFromPrefab(out var soilObj, soilPrefab)
-                if soilObj != nil {
-                    soilObj<Transform>.Position = Vector3{floorPos.X + gridPos.X, surfaceY + 0.01, floorPos.Z + gridPos.Z}
-                    floor<floorData>.SoilVisuals[key] = soilObj
-                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned soil visual at key=" + key) }
+                CreateFromPrefab(out var potObj, potPrefab)
+                if potObj != nil {
+                    potObj<Transform>.Position = Vector3{spawnPos.X, surfaceY + 0.01, spawnPos.Z}
+                    cs<cropSlot>.PotVisual = potObj
+                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned pot visual tier=" + convert.ToString(skinTier) + " key=" + key) }
                 } else {
-                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn soil prefab") }
+                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn pot prefab") }
                 }
             } else {
-                if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Soil visual already exists for key=" + key) }
+                if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Pot visual already exists for key=" + key) }
             }
             return
         }
 
-        // --- CASE 2: PLANTING, WATERING, GROWING ---
-        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE2: Plant state change") }
-        
+        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE2: crop visual") }
+
         ReturnPlantToPool(floor, key)
 
-        var plantedSeedId = "unknown"
-        if map.ContainKey(floor<floorData>.PlantedSeeds, key) {
-            plantedSeedId = floor<floorData>.PlantedSeeds[key] as string
+        var plantedSeedId = cs<cropSlot>.PlantedSeed
+        if plantedSeedId == "" {
+            if debugCfg.Farming() { LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping") }
+            return
         }
 
-        if debugCfg.Farming() { LogInfo("[FarmVisualMgr] plantedSeedId=" + plantedSeedId) }
+        var prefabKey = itemCfg.GetPlantPrefabKey(plantedSeedId, newState)
 
-        if plantedSeedId != "unknown" {
-            var prefabKey = itemCfg.GetPlantPrefabKey(plantedSeedId, newState)
+        if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
 
-            if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
-            
-            var plantObj = cropPool.Get(prefabKey)
-            
-            if plantObj != nil {
-                var targetPos = Vector3{floorPos.X + gridPos.X, surfaceY + 0.1, floorPos.Z + gridPos.Z}
-                plantObj<Transform>.Position = targetPos
-                
-                var child = GetChildByName(plantObj, plantObj<Entity>.Name)
-                if child != nil {
-                    child<Transform>.Position = targetPos
-                    if debugCfg.Farming() { LogInfo("[VISUAL-DBG] CHILD found! Set child pos=" + targetPos + " childName=" + child<Entity>.Name + " childActive=" + child<Entity>.ActiveSelf) }
-                } else {
-                    if debugCfg.Farming() { LogInfo("[VISUAL-DBG] NO child found, entity is leaf node") }
-                }
-                
-                floor<floorData>.PlantVisuals[key] = plantObj
-                floor<floorData>.PlantPrefabKeys[key] = prefabKey
+        var plantObj = cropPool.Get(prefabKey)
 
-                if newState == gen.EFarmSlotState.ReadyToHarvest && map.ContainKey(floor<floorData>.MutationResults, key) {
-                    var mutStr = floor<floorData>.MutationResults[key] as string
-                    var prefixId = itemCfg.ParseMutationPrefix(mutStr)
-                    var matId = mutCfg.GetMutationMaterialId(prefixId)
-                    var matList = list.New(0, 1) as List<MaterialID>
-                    list.Append(matList, matId)
-                    plantObj<CustomRender>.MaterialIDList = matList
-                    if debugCfg.Mutation() { LogInfo("[MUTATION-VISUAL] key=" + key + " mutStr=" + mutStr + " prefixId=" + convert.ToString(prefixId) + " material applied") }
-                }
+        if plantObj != nil {
+            var targetPos = Vector3{spawnPos.X, surfaceY + 0.1, spawnPos.Z}
+            plantObj<Transform>.Position = targetPos
 
-                if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos + " active=" + plantObj<Entity>.ActiveSelf) }
-            } else {
-                if debugCfg.Farming() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
+            var child = GetChildByName(plantObj, plantObj<Entity>.Name)
+            if child != nil {
+                child<Transform>.Position = targetPos
+                if debugCfg.Farming() { LogInfo("[VISUAL-DBG] CHILD found pos=" + targetPos) }
             }
+
+            cs<cropSlot>.PlantVisual = plantObj
+            cs<cropSlot>.PlantPrefabKey = prefabKey
+
+            if newState == EFarmSlotState.CropReady && cs<cropSlot>.MutationResult != "" {
+                var mutStr = cs<cropSlot>.MutationResult
+                var prefixId = itemCfg.ParseMutationPrefix(mutStr)
+                var matId = mutCfg.GetMutationMaterialId(prefixId)
+                var matList = list.New(0, 1) as List<MaterialID>
+                list.Append(matList, matId)
+                plantObj<CustomRender>.MaterialIDList = matList
+                if debugCfg.Mutation() { LogInfo("[MUTATION-VISUAL] key=" + key + " mutStr=" + mutStr) }
+            }
+
+            if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " key=" + key + " pos=" + targetPos) }
         } else {
-            if debugCfg.Farming() { LogWarning("[VISUAL-DBG] No seed at key=" + key + ", skipping") }
+            if debugCfg.Farming() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
         }
     }
 
     func ReturnPlantToPool(floor entity<Entity>, cellKey string) {
-        if !map.ContainKey(floor<floorData>.PlantVisuals, cellKey) { return }
+        if floor == nil || floor<gardenData> == nil { return }
+        var cs = floor<gardenData>.GetCropSlotByKey(cellKey)
+        if cs == nil { return }
+        if cs<cropSlot>.PlantVisual == nil { return }
 
-        var oldPlant = floor<floorData>.PlantVisuals[cellKey] as entity
+        var oldPlant = cs<cropSlot>.PlantVisual as entity
         if oldPlant != nil {
-            var oldPrefabKey = "seed_model"
-            if map.ContainKey(floor<floorData>.PlantPrefabKeys, cellKey) {
-                oldPrefabKey = floor<floorData>.PlantPrefabKeys[cellKey] as string
-            }
+            var oldPrefabKey = cs<cropSlot>.PlantPrefabKey
+            if oldPrefabKey == "" { oldPrefabKey = "seed_model" }
             cropPool.Return(oldPrefabKey, oldPlant)
-            map.Remove(floor<floorData>.PlantPrefabKeys, cellKey)
             if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Returned plant to pool '" + oldPrefabKey + "' for key=" + cellKey) }
         }
-        map.Remove(floor<floorData>.PlantVisuals, cellKey)
+        cs<cropSlot>.PlantPrefabKey = ""
+        cs<cropSlot>.PlantVisual = nil
     }
 }
