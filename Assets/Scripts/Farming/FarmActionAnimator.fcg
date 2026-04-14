@@ -49,24 +49,24 @@ static graph FarmActionAnimator {
             return
         }
 
-        var hasPotion = false
+        var hasConsumable = false
         if player<backpackData> != nil {
             var activeSlot = player<backpackData>._ActiveQuickbarSlot
             var handle = player<backpackData>._QuickSlotRefs[activeSlot]
             if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
                 var heldId = player<backpackData>._ItemIDs[handle] as string
-                if itemCfg.GetType(heldId) == 4 { hasPotion = true }
+                if itemCfg.IsConsumableItem(heldId) { hasConsumable = true }
             }
         }
 
-        if hasPotion && state != EFarmSlotState.PotReady {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: potion only on PotReady") }
+        if hasConsumable && state != EFarmSlotState.PotReady {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: consumable only on PotReady") }
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
             player<playerCropData>._IsPerformingAction = false
             return
         }
 
-        if hasPotion && gardenEnt<gardenData>.IsFertilized(key) {
+        if hasConsumable && gardenEnt<gardenData>.IsFertilized(key) {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
             player<playerCropData>._IsPerformingAction = false

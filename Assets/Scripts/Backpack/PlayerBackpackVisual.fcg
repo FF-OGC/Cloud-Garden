@@ -313,12 +313,18 @@ graph PlayerBackpackVisual {
         }
 
         var prePriceObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/pre_price")
-        if prePriceObj != nil { prePriceObj<UIWidgetLabel>.Content = "Sell Price:" }
+        if prePriceObj != nil {
+            if itemCfg.IsSellable(itemId) {
+                prePriceObj<UIWidgetLabel>.Content = "Market sell:"
+            } else {
+                prePriceObj<UIWidgetLabel>.Content = "Shop price:"
+            }
+        }
 
         var priceObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/price")
         if priceObj != nil {
-            if isCrop {
-                priceObj<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetMutationSellPrice(itemId, mutStr))
+            if itemCfg.IsSellable(itemId) {
+                priceObj<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetMarketUnitSellPrice(itemId, mutStr))
             } else {
                 priceObj<UIWidgetLabel>.Content = convert.ToString(itemCfg.GetBuyPrice(itemId))
             }
@@ -331,7 +337,7 @@ graph PlayerBackpackVisual {
         if weightObj != nil { weightObj<UIWidgetLabel>.Content = convert.ToString(amount) }
 
         var introObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, "/root/bg_inspector/selection_info/type2/introduce")
-        if introObj != nil { introObj<UIWidgetLabel>.Content = itemCfg.GetItemDescription(itemId) }
+        if introObj != nil { introObj<UIWidgetLabel>.Content = itemCfg.GetBackpackInspectorIntroText(itemId, mutStr) }
     }
 
     func _HideInspector() {

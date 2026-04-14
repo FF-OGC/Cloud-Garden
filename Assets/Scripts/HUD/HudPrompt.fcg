@@ -12,7 +12,7 @@ graph HudPrompt {
     PROMPT_DURATION = 3000
 
     PROMPT_MESSAGES Map<string, string> = Map<string, string>{
-        "PROMPT_ITEM_WRONG": "Potion can only be used on a pot!",
+        "PROMPT_ITEM_WRONG": "Use consumables on an empty pot (ready to plant)!",
         "PROMPT_NOT_ON_FLOOR": "Go to your garden to start farming!",
         "PROMPT_NOT_ON_FLOOR_PLANT": "Go to your garden to plant seeds!",
         "PROMPT_NO_EQUIP": "Equip a seed from your backpack to plant!",

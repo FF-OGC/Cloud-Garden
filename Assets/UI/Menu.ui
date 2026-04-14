@@ -6443,7 +6443,7 @@
               "PROP_79902060": 0
             },
             "CustomComponent62548545": {
-              "PROP_41899047": "plant_btn",
+              "PROP_41899047": "pot_btn",
               "PROP_24899680": 0
             }
           },
@@ -6654,9 +6654,7 @@
           "PROP_24899680": 0
         }
       },
-      "componentList": [
-        "CustomComponent62548545"
-      ],
+      "componentList": [],
       "_filters": [],
       "_entityName": "pot_btn",
       "entityTagData": {
@@ -6717,8 +6715,8 @@
             "priority": 0,
             "button": {
               "spriteName": {
-                "fileId": "j54pcgpucqs-mnojoys9-49xirmqdeos",
-                "filePath": "Assets\\Resources\\Texture\\Menu\\plant.png",
+                "fileId": "hmwmg51nz6n-mnsmfx39-lok60ffx1r",
+                "filePath": "Assets\\Resources\\Sprites\\pots.png",
                 "_tag": {
                   "type": "GFileRefer"
                 },
@@ -6789,7 +6787,7 @@
               "PROP_79902060": 0
             },
             "CustomComponent62548545": {
-              "PROP_41899047": "plant_btn",
+              "PROP_41899047": "consumable_btn",
               "PROP_24899680": 0
             }
           },

@@ -1,5 +1,5 @@
 {
-  "_entityName": "Prefab",
+  "_entityName": "Table B",
   "_tag": {
     "type": "Prefab"
   },
@@ -17,16 +17,19 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
         "x": 0,
         "y": 0,
         "z": 0
       },
       "scale": {
-        "x": 0.30000001192092896,
-        "y": 0.30000001192092896,
-        "z": 0.10000000149011612
+        "x": 0.3,
+        "y": 0.5,
+        "z": 0.3
       },
       "rotation": {
         "x": 0,
@@ -53,7 +56,7 @@
       "entityTagData": {
         "tagPointers": []
       },
-      "tempIndex": 12,
+      "tempIndex": 41,
       "itemID": 169,
       "seParent": null,
       "ecaScripts": [
@@ -85,8 +88,14 @@
     }
   ],
   "prefabVariant": null,
-  "activeValue": null,
-  "unlockedValue": null,
+  "activeValue": {
+    "selfValue": true,
+    "valueTag": "activeValue"
+  },
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,

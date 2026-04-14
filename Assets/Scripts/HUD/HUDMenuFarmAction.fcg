@@ -21,6 +21,7 @@ graph HUDMenuFarmAction {
     _PotText entity<UIWidget> = nil
     _ConsumableBtn entity<UIWidget> = nil
     _ConsumableText entity<UIWidget> = nil
+    _ConsumableRoot entity<UIWidget> = nil
 
     _IsOnFloor bool = false
     _IsTickRunning bool = false
@@ -43,6 +44,7 @@ graph HUDMenuFarmAction {
         _HarvestText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/harvest_btn/text")
         _PotBtn = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/pot_btn/btn")
         _PotText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/pot_btn/text")
+        _ConsumableRoot = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/consumable_btn")
         _ConsumableBtn = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/consumable_btn/btn")
         _ConsumableText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/consumable_btn/text")
 
@@ -108,34 +110,47 @@ graph HUDMenuFarmAction {
 
     func HandleConsumableTap(player entity<Player>) {
         SyncFloorState()
-        if !IsHoldingPotion(player) {
+        if !IsHoldingConsumable(player) {
+            return
+        }
+        if !_IsOnFloor {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
             return
         }
-        HandlePotTap(player)
+
+        var floor = player<playerCropData>.CurrentGarden
+        if floor == nil || floor<gardenData> == nil {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
+            return
+        }
+
+        if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
+            return
+        }
+
+        var key = floor<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
+        var state = floor<gardenData>.GetCellState(key)
+        if state != EFarmSlotState.PotReady {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
+            return
+        }
+
+        DispatchEventToEntity(OnPlayerPotShopAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
     }
 
     func HandleHarvestTap(player entity<Player>) {
         SyncFloorState()
-        var hasPotion = IsHoldingPotion(player)
 
         if !_IsOnFloor {
-            if hasPotion {
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
-            } else {
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
-            }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             return
         }
 
         var floor = player<playerCropData>.CurrentGarden
         if floor == nil || floor<gardenData> == nil {
             _IsOnFloor = false
-            if hasPotion {
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
-            } else {
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
-            }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             return
         }
 
@@ -157,7 +172,20 @@ graph HUDMenuFarmAction {
             return
         }
 
-        DispatchEventToEntity(OnPlayerPotShopAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
+        if state == EFarmSlotState.CropReady {
+            DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
+            return
+        }
+
+        if state == EFarmSlotState.Cloud {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NEED_PREPARE_FIRST"})
+            return
+        }
+
+        if state == EFarmSlotState.PotReady {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_EQUIP"})
+            return
+        }
     }
 
     event OnPlayerEnterFloor(player entity<Player>, floor entity<Entity>) {
@@ -214,25 +242,15 @@ graph HUDMenuFarmAction {
     func UpdateHarvestBtn() {
         if _HarvestBtn == nil || _HarvestText == nil { return }
 
-        var hasPotion = IsHoldingPotion(thisEntity)
-
         if !_IsOnFloor {
-            if hasPotion {
-                SetHarvestBtnState(COLOR_INACTIVE, "Use", EResSprite.icon_useItem)
-            } else {
-                SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
-            }
+            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
             return
         }
 
         if thisEntity<playerCropData> == nil { return }
         var floor = thisEntity<playerCropData>.CurrentGarden
         if floor == nil || floor<gardenData> == nil {
-            if hasPotion {
-                SetHarvestBtnState(COLOR_INACTIVE, "Use", EResSprite.icon_useItem)
-            } else {
-                SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
-            }
+            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
             return
         }
 
@@ -244,15 +262,13 @@ graph HUDMenuFarmAction {
         var key = floor<gardenData>.SlotKeyFromIndex(thisEntity<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
 
-        if hasPotion && state != EFarmSlotState.CropReady && state != EFarmSlotState.CropGrowing {
-            SetHarvestBtnState(COLOR_ACTIVE, "Use", EResSprite.icon_useItem)
-        } else if state == EFarmSlotState.Cloud {
+        if state == EFarmSlotState.Cloud {
             SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
         } else if state == EFarmSlotState.PotReady {
             if IsHoldingSeed(thisEntity) {
                 SetHarvestBtnState(COLOR_ACTIVE, "Plant", EResSprite.icon_plan)
             } else {
-                SetHarvestBtnState(COLOR_INACTIVE, "Pot", EResSprite.icon_plan)
+                SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
             }
         } else if state == EFarmSlotState.CropGrowing {
             SetHarvestBtnState(COLOR_INACTIVE, "Growing", EResSprite.icon_plan)
@@ -267,6 +283,8 @@ graph HUDMenuFarmAction {
         if _PotBtn == nil { return }
         if _PotText == nil { return }
 
+        _PotBtn<UIWidgetButton>.SpriteResource = EResSprite.icon_pot
+
         if !_IsOnFloor || thisEntity<playerCropData> == nil {
             _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
             _PotText<UIWidgetLabel>.Content = "Pot"
@@ -276,6 +294,7 @@ graph HUDMenuFarmAction {
         var floor = thisEntity<playerCropData>.CurrentGarden
         if floor == nil || floor<gardenData> == nil {
             _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
+            _PotText<UIWidgetLabel>.Content = "Pot"
             return
         }
 
@@ -291,6 +310,9 @@ graph HUDMenuFarmAction {
         if state == EFarmSlotState.Cloud {
             _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
             _PotText<UIWidgetLabel>.Content = "Buy"
+        } else if state == EFarmSlotState.PotReady {
+            _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
+            _PotText<UIWidgetLabel>.Content = "Change"
         } else {
             _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
             _PotText<UIWidgetLabel>.Content = "Pot"
@@ -312,21 +334,31 @@ graph HUDMenuFarmAction {
         }
 
         if !heldConsumable {
-            _ConsumableBtn<Entity>.ActiveSelf = false
+            if _ConsumableRoot != nil {
+                _ConsumableRoot<Entity>.ActiveSelf = false
+            } else {
+                _ConsumableBtn<Entity>.ActiveSelf = false
+            }
             return
         }
 
-        _ConsumableBtn<Entity>.ActiveSelf = true
+        if _ConsumableRoot != nil {
+            _ConsumableRoot<Entity>.ActiveSelf = true
+        } else {
+            _ConsumableBtn<Entity>.ActiveSelf = true
+        }
+
+        _ConsumableBtn<UIWidgetButton>.SpriteResource = EResSprite.icon_useItem
+        _ConsumableText<UIWidgetLabel>.Content = "Use"
+
         if !_IsOnFloor || thisEntity<playerCropData> == nil {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
-            _ConsumableText<UIWidgetLabel>.Content = "Use"
             return
         }
 
         var floor = thisEntity<playerCropData>.CurrentGarden
         if floor == nil || floor<gardenData> == nil || !thisEntity<playerCropData>.InFarmPotTrigger || thisEntity<playerCropData>.CurrentFarmSlotIndex < 0 {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
-            _ConsumableText<UIWidgetLabel>.Content = "Use"
             return
         }
 
@@ -338,7 +370,6 @@ graph HUDMenuFarmAction {
         } else {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
         }
-        _ConsumableText<UIWidgetLabel>.Content = "Use"
     }
 
     func SetHarvestBtnState(color Color, text string, icon SpriteID) {
@@ -361,13 +392,13 @@ graph HUDMenuFarmAction {
         return itemCfg.GetType(heldId) == 1
     }
 
-    func IsHoldingPotion(player entity<Entity>) bool {
+    func IsHoldingConsumable(player entity<Entity>) bool {
         if player<backpackData> == nil { return false }
         var activeSlot = player<backpackData>._ActiveQuickbarSlot
         var handle = player<backpackData>._QuickSlotRefs[activeSlot]
         if handle == -1 { return false }
         if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return false }
         var heldId = player<backpackData>._ItemIDs[handle] as string
-        return itemCfg.GetType(heldId) == 4
+        return itemCfg.IsConsumableItem(heldId)
     }
 }

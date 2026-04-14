@@ -18,13 +18,22 @@ static graph FarmVisualManager {
         if floor == nil || floor<gardenData> == nil { return }
 
         var key = slotKey
+        // Base = VisualAnchor world pos; tiny Y lift so pot/plant does not z-fight with the anchor/ground (tune anchor in editor for coarse height).
         var spawnPos = floor<gardenData>.GetSpawnWorldPositionForSlotKey(key)
-        var surfaceY = spawnPos.Y
+        var liftPotY = 0.05
+        var liftPlantY = 0.5
+        var potPos = Vector3{spawnPos.X, spawnPos.Y + liftPotY, spawnPos.Z}
+        var plantPos = Vector3{spawnPos.X, spawnPos.Y + liftPlantY, spawnPos.Z}
 
         if debugCfg.Farming() { LogInfo("[FarmVisualMgr] >>> OnFarmCellStateChanged key=" + key + " newState=" + newState) }
 
         var cs = floor<gardenData>.GetCropSlotByKey(key)
-        if cs == nil { return }
+        if cs == nil {
+            if debugCfg.Farming() {
+                LogWarning("[FarmVisualMgr] CropSlot NIL for key=" + key + " — skip pot/plant (check GardenData.CropSlot refs order 0..5)")
+            }
+            return
+        }
 
         if (newState == EFarmSlotState.PotReady) {
             if debugCfg.Farming() { LogInfo("[FarmVisualMgr] CASE1: PotReady") }
@@ -37,7 +46,7 @@ static graph FarmVisualManager {
 
                 CreateFromPrefab(out var potObj, potPrefab)
                 if potObj != nil {
-                    potObj<Transform>.Position = Vector3{spawnPos.X, surfaceY + 0.01, spawnPos.Z}
+                    potObj<Transform>.Position = potPos
                     cs<cropSlot>.PotVisual = potObj
                     if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned pot visual tier=" + convert.ToString(skinTier) + " key=" + key) }
                 } else {
@@ -66,7 +75,7 @@ static graph FarmVisualManager {
         var plantObj = cropPool.Get(prefabKey)
 
         if plantObj != nil {
-            var targetPos = Vector3{spawnPos.X, surfaceY + 0.1, spawnPos.Z}
+            var targetPos = plantPos
             plantObj<Transform>.Position = targetPos
 
             var child = GetChildByName(plantObj, plantObj<Entity>.Name)

@@ -44,7 +44,7 @@ static graph CurrencyManager {
 
     func ProcessItemSale(player entity<Player>, itemId string, quantity int) {
         if player == nil || quantity <= 0 { return }
-        var unitPrice = itemCfg.GetSellPrice(itemId)
+        var unitPrice = itemCfg.GetMarketUnitSellPrice(itemId, "")
         var totalEarnings = (unitPrice * quantity) as int
 
         currencyService.AddBalance(player, totalEarnings)

@@ -33,13 +33,13 @@
           "editorLockValue": false,
           "editorVisibleValue": true,
           "position": {
-            "x": -0.5039181709289551,
-            "y": 3.4421169757843018,
-            "z": -1.1920928955078125e-7
+            "x": -1.4413151741027832,
+            "y": 3.442000389099121,
+            "z": 0
           },
           "scale": {
-            "x": 2,
-            "y": 7,
+            "x": 4,
+            "y": 9,
             "z": 1.2000000476837158
           },
           "rotation": {
@@ -137,7 +137,13 @@
             "Collider": {},
             "MeshRender": {},
             "CustomComponent38147736": {
-              "PROP_20039778": null,
+              "PROP_20039778": {
+                "entityId": "djV65D28",
+                "fileId": "0wdc2rpzq6x-mmkgl5iq-r77v1u4qqtj",
+                "_tag": {
+                  "type": "EntityRefer"
+                }
+              },
               "PROP_28856728": 0
             }
           },
@@ -154,9 +160,9 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": -0.4,
-        "y": -0.8,
-        "z": -0.5
+        "x": 0.08322283625602722,
+        "y": -0.8000001311302185,
+        "z": -0.4999998211860657
       },
       "scale": {
         "x": 1,

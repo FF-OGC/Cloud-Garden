@@ -5,6 +5,7 @@ import "Convert.fcc" as convert
 import "../Market/MarketRuntimeData.fcg" as marketData
 import "../Core/GameManager.fcg" as gameManager
 import "../Config/DebugConfig.fcg" as debugCfg
+import "../Config/ItemConfig.fcg" as itemCfg
 
 [platform_server]
 static graph MarketService {
@@ -45,6 +46,41 @@ static graph MarketService {
             list.Append(market<marketData>._TableMutations, mutStr)
             if debugCfg.Market() { LogInfo("[MarketService] AddToTable | NEW " + itemId + " mut=" + mutStr + " amount=" + convert.ToString(amount)) }
         }
+    }
+
+    // Gold if we remove `amount` of itemId in the same order as RemoveFromTableAny (per-stack mutation). Call BEFORE RemoveFromTable.
+    // Walks a static snapshot with i++ after each consumed row (equivalent to RemoveAt collapsing the list).
+    func ComputeGoldForRemoval(market entity<Entity>, itemId string, amount int) int {
+        if market == nil || amount <= 0 { return 0 }
+        if market<marketData> == nil { return 0 }
+        market<marketData>.EnsureInit()
+
+        var remaining = amount
+        var totalGold = 0
+        var n = list.Length(market<marketData>._TableItemIDs)
+        var i = 0
+        while i < n && remaining > 0 {
+            if market<marketData>._TableItemIDs[i] as string != itemId {
+                i = i + 1
+                continue
+            }
+            var current = market<marketData>._TableItemAmounts[i] as int
+            var mut = ""
+            if i < list.Length(market<marketData>._TableMutations) {
+                mut = market<marketData>._TableMutations[i] as string
+            }
+            var unit = itemCfg.GetMarketUnitSellPrice(itemId, mut)
+            if current <= remaining {
+                totalGold = totalGold + (unit * current)
+                remaining = remaining - current
+                i = i + 1
+            } else {
+                totalGold = totalGold + (unit * remaining)
+                remaining = 0
+                i = i + 1
+            }
+        }
+        return totalGold
     }
 
     func RemoveFromTable(market entity<Entity>, itemId string, amount int) bool {

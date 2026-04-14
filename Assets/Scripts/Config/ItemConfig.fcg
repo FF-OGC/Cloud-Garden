@@ -111,7 +111,6 @@ static graph ItemConfig {
     }
 
     func GetPotPrefabForSkinTier(skinTier int) PrefabID {
-        if skinTier == 3 { return EResPrefab.pot_tier3 }
         if skinTier == 2 { return EResPrefab.pot_tier2 }
         return EResPrefab.pot_tier1
     }
@@ -242,6 +241,24 @@ static graph ItemConfig {
         var result = math.Floor(basePrice * prefixMult * suffixMult)
         if result < 50.0 { return 50 }
         return result as int
+    }
+
+    // Single source for market payouts + backpack "sell" line (mutation-aware). 0 = not sold at market.
+    func GetMarketUnitSellPrice(itemId string, mutStr string) int {
+        if !IsSellable(itemId) { return 0 }
+        return GetMutationSellPrice(itemId, mutStr)
+    }
+
+    // Backpack inspector introduce: flavor text + same market value as price row (GetMarketUnitSellPrice).
+    func GetBackpackInspectorIntroText(itemId string, mutStr string) string {
+        var base = GetItemDescription(itemId)
+        if IsSellable(itemId) {
+            var p = GetMarketUnitSellPrice(itemId, mutStr)
+            var line = "Market value: " + convert.ToString(p) + " gold per unit when sold."
+            if base == "" { return line }
+            return base + "\n" + line
+        }
+        return base
     }
 
     func GetPotPurchaseItemId() string { return "pot_purchase" }

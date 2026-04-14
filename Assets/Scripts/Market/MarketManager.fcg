@@ -401,6 +401,12 @@ static graph MarketManager {
         var timePerUnit = marketCfg.GetTransactionTimeMs(itemId) as int
         var totalTimeMs = (timePerUnit * amount) as int
 
+        // Payout must use table state BEFORE removal; per-stack mutation matches RemoveFromTableAny order.
+        var saleGold = 0
+        if market<marketData>._Owner != nil {
+            saleGold = marketService.ComputeGoldForRemoval(market, itemId, amount)
+        }
+
         marketService.RemoveFromTable(market, itemId, amount)
 
         if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
@@ -415,18 +421,7 @@ static graph MarketManager {
         marketService.ClearCustomer(market, 0)
 
         if market<marketData>._Owner != nil {
-            // Find the mutation string for the sold items from the table
-            var soldMutStr = ""
-            var tCount = list.Length(market<marketData>._TableItemIDs)
-            for t = 0, tCount, 1 {
-                if market<marketData>._TableItemIDs[t] as string == itemId {
-                    if t < list.Length(market<marketData>._TableMutations) {
-                        soldMutStr = market<marketData>._TableMutations[t] as string
-                    }
-                    break
-                }
-            }
-            currencyVisualManager.DropMoneyWithMutation(market, itemId, amount, soldMutStr)
+            currencyVisualManager.CreditMarketPendingGold(market, saleGold)
         }
 
         var conveyorDelay = marketCfg.GetConveyorDelayMs() as int

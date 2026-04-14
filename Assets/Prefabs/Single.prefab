@@ -40,13 +40,13 @@
               "editorLockValue": false,
               "editorVisibleValue": true,
               "position": {
-                "x": -0.5039181709289551,
-                "y": 3.4421169757843018,
-                "z": -1.1920928955078125e-7
+                "x": -1.4413151741027832,
+                "y": 3.442000389099121,
+                "z": 0
               },
               "scale": {
-                "x": 2,
-                "y": 7,
+                "x": 4,
+                "y": 9,
                 "z": 1.2000000476837158
               },
               "rotation": {
@@ -72,7 +72,8 @@
               "initialTypes": {},
               "componentList": [
                 "ColliderShape",
-                "Collider"
+                "Collider",
+                "CustomComponent38147736"
               ],
               "entityTagData": {
                 "tagPointers": []
@@ -141,7 +142,17 @@
                 "Visibility": {},
                 "ColliderShape": {},
                 "Collider": {},
-                "MeshRender": {}
+                "MeshRender": {},
+                "CustomComponent38147736": {
+                  "PROP_20039778": {
+                    "entityId": "djV65D28",
+                    "fileId": "0wdc2rpzq6x-mmkgl5iq-r77v1u4qqtj",
+                    "_tag": {
+                      "type": "EntityRefer"
+                    }
+                  },
+                  "PROP_28856728": 0
+                }
               },
               "propsData": {},
               "entityVersion": 3,
@@ -157,9 +168,9 @@
             "valueTag": "unlockedValue"
           },
           "position": {
-            "x": -0.4,
-            "y": -0.8,
-            "z": -0.5
+            "x": 0.08322283625602722,
+            "y": -0.8000001311302185,
+            "z": -0.4999998211860657
           },
           "scale": {
             "x": 1,
@@ -511,17 +522,20 @@
                   "selfValue": true,
                   "valueTag": "activeValue"
                 },
-                "unlockedValue": null,
+                "unlockedValue": {
+                  "selfValue": true,
+                  "valueTag": "unlockedValue"
+                },
                 "editorLockValue": false,
                 "editorVisibleValue": true,
                 "position": {
-                  "x": -0.5039181709289551,
-                  "y": 3.4421169757843018,
-                  "z": -1.1920928955078125e-7
+                  "x": -1.4413151741027832,
+                  "y": 3.442000389099121,
+                  "z": 0
                 },
                 "scale": {
-                  "x": 2,
-                  "y": 7,
+                  "x": 4,
+                  "y": 9,
                   "z": 1.2000000476837158
                 },
                 "rotation": {
@@ -547,7 +561,8 @@
                 "initialTypes": {},
                 "componentList": [
                   "ColliderShape",
-                  "Collider"
+                  "Collider",
+                  "CustomComponent38147736"
                 ],
                 "entityTagData": {
                   "tagPointers": []
@@ -598,7 +613,13 @@
                   "FreezePosZ": false,
                   "FreezeRotZ": false
                 },
-                "ecaScripts": [],
+                "ecaScripts": [
+                  {
+                    "fileId": "a3farmpotslot-mmoeflr3-h9r4ss59lr8",
+                    "filePath": "Assets\\Scripts\\Farming\\CropSlotTrigger.fcg",
+                    "fileType": "ugcscript"
+                  }
+                ],
                 "ecaProps": {
                   "CustomLevelObject": {},
                   "LevelObject": {},
@@ -606,7 +627,15 @@
                   "Entity": {},
                   "Visibility": {},
                   "ColliderShape": {},
-                  "Collider": {}
+                  "Collider": {},
+                  "MeshRender": {},
+                  "CustomComponent38147736": {
+                    "PROP_20039778": {
+                      "entityId": "djV65D28",
+                      "fileId": "0wdc2rpzq6x-mmkgl5iq-r77v1u4qqtj"
+                    },
+                    "PROP_28856728": 0
+                  }
                 },
                 "propsData": {},
                 "entityVersion": 3
@@ -631,14 +660,14 @@
             "valueTag": "unlockedValue"
           },
           "position": {
-            "x": -1.5000003576278687,
-            "y": 2.3379886150360107,
-            "z": -0.5000001192092896
+            "x": -1.5000039339065552,
+            "y": 4.5,
+            "z": -0.4999998211860657
           },
           "scale": {
-            "x": 0.5,
+            "x": 1,
             "y": 0.10000000149011612,
-            "z": 0.5
+            "z": 1
           },
           "rotation": {
             "x": 0,
@@ -762,11 +791,14 @@
                   "selfValue": true,
                   "valueTag": "activeValue"
                 },
-                "unlockedValue": null,
+                "unlockedValue": {
+                  "selfValue": true,
+                  "valueTag": "unlockedValue"
+                },
                 "scale": {
-                  "x": 0.5,
+                  "x": 1,
                   "y": 0.10000000149011612,
-                  "z": 0.5
+                  "z": 1
                 },
                 "BTPath": [
                   null
@@ -877,9 +909,9 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": -0.25212132930755615,
-        "y": 0.5488631725311279,
-        "z": -0.3248167037963867
+        "x": -0.2,
+        "y": 0.550000011920929,
+        "z": 0.3499999940395355
       },
       "scale": {
         "x": 0.10000000149011612,

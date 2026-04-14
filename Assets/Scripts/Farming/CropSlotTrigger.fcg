@@ -3,7 +3,7 @@ import "Physics.fcc" as physics
 import "EditorGenLib.fcc" as gen
 
 import "../Config/DebugConfig.fcg" as debugCfg
-import "../Farming/PlayerCropData.fcg" as playerCropData
+import "./PlayerCropData.fcg" as playerCropData
 
 [platform_server]
 graph CropSlotTrigger {

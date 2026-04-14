@@ -139,18 +139,6 @@
         },
         {
           "refer": {
-            "fileId": "4trvtvqwn4g-mmlv6pe7-fienmj6q69",
-            "filePath": "Assets\\Prefabs\\farm_slot.prefab",
-            "_tag": {
-              "type": "GFileRefer"
-            },
-            "fileType": "prefab"
-          },
-          "scriptName": "pot_tier2",
-          "children": []
-        },
-        {
-          "refer": {
             "fileId": "qsy6lq50iwq-mmokdu6h-ovj42t20g1r",
             "filePath": "Assets\\Prefabs\\Grid Tracker.prefab",
             "_tag": {
@@ -242,7 +230,7 @@
             },
             "fileType": "prefab"
           },
-          "scriptName": "pot_tier3",
+          "scriptName": "pot_tier2",
           "children": []
         },
         {

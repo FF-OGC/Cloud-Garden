@@ -79,12 +79,24 @@ static graph CurrencyVisualManager {
     func DropMoneyWithMutation(market entity<Entity>, itemId string, amount int, mutStr string) {
         if market == nil || market<marketData> == nil { return }
 
-        var unitPrice = itemCfg.GetMutationSellPrice(itemId, mutStr)
+        var unitPrice = itemCfg.GetMarketUnitSellPrice(itemId, mutStr)
         var earnings = (unitPrice * amount) as int
 
         market<marketData>._PendingMoney = (market<marketData>._PendingMoney + earnings) as int
 
         if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] DropMoney | +" + convert.ToString(earnings) + " pending=" + convert.ToString(market<marketData>._PendingMoney) + " mut=" + mutStr) }
+
+        _UpdateMoneyStack(market)
+    }
+
+    // Exact gold from MarketService.ComputeGoldForRemoval (multi-stack / multi-mutation sales).
+    func CreditMarketPendingGold(market entity<Entity>, earnings int) {
+        if market == nil || market<marketData> == nil { return }
+        if earnings <= 0 { return }
+
+        market<marketData>._PendingMoney = (market<marketData>._PendingMoney + earnings) as int
+
+        if debugCfg.MoneyDrop() { LogInfo("[CurrencyVisualManager] CreditMarketPendingGold | +" + convert.ToString(earnings) + " pending=" + convert.ToString(market<marketData>._PendingMoney)) }
 
         _UpdateMoneyStack(market)
     }

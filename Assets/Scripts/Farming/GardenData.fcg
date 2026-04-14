@@ -10,6 +10,7 @@ import "./CropSlot.fcg" as cropSlot
 // One garden bed: Owner + exactly 6 CropSlot entities.
 // Craftland serializes entity refs on the Custom Component (EditorGenLib `component GardenData`: Owner, CropSlot),
 // not on graph fields — HydrateRefsFromCustomComponent copies into Owner + CropSlots at runtime.
+// Each CropSlot entity also hydrates its own CC (`component CropSlot`: VisualAnchor) in CropSlot.HydrateRefsFromCustomComponent.
 // CropSlotTrigger / GardenTrigger: assign Garden + SlotIndex in editor (see those scripts); no DFS wiring here.
 // OnAwake: hydrate only. InitFarmRuntimeDefaults (slot defaults) runs on player join from GameManager → InitGardenFarmRuntimeInZone.
 [platform_server]
@@ -88,7 +89,16 @@ graph GardenData {
 
     func GetSpawnWorldPositionForSlotKey(key string) Vector3 {
         var cs = GetCropSlotByKey(key)
-        if cs == nil { return thisEntity<Transform>.Position }
+        if cs == nil {
+            if debugCfg.Farming() {
+                var n = 0
+                if CropSlots != nil { n = list.Length(CropSlots) }
+                LogWarning("[GardenData] GetSpawnWorldPositionForSlotKey: CropSlot NIL for key=" + key +
+                    " garden='" + thisEntity<Entity>.Name + "' CropSlots count=" + convert.ToString(n) +
+                    " → spawn uses GARDEN pivot (center)")
+            }
+            return thisEntity<Transform>.Position
+        }
         return cs<cropSlot>.GetSpawnWorldPosition(thisEntity as entity<Entity>)
     }
 
@@ -99,7 +109,10 @@ graph GardenData {
         var i = 0
         while i < 6 {
             var cs = GetCropSlotAtIndex(i)
-            if cs != nil { cs<cropSlot>.InitSlotDefaults() }
+            if cs != nil {
+                cs<cropSlot>.HydrateRefsFromCustomComponent()
+                cs<cropSlot>.InitSlotDefaults()
+            }
             i = i + 1
         }
     }

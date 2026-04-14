@@ -105,7 +105,7 @@ static graph GachaManager {
         if gachaData.ConsumeNextPotSkinGuaranteed(owner) {
             gachaData.ResetPity(owner, gachaId)
             if debugCfg.Gacha() { LogInfo("[GACHA] " + owner<Player>.NickName + " | POT SKIN | GUARANTEED tier 3 (tutorial)") }
-            return 3
+            return 2
         }
 
         if !gachaCfg.HasGacha(gachaId) {

@@ -1,7 +1,11 @@
 import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 
+import "../Config/DebugConfig.fcg" as debugCfg
+
 // Runtime state for a single crop slot (one garden has 6). Visual spawn position: VisualAnchor.
+// Editor: Custom Component CropSlot — set VisualAnchor (Transform). Serialized on CC, not graph fields;
+// HydrateRefsFromCustomComponent copies into VisualAnchor at runtime (same idea as GardenData / CropSlotTrigger).
 [platform_server]
 graph CropSlot {
     VisualAnchor entity<Transform>
@@ -24,6 +28,27 @@ graph CropSlot {
     FertilizerLuckBonus int
     FertilizerGrowthReduction float
 
+    func HydrateRefsFromCustomComponent() {
+        var ser = thisEntity as entity<gen.CropSlot>
+        if ser == nil { return }
+        var va = ser<gen.CropSlot>.VisualAnchor
+        if va != nil {
+            VisualAnchor = va as entity<Transform>
+        }
+        if debugCfg.Farming() {
+            if VisualAnchor != nil {
+                LogInfo("[CropSlot] Hydrate: VisualAnchor OK '" + thisEntity<Entity>.Name + "'")
+            } else {
+                LogWarning("[CropSlot] Hydrate: Custom Component VisualAnchor nil — assign on slot entity '" +
+                    thisEntity<Entity>.Name + "'")
+            }
+        }
+    }
+
+    event OnAwake() {
+        HydrateRefsFromCustomComponent()
+    }
+
     func InitSlotDefaults() {
         CellState = EFarmSlotState.Cloud as int
         PotTier = 1
@@ -43,6 +68,10 @@ graph CropSlot {
 
     func GetSpawnWorldPosition(gardenEntity entity<Entity>) Vector3 {
         if VisualAnchor != nil { return VisualAnchor<Transform>.Position }
+        if debugCfg.Farming() {
+            LogWarning("[CropSlot] VisualAnchor NIL on slot='" + thisEntity<Entity>.Name + "' garden='" +
+                gardenEntity<Entity>.Name + "' → spawn uses GARDEN pivot (center)")
+        }
         return gardenEntity<Transform>.Position
     }
 }

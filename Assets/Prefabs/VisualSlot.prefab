@@ -17,16 +17,19 @@
         "selfValue": true,
         "valueTag": "activeValue"
       },
-      "unlockedValue": null,
+      "unlockedValue": {
+        "selfValue": true,
+        "valueTag": "unlockedValue"
+      },
       "position": {
-        "x": -1.5000003576278687,
-        "y": 2.3379886150360107,
-        "z": -0.5000001192092896
+        "x": -1.5000039339065552,
+        "y": 4.5,
+        "z": -0.4999998211860657
       },
       "scale": {
-        "x": 0.5,
+        "x": 1,
         "y": 0.10000000149011612,
-        "z": 0.5
+        "z": 1
       },
       "rotation": {
         "x": 0,
@@ -142,7 +145,10 @@
     "selfValue": true,
     "valueTag": "activeValue"
   },
-  "unlockedValue": null,
+  "unlockedValue": {
+    "selfValue": true,
+    "valueTag": "unlockedValue"
+  },
   "editorLockValue": false,
   "editorVisibleValue": true,
   "HintCraftlandCombineMesh": false,

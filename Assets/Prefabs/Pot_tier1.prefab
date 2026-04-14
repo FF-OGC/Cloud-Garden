@@ -1,9 +1,9 @@
 {
-  "_entityName": "Dirt_lucky",
+  "_entityName": "Pot_tier1",
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "ZTzqheGg",
+  "_entityId": "X0hH8f6y",
   "children": [
     {
       "_entityName": "Dirt",
@@ -136,14 +136,17 @@
             "type": "SceneEditEntity",
             "resourceId": "Primitive/Empty"
           },
-          "_entityId": "d5zyJW7X",
+          "_entityId": "n3XKrQCR",
           "children": [],
           "prefabVariant": null,
           "activeValue": {
             "selfValue": false,
             "valueTag": "activeValue"
           },
-          "unlockedValue": null,
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
           "editorLockValue": false,
           "editorVisibleValue": true,
           "position": {
@@ -153,7 +156,7 @@
           },
           "scale": {
             "x": 1,
-            "y": 1,
+            "y": 0.5,
             "z": 1
           },
           "rotation": {
@@ -182,7 +185,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 21,
+          "tempIndex": 85,
           "itemID": 224,
           "seParent": null,
           "ecaScripts": [
@@ -228,6 +231,18 @@
             },
             "effectType": "UGC_T_34_LY_WS_VFX1",
             "isLoop": 1
+          },
+          "_performanceConfigData": {
+            "ItemID": 224,
+            "MeshCount": 0,
+            "MaterialCount": 0,
+            "AnimationCount": 0,
+            "BoneCount": 0,
+            "ParticleEmitterCount": 0,
+            "ParticleCount": 0,
+            "TextureMemory": 0,
+            "ModelMemory": 0,
+            "AudioMemory": 0
           }
         }
       ],
@@ -240,14 +255,14 @@
         "valueTag": "unlockedValue"
       },
       "position": {
-        "x": -7.742035865783691,
-        "y": 0.0011949539184570312,
-        "z": -15.48878288269043
+        "x": 9.826471328735352,
+        "y": 200.5,
+        "z": -19.940082550048828
       },
       "scale": {
-        "x": 1,
-        "y": 1,
-        "z": 1
+        "x": 0.5,
+        "y": 0.5,
+        "z": 0.5
       },
       "rotation": {
         "x": 0,
@@ -273,16 +288,15 @@
       "initialTypes": {},
       "componentList": [
         "MeshRender",
-        "ColliderShape",
-        "Collider"
+        "ColliderShape"
       ],
       "entityTagData": {
         "tagPointers": []
       },
       "materials": [
         {
-          "fileId": "y94n67458pj-lnu4hp5y-moivyc0o59n",
-          "filePath": "Assets\\Materials\\Ice01.mat",
+          "fileId": "lcfqzwwjiha-mmlpxix6-wmw54v36rw",
+          "filePath": "Assets\\Materials\\Ground_Tilled.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -358,12 +372,12 @@
         "Loopable": {}
       },
       "propsData": {
-        "isLoop": 1
+        "isLoop": 0
       },
       "entityVersion": 3,
       "mesh": {
-        "fileId": "wehss29x://56937734-67d8-4e83-b175-17c2544b25b4-WS_Plane.~@FFFUB",
-        "filePath": "wehss29x://Meshes/plane.fbx/WS_Plane",
+        "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
+        "filePath": "wehss29x://Meshes/cube.fbx/Box001",
         "_tag": {
           "type": "GFileRefer"
         },
@@ -388,4 +402,4 @@
   "HintCraftlandCombineMesh": false,
   "discriminator": "ISceneLike"
 }
-//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}
