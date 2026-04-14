@@ -23,7 +23,13 @@ graph HudPrompt {
         "PROMPT_MARKET_EMPTY_HAND": "Equip a crop from your backpack to sell!",
         "PROMPT_ALREADY_FERTILIZED": "This pot is already fertilized!",
         "PROMPT_WALKWAY_NO_POT": "Walkway — buy pots on the left or right columns only!",
-        "PROMPT_NO_GOLD_POT": "Not enough gold to buy a pot!",
+        "PROMPT_NO_GOLD_POT": "Not enough gold to buy or change a pot!",
+        "PROMPT_POT_CANT_CHANGE_WHILE_GROWING": "Can't buy or change a pot while a crop is growing. Harvest first",
+        "PROMPT_CONSUMABLE_NEED_EQUIP": "Equip a consumable in your quick bar to use it here.",
+        "PROMPT_POT_ACTION_UNAVAILABLE": "You can't use the pot action on this slot right now.",
+        "PROMPT_STORE_NO_GOLD": "Not enough gold to buy this!",
+        "PROMPT_STORE_NO_STOCK": "This item is out of stock!",
+        "PROMPT_STORE_BACKPACK_FULL": "Your backpack is full!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
@@ -39,6 +45,12 @@ graph HudPrompt {
         "PROMPT_ALREADY_FERTILIZED": #FABF00,
         "PROMPT_WALKWAY_NO_POT": #FABF00,
         "PROMPT_NO_GOLD_POT": #FABF00,
+        "PROMPT_POT_CANT_CHANGE_WHILE_GROWING": #FABF00,
+        "PROMPT_CONSUMABLE_NEED_EQUIP": #FABF00,
+        "PROMPT_POT_ACTION_UNAVAILABLE": #FABF00,
+        "PROMPT_STORE_NO_GOLD": #FABF00,
+        "PROMPT_STORE_NO_STOCK": #FABF00,
+        "PROMPT_STORE_BACKPACK_FULL": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>

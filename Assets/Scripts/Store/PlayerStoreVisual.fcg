@@ -98,6 +98,13 @@ graph PlayerStoreVisual {
             }
             if debugCfg.Store() { LogInfo("[PlayerStoreVisual] Buy OK: " + message) }
         } else {
+            if message == "Not enough gold!" {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_STORE_NO_GOLD"})
+            } else if message == "Not enough stock!" {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_STORE_NO_STOCK"})
+            } else if message == "Backpack is full!" {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_STORE_BACKPACK_FULL"})
+            }
             if debugCfg.Store() { LogWarning("[PlayerStoreVisual] Buy FAILED: " + message) }
         }
     }

@@ -7,11 +7,14 @@ graph PlayerCropData {
     CurrentFarmSlotIndex int = -1
     InFarmPotTrigger bool = false
     _IsPerformingAction bool = false
+    // True only when HUD consumable_btn dispatched OnPlayerPotShopAction (fertilize). pot_btn clears this before dispatch.
+    _PotShopFromConsumableBtn bool = false
 
     event OnAwake() {
         CurrentGarden = nil
         CurrentFarmSlotIndex = -1
         InFarmPotTrigger = false
         _IsPerformingAction = false
+        _PotShopFromConsumableBtn = false
     }
 }

@@ -9,6 +9,7 @@ import "../Config/DebugConfig.fcg" as debugCfg
 import "./GardenData.fcg" as gardenData
 import "../Backpack/BackpackData.fcg" as backpackData
 import "../Config/ItemConfig.fcg" as itemCfg
+import "../Currency/CurrencyManager.fcg" as currencyMgr
 
 [platform_server]
 static graph FarmActionAnimator {
@@ -26,6 +27,9 @@ static graph FarmActionAnimator {
 
     async func PerformAction(player entity<Entity>) {
         player<playerCropData>._IsPerformingAction = true
+
+        var fromConsumableBtn = player<playerCropData>._PotShopFromConsumableBtn
+        player<playerCropData>._PotShopFromConsumableBtn = false
 
         var gardenEnt = player<playerCropData>.CurrentGarden
         if gardenEnt == nil || gardenEnt<gardenData> == nil {
@@ -49,8 +53,14 @@ static graph FarmActionAnimator {
             return
         }
 
-        // Pot button = Buy (Cloud) or Change (PotReady). Independent of quick-bar item (Use is a separate button).
+        // Pot button = Buy (Cloud) or Change (PotReady). Check gold before anim so we don't play dig on failure.
         if state == EFarmSlotState.Cloud || state == EFarmSlotState.PotReady {
+            var potItemId = itemCfg.GetPotPurchaseItemId()
+            if !currencyMgr.CanAffordItem(player<Player>, potItemId, 1) {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_GOLD_POT"})
+                player<playerCropData>._IsPerformingAction = false
+                return
+            }
             if debugCfg.Farming() { LogInfo("[POT_SHOP] [FarmActionAnimator] pot shop anim | Cloud or PotReady (ignore hand item)") }
             DisableActions(player)
             animSvc.PlayAnimOnce(player, "Farming")
@@ -71,7 +81,14 @@ static graph FarmActionAnimator {
             }
         }
 
+        // Fertilize only from consumable_btn, never from pot_btn (even if hand holds a consumable).
         if state == EFarmSlotState.CropGrowing {
+            if !fromConsumableBtn {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_CANT_CHANGE_WHILE_GROWING"})
+                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing on pot_btn (use consumable_btn to apply item)") }
+                player<playerCropData>._IsPerformingAction = false
+                return
+            }
             if hasConsumable {
                 if gardenEnt<gardenData>.IsFertilized(key) {
                     if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
@@ -87,11 +104,13 @@ static graph FarmActionAnimator {
                 player<playerCropData>._IsPerformingAction = false
                 return
             }
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no consumable") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_CONSUMABLE_NEED_EQUIP"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: consumable_btn but no consumable in hand") }
             player<playerCropData>._IsPerformingAction = false
             return
         }
 
+        DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_ACTION_UNAVAILABLE"})
         if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: pot_btn no action for state=" + state) }
         player<playerCropData>._IsPerformingAction = false
     }

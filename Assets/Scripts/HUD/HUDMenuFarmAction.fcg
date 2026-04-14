@@ -107,6 +107,7 @@ graph HUDMenuFarmAction {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             return
         }
+        player<playerCropData>._PotShopFromConsumableBtn = false
         DispatchEventToEntity(OnPlayerPotShopAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
     }
 
@@ -138,6 +139,7 @@ graph HUDMenuFarmAction {
             return
         }
 
+        player<playerCropData>._PotShopFromConsumableBtn = true
         DispatchEventToEntity(OnPlayerPotShopAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
     }
 
