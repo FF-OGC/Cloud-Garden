@@ -72,7 +72,7 @@ static graph MutationConfig {
         return 0
     }
 
-    func GetLuckyDirtWeightBonus(prefixId int) int {
+    func GetLuckyPotWeightBonus(prefixId int) int {
         if prefixId == 1 { return 5 }
         if prefixId == 2 { return 3 }
         if prefixId == 3 { return 1 }

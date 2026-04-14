@@ -49,6 +49,18 @@ static graph FarmActionAnimator {
             return
         }
 
+        // Pot button = Buy (Cloud) or Change (PotReady). Independent of quick-bar item (Use is a separate button).
+        if state == EFarmSlotState.Cloud || state == EFarmSlotState.PotReady {
+            if debugCfg.Farming() { LogInfo("[POT_SHOP] [FarmActionAnimator] pot shop anim | Cloud or PotReady (ignore hand item)") }
+            DisableActions(player)
+            animSvc.PlayAnimOnce(player, "Farming")
+            DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+            WaitForMillisecond(_ACTION_DELAY)
+            EnableActions(player)
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
         var hasConsumable = false
         if player<backpackData> != nil {
             var activeSlot = player<backpackData>._ActiveQuickbarSlot
@@ -59,37 +71,28 @@ static graph FarmActionAnimator {
             }
         }
 
-        if hasConsumable {
-            if state != EFarmSlotState.CropGrowing {
-                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: consumable only while crop is growing") }
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
+        if state == EFarmSlotState.CropGrowing {
+            if hasConsumable {
+                if gardenEnt<gardenData>.IsFertilized(key) {
+                    if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
+                    DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+                    player<playerCropData>._IsPerformingAction = false
+                    return
+                }
+                DisableActions(player)
+                animSvc.PlayAnimOnce(player, "Farming")
+                DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+                WaitForMillisecond(_ACTION_DELAY)
+                EnableActions(player)
                 player<playerCropData>._IsPerformingAction = false
                 return
             }
-            if gardenEnt<gardenData>.IsFertilized(key) {
-                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
-                player<playerCropData>._IsPerformingAction = false
-                return
-            }
-        } else {
-            if state == EFarmSlotState.CropGrowing {
-                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no consumable / no action") }
-                player<playerCropData>._IsPerformingAction = false
-                return
-            }
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no consumable") }
+            player<playerCropData>._IsPerformingAction = false
+            return
         }
 
-        DisableActions(player)
-
-        animSvc.PlayAnimOnce(player, "Farming")
-
-        DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
-
-        WaitForMillisecond(_ACTION_DELAY)
-
-        EnableActions(player)
-
+        if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: pot_btn no action for state=" + state) }
         player<playerCropData>._IsPerformingAction = false
     }
 

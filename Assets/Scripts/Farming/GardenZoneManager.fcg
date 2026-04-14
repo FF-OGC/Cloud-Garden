@@ -1,8 +1,7 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
-
-import "../Core/GameManager.fcg" as gameMgr
+import "Player.fcc" as Player
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Floors/FloorManager.fcg" as floorManager
 import "./GardenData.fcg" as gardenData
@@ -42,6 +41,33 @@ static graph GardenZoneManager {
         var zCount = list.Length(farmZones)
         for i = 0, zCount, 1 {
             InitGardenFarmRuntimeInZone(farmZones[i])
+        }
+    }
+
+    // First-time zone claim only (after InitGardenFarmRuntimeInZone): floor index 0, slots 0–2 = free tier-1 pots, PotReady.
+    func ApplyFirstFloorStarterPots(zoneObj entity<Entity>, owner entity<Player>) {
+        if zoneObj == nil || zoneObj<FarmZoneData> == nil || owner == nil { return }
+        var floors = zoneObj<FarmZoneData>.Floors
+        if floors == nil || list.Length(floors) < 1 { return }
+        var floorEnt = floors[0]
+        if floorEnt == nil || floorEnt<gardenData> == nil { return }
+
+        if !floorEnt<gardenData>.IsOwner(owner as entity<Entity>) { return }
+
+        var idx = 0
+        while idx < 3 {
+            var key = floorEnt<gardenData>.SlotKeyFromIndex(idx)
+            floorEnt<gardenData>.TrySetPotTier(key, 1, owner as entity<Entity>)
+            floorEnt<gardenData>.TrySetPotSkinTier(key, 1, owner as entity<Entity>)
+            floorEnt<gardenData>.TrySetLuckyPot(key, false)
+            if floorEnt<gardenData>.TryModifyCell(key, EFarmSlotState.PotReady, owner as entity<Entity>) {
+                DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{floorEnt, key, EFarmSlotState.PotReady})
+                DispatchEventToEntity(OnFarmCellStateChanged, owner, PlatformType.Server, List<object>{floorEnt, key, EFarmSlotState.PotReady})
+                if debugCfg.Farming() {
+                    LogInfo("[POT_SHOP] [StarterPots] floor='" + floorEnt<Entity>.Name + "' key=" + key + " PotReady skinTier=1 potTier=1")
+                }
+            }
+            idx = idx + 1
         }
     }
 }

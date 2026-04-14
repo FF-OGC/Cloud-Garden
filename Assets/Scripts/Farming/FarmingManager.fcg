@@ -57,12 +57,12 @@ static graph FarmingManager {
         if debugCfg.Farming() { LogInfo("[FarmingMgr] intentState=" + intentState) }
 
         if intentState == EFarmSlotState.Cloud {
-            ProcessBuyPot(player, gardenEnt, key)
+            ProcessPaidPotGacha(player, gardenEnt, key, false)
             return
         }
 
         if intentState == EFarmSlotState.PotReady {
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] PotReady idle (buy/change pot via UI only)") }
+            ProcessPaidPotGacha(player, gardenEnt, key, true)
             return
         }
 
@@ -76,16 +76,22 @@ static graph FarmingManager {
         }
     }
 
-    func ProcessBuyPot(player entity<Entity>, gardenEnt entity<Entity>, key string) {
+    // isChangePot: true = reroll skin on existing empty pot (same cost/gacha as buy); clears pot visual first so prefab refreshes.
+    func ProcessPaidPotGacha(player entity<Entity>, gardenEnt entity<Entity>, key string, isChangePot bool) {
         var potItemId = itemCfg.GetPotPurchaseItemId()
         if !currencyMgr.CanAffordItem(player as entity<Player>, potItemId, 1) {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_GOLD_POT"})
             return
         }
 
-        if debugCfg.Farming() { LogInfo("[FarmingMgr] Cloud->PotReady purchase") }
+        var modeStr = "buy"
+        if isChangePot { modeStr = "change" }
+        if debugCfg.Farming() || debugCfg.Gacha() {
+            LogInfo("[POT_SHOP] [FarmingMgr] ProcessPaidPotGacha mode=" + modeStr + " key=" + key + " (Cloud=buy PotReady=change)")
+        }
 
         if !currencyMgr.ProcessItemPurchase(player as entity<Player>, potItemId, 1) {
+            if debugCfg.Farming() || debugCfg.Gacha() { LogInfo("[POT_SHOP] [FarmingMgr] ProcessPaidPotGacha aborted: payment failed key=" + key) }
             return
         }
 
@@ -94,7 +100,16 @@ static graph FarmingManager {
             gachaData.MarkNextPotSkinGuaranteed(player)
         }
 
+        if isChangePot {
+            gardenEnt<gardenData>.TryClearPotVisual(key)
+            if debugCfg.Farming() || debugCfg.Gacha() { LogInfo("[POT_SHOP] [FarmingMgr] change: cleared pot visual key=" + key) }
+        }
+
         var skinTier = gachaManager.RollPotSkinTier(player)
+        if debugCfg.Farming() || debugCfg.Gacha() {
+            LogInfo("[POT_SHOP] [FarmingMgr] pot skin roll tier=" + convert.ToString(skinTier) + " key=" + key + " mode=" + modeStr)
+        }
+
         gardenEnt<gardenData>.TrySetPotSkinTier(key, skinTier, player)
         gardenEnt<gardenData>.TrySetLuckyPot(key, skinTier >= 2)
         gardenEnt<gardenData>.TrySetPotTier(key, 1, player)

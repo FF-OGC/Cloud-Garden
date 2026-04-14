@@ -188,8 +188,8 @@
                   },
                   "scale": {
                     "x": 4,
-                    "y": 9,
-                    "z": 1.2000000476837158
+                    "y": 25,
+                    "z": 1.2
                   },
                   "rotation": {
                     "x": 0,
@@ -3109,7 +3109,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 195,
+          "tempIndex": 263,
           "itemID": 169,
           "seParent": null,
           "ecaScripts": [
@@ -3261,7 +3261,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 196,
+          "tempIndex": 264,
           "itemID": 169,
           "seParent": null,
           "ecaScripts": [

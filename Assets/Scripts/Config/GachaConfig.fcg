@@ -3,17 +3,17 @@ import "StdLibrary.fcc" as std
 static graph GachaConfig {
 
     func GetBaseRate(gachaId string) int {
-        if gachaId == "gacha_lucky_dirt" { return 5 }
+        if gachaId == "gacha_pot_skin" { return 5 }
         return 1
     }
 
     func GetSoftPityThreshold(gachaId string) int {
-        if gachaId == "gacha_lucky_dirt" { return 30 }
+        if gachaId == "gacha_pot_skin" { return 5 }
         return 50
     }
 
     func GetHardPityThreshold(gachaId string) int {
-        if gachaId == "gacha_lucky_dirt" { return 60 }
+        if gachaId == "gacha_pot_skin" { return 10 }
         return 90
     }
 
@@ -26,16 +26,16 @@ static graph GachaConfig {
     }
 
     func GetKillZoneMaxBonus(gachaId string) int {
-        if gachaId == "gacha_lucky_dirt" { return 5 }
+        if gachaId == "gacha_pot_skin" { return 5 }
         return 8
     }
 
     func HasGacha(gachaId string) bool {
-        if gachaId == "gacha_lucky_dirt" { return true }
+        if gachaId == "gacha_pot_skin" { return true }
         return false
     }
 
-    func GetLuckyDirtMutationBonus() int {
+    func GetLuckyPotMutationBonus() int {
         return 15
     }
 }

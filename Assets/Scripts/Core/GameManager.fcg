@@ -125,6 +125,7 @@ static graph GameManager {
 
         var zCount = list.Length(_FarmZones)
         var assignedZone entity<Entity> = nil
+        var isFreshZoneClaim bool = false
         
         // 1. Check session ownership
         for i = 0, zCount, 1 {
@@ -151,6 +152,7 @@ static graph GameManager {
                         }
                     }
                     assignedZone = zone
+                    isFreshZoneClaim = true
                     marketManager.AssignMarketOwner(zone, player)
                     if debugCfg.Core() { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
                     break
@@ -159,9 +161,16 @@ static graph GameManager {
         }
 
         if assignedZone != nil {
-            zoneManager.InitGardenFarmRuntimeInZone(assignedZone)
-            if debugCfg.Farming() {
-                LogInfo("[GameManager] InitGardenFarmRuntimeInZone after assign/rejoin | zone='" + assignedZone<Entity>.Name + "'")
+            if isFreshZoneClaim {
+                zoneManager.InitGardenFarmRuntimeInZone(assignedZone)
+                zoneManager.ApplyFirstFloorStarterPots(assignedZone, player)
+                if debugCfg.Farming() {
+                    LogInfo("[POT_SHOP] [GameManager] Fresh zone claim | InitGardenFarmRuntimeInZone + starter pots floor0 slots 0-2 | zone='" + assignedZone<Entity>.Name + "'")
+                }
+            } else {
+                if debugCfg.Farming() {
+                    LogInfo("[POT_SHOP] [GameManager] Rejoin / existing ownership | skip InitGardenFarmRuntimeInZone (preserve farm state) | zone='" + assignedZone<Entity>.Name + "'")
+                }
             }
         }
         
