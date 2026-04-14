@@ -37,6 +37,10 @@ static graph ItemConfig {
         return 60.0
     }
 
+    // World Y lift from VisualAnchor (single source: FarmVisualManager pot/plant + potion VFX world Y on pot).
+    func GetFarmLiftPotY() float { return 0.05 }
+    func GetFarmLiftPlantY() float { return 0.5 }
+
     // Maps the Seed ID to its corresponding Crop ID yield
     func GetHarvestYield(seedId string) string {
         if seedId == "seed_apple" { return "crop_apple" }
@@ -152,7 +156,7 @@ static graph ItemConfig {
         if itemId == "seed_tomato" { return "Plant to grow Tomatoes" }
         if itemId == "potion" {
             var gPct = GetPotionGoldWeightBonusPercent()
-            return "+90% prefix | -30% growth | Golden +" + convert.ToString(gPct) + "%"
+            return "Use while growing: +90% prefix | -30% remaining time | Golden +" + convert.ToString(gPct) + "%"
         }
         return ""
     }

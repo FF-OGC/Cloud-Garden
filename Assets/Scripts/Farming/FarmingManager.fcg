@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "Map.fcc" as map
 import "List.fcc" as list
+import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
 
 import "./GardenData.fcg" as gardenData
@@ -61,12 +62,12 @@ static graph FarmingManager {
         }
 
         if intentState == EFarmSlotState.PotReady {
-            ProcessFertilize(player, gardenEnt, key)
+            if debugCfg.Farming() { LogInfo("[FarmingMgr] PotReady idle (buy/change pot via UI only)") }
             return
         }
 
         if intentState == EFarmSlotState.CropGrowing {
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] CropGrowing idle") }
+            ProcessFertilize(player, gardenEnt, key)
             return
         }
 
@@ -104,6 +105,7 @@ static graph FarmingManager {
         DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
     }
 
+    // Potion only while CropGrowing (after plant). VFX world Y = same as plant in FarmVisualManager (spawn + GetFarmLiftPlantY).
     func ProcessFertilize(player entity<Entity>, gardenEnt entity<Entity>, key string) {
         var hasPotion = false
 
@@ -116,42 +118,58 @@ static graph FarmingManager {
             }
         }
 
-        if hasPotion {
-            if gardenEnt<gardenData>.IsFertilized(key) {
-                if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE ABORT: already fertilized, key=" + key) }
-                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
-                return
+        if !hasPotion {
+            if debugCfg.Farming() { LogInfo("[FarmingMgr] CropGrowing: no consumable to apply") }
+            return
+        }
+
+        if gardenEnt<gardenData>.IsFertilized(key) {
+            if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE ABORT: already fertilized, key=" + key) }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+            return
+        }
+
+        if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE growing crop") }
+
+        var activeSlot = player<backpackData>._ActiveQuickbarSlot
+        var handle = player<backpackData>._QuickSlotRefs[activeSlot]
+        var availableAmt = player<backpackData>._ItemAmounts[handle] as int
+        if availableAmt < 1 { return }
+
+        var isConsumed = backpackMgr.ConsumeActiveItem(player, 1)
+        if !isConsumed { return }
+
+        var luckBonus = itemCfg.GetPotionLuckBonus()
+        var growthReduction = itemCfg.GetPotionGrowthReduction()
+
+        if !gardenEnt<gardenData>.TrySetFertilized(key, luckBonus, growthReduction, player) { return }
+
+        var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
+        if cs != nil {
+            var now = gameMgr.GetGameTime()
+            var target = cs<cropSlot>.HarvestTime
+            if target > now {
+                var remaining = target - now
+                var newRemaining = remaining * (1.0 - growthReduction)
+                if newRemaining < 0.0 { newRemaining = 0.0 }
+                gardenEnt<gardenData>.TryUpdateHarvestTime(key, now + newRemaining, player)
+                if debugCfg.Farming() { LogInfo("[FarmingMgr] Growth time reduced, new target=" + convert.ToString(now + newRemaining)) }
             }
 
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE pot") }
-
-            var activeSlot = player<backpackData>._ActiveQuickbarSlot
-            var handle = player<backpackData>._QuickSlotRefs[activeSlot]
-            var availableAmt = player<backpackData>._ItemAmounts[handle] as int
-            var amountToUse = 1
-            if availableAmt < 1 { amountToUse = 0 }
-            if amountToUse < 1 { return }
-
-            var isConsumed = backpackMgr.ConsumeActiveItem(player, amountToUse)
-            if isConsumed {
-                var luckBonus = itemCfg.GetPotionLuckBonus()
-                var growthReduction = itemCfg.GetPotionGrowthReduction()
-
-                gardenEnt<gardenData>.TrySetFertilized(key, luckBonus, growthReduction, player)
-
-                var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
-                if cs != nil && cs<cropSlot>.PotVisual != nil {
-                    var potEntity = cs<cropSlot>.PotVisual as entity
-                    if potEntity != nil {
-                        var vfx = GetChildByName(potEntity, "Visual effects")
-                        if vfx != nil { vfx<Entity>.ActiveSelf = true }
+            if cs<cropSlot>.PotVisual != nil {
+                var potEntity = cs<cropSlot>.PotVisual as entity
+                if potEntity != nil {
+                    var vfx = GetChildByName(potEntity, "Visual effects")
+                    if vfx != nil {
+                        var spawnPos = gardenEnt<gardenData>.GetSpawnWorldPositionForSlotKey(key)
+                        var py = spawnPos.Y + itemCfg.GetFarmLiftPlantY()
+                        vfx<Transform>.Position = Vector3{spawnPos.X, py, spawnPos.Z}
+                        vfx<Entity>.ActiveSelf = true
                     }
                 }
-                if debugCfg.Farming() { LogInfo("[FarmingMgr] Potion applied at key=" + key) }
             }
-        } else {
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] PotReady idle (no potion action)") }
         }
+        if debugCfg.Farming() { LogInfo("[FarmingMgr] Potion applied at key=" + key) }
     }
 
     func ProcessHarvest(player entity<Entity>, gardenEnt entity<Entity>, key string) {
@@ -177,7 +195,10 @@ static graph FarmingManager {
             var potEntity = cs<cropSlot>.PotVisual
             if potEntity != nil {
                 var vfx = GetChildByName(potEntity, "Visual effects")
-                if vfx != nil { vfx<Entity>.ActiveSelf = false }
+                if vfx != nil {
+                    vfx<Transform>.LocalPosition = Vector3{0.0, 0.0, 0.0}
+                    vfx<Entity>.ActiveSelf = false
+                }
             }
         }
 
@@ -242,14 +263,6 @@ static graph FarmingManager {
 
         if isRemoved {
             var growthTime = itemCfg.GetGrowthTime(holdItemId)
-            if gardenEnt<gardenData>.IsFertilized(key) {
-                var csF = gardenEnt<gardenData>.GetCropSlotByKey(key)
-                if csF != nil {
-                    var reduction = csF<cropSlot>.FertilizerGrowthReduction
-                    growthTime = growthTime * (1.0 - reduction)
-                    if debugCfg.Farming() { LogInfo("[FarmingMgr] PLANT Fertilized cell reduction applied, growthTime=" + growthTime) }
-                }
-            }
             var harvestTime = gameMgr.GetGameTime() + growthTime
             var plantPos = gardenEnt<gardenData>.GetSpawnWorldPositionForSlotKey(key)
 

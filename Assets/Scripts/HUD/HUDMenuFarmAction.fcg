@@ -48,6 +48,8 @@ graph HUDMenuFarmAction {
         _ConsumableBtn = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/consumable_btn/btn")
         _ConsumableText = GetWidgetByPath(thisEntity<Player>, _MenuUI, "/consumable_btn/text")
 
+        SetConsumableBarVisible(false)
+
         if debugCfg.Farming() { LogInfo("[HUDFarmAction] InitWidgets OK") }
 
         SyncFloorState()
@@ -131,7 +133,7 @@ graph HUDMenuFarmAction {
 
         var key = floor<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
-        if state != EFarmSlotState.PotReady {
+        if state != EFarmSlotState.CropGrowing {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
             return
         }
@@ -243,19 +245,19 @@ graph HUDMenuFarmAction {
         if _HarvestBtn == nil || _HarvestText == nil { return }
 
         if !_IsOnFloor {
-            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
+            SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
             return
         }
 
         if thisEntity<playerCropData> == nil { return }
         var floor = thisEntity<playerCropData>.CurrentGarden
         if floor == nil || floor<gardenData> == nil {
-            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
+            SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
             return
         }
 
         if !thisEntity<playerCropData>.InFarmPotTrigger || thisEntity<playerCropData>.CurrentFarmSlotIndex < 0 {
-            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
+            SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
             return
         }
 
@@ -263,7 +265,7 @@ graph HUDMenuFarmAction {
         var state = floor<gardenData>.GetCellState(key)
 
         if state == EFarmSlotState.Cloud {
-            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
+            SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
         } else if state == EFarmSlotState.PotReady {
             if IsHoldingSeed(thisEntity) {
                 SetHarvestBtnState(COLOR_ACTIVE, "Plant", EResSprite.icon_plan)
@@ -275,7 +277,7 @@ graph HUDMenuFarmAction {
         } else if state == EFarmSlotState.CropReady {
             SetHarvestBtnState(COLOR_ACTIVE, "Harvest", EResSprite.icon_harvest)
         } else {
-            SetHarvestBtnState(COLOR_INACTIVE, "Farm", EResSprite.icon_plan)
+            SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
         }
     }
 
@@ -319,34 +321,29 @@ graph HUDMenuFarmAction {
         }
     }
 
+    // Consumable bar: only visible when the *active* quick_slot holds a consumable (hand). Otherwise hidden entirely.
+    func SetConsumableBarVisible(visible bool) {
+        if _ConsumableRoot != nil {
+            _ConsumableRoot<Entity>.ActiveSelf = visible
+        }
+        if _ConsumableBtn != nil {
+            _ConsumableBtn<Entity>.ActiveSelf = visible
+        }
+        if _ConsumableText != nil {
+            _ConsumableText<Entity>.ActiveSelf = visible
+        }
+    }
+
     func UpdateConsumableBtn() {
         if _ConsumableBtn == nil { return }
         if _ConsumableText == nil { return }
 
-        var heldConsumable = false
-        if thisEntity<backpackData> != nil {
-            var activeSlot = thisEntity<backpackData>._ActiveQuickbarSlot
-            var handle = thisEntity<backpackData>._QuickSlotRefs[activeSlot]
-            if handle != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, handle) {
-                var hid = thisEntity<backpackData>._ItemIDs[handle] as string
-                heldConsumable = itemCfg.IsConsumableItem(hid)
-            }
-        }
-
-        if !heldConsumable {
-            if _ConsumableRoot != nil {
-                _ConsumableRoot<Entity>.ActiveSelf = false
-            } else {
-                _ConsumableBtn<Entity>.ActiveSelf = false
-            }
+        if !IsHoldingConsumable(thisEntity) {
+            SetConsumableBarVisible(false)
             return
         }
 
-        if _ConsumableRoot != nil {
-            _ConsumableRoot<Entity>.ActiveSelf = true
-        } else {
-            _ConsumableBtn<Entity>.ActiveSelf = true
-        }
+        SetConsumableBarVisible(true)
 
         _ConsumableBtn<UIWidgetButton>.SpriteResource = EResSprite.icon_useItem
         _ConsumableText<UIWidgetLabel>.Content = "Use"
@@ -365,7 +362,7 @@ graph HUDMenuFarmAction {
         var key = floor<gardenData>.SlotKeyFromIndex(thisEntity<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
 
-        if state == EFarmSlotState.PotReady {
+        if state == EFarmSlotState.CropGrowing && !floor<gardenData>.IsFertilized(key) {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_ACTIVE
         } else {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
@@ -392,6 +389,7 @@ graph HUDMenuFarmAction {
         return itemCfg.GetType(heldId) == 1
     }
 
+    // True only if the *selected* quick bar slot (hand) has a consumable equipped.
     func IsHoldingConsumable(player entity<Entity>) bool {
         if player<backpackData> == nil { return false }
         var activeSlot = player<backpackData>._ActiveQuickbarSlot

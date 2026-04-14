@@ -1,5 +1,5 @@
 {
-  "_entityName": "Dirt_lucky",
+  "_entityName": "Pot_Tier2",
   "_tag": {
     "type": "Prefab"
   },
@@ -185,7 +185,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 88,
+          "tempIndex": 228,
           "itemID": 224,
           "seParent": null,
           "ecaScripts": [
@@ -267,7 +267,7 @@
       "rotation": {
         "x": 0,
         "y": 0,
-        "z": 0
+        "z": 180
       },
       "BTPath": [
         null
@@ -377,8 +377,8 @@
       },
       "entityVersion": 3,
       "mesh": {
-        "fileId": "wehss29x://7d9977d6-d297-4a69-970c-c4d88446bf3b-Box001.~@FFFUB",
-        "filePath": "wehss29x://Meshes/cube.fbx/Box001",
+        "fileId": "wehss29x://c2ce394e-c59e-4f72-8f2b-9f287d9cb292-Cone001.~@FFFUB",
+        "filePath": "wehss29x://Meshes/cone.fbx/Cone001",
         "_tag": {
           "type": "GFileRefer"
         },

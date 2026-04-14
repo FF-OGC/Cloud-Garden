@@ -59,24 +59,25 @@ static graph FarmActionAnimator {
             }
         }
 
-        if hasConsumable && state != EFarmSlotState.PotReady {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: consumable only on PotReady") }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
-            player<playerCropData>._IsPerformingAction = false
-            return
-        }
-
-        if hasConsumable && gardenEnt<gardenData>.IsFertilized(key) {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
-            player<playerCropData>._IsPerformingAction = false
-            return
-        }
-
-        if state == EFarmSlotState.CropGrowing {
-            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no action") }
-            player<playerCropData>._IsPerformingAction = false
-            return
+        if hasConsumable {
+            if state != EFarmSlotState.CropGrowing {
+                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: consumable only while crop is growing") }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ITEM_WRONG"})
+                player<playerCropData>._IsPerformingAction = false
+                return
+            }
+            if gardenEnt<gardenData>.IsFertilized(key) {
+                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+                player<playerCropData>._IsPerformingAction = false
+                return
+            }
+        } else {
+            if state == EFarmSlotState.CropGrowing {
+                if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: CropGrowing, no consumable / no action") }
+                player<playerCropData>._IsPerformingAction = false
+                return
+            }
         }
 
         DisableActions(player)

@@ -18,10 +18,10 @@ static graph FarmVisualManager {
         if floor == nil || floor<gardenData> == nil { return }
 
         var key = slotKey
-        // Base = VisualAnchor world pos; tiny Y lift so pot/plant does not z-fight with the anchor/ground (tune anchor in editor for coarse height).
+        // Base = VisualAnchor world pos; Y lifts from ItemConfig (same as potion VFX on pot).
         var spawnPos = floor<gardenData>.GetSpawnWorldPositionForSlotKey(key)
-        var liftPotY = 0.05
-        var liftPlantY = 0.5
+        var liftPotY = itemCfg.GetFarmLiftPotY()
+        var liftPlantY = itemCfg.GetFarmLiftPlantY()
         var potPos = Vector3{spawnPos.X, spawnPos.Y + liftPotY, spawnPos.Z}
         var plantPos = Vector3{spawnPos.X, spawnPos.Y + liftPlantY, spawnPos.Z}
 
