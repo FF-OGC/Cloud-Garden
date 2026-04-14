@@ -4,7 +4,6 @@ import "Math.fcc" as math
 
 import "../Config/GachaConfig.fcg" as gachaCfg
 import "../Config/MutationConfig.fcg" as mutCfg
-import "../Config/ItemConfig.fcg" as itemCfg
 import "../Gacha/GachaData.fcg" as gachaData
 import "../Services/GachaService.fcg" as gachaService
 import "../Core/GameManager.fcg" as gameManager
@@ -56,19 +55,11 @@ static graph GachaManager {
             gachaData.ResetPity(owner, pityId)
 
             var prefixCount = mutCfg.GetPrefixCount()
-            var potionRef = itemCfg.GetPotionLuckBonus()
-            if potionRef < 1 { potionRef = 1 }
-
+            // Which prefix (Silver / Golden / Rainbow) uses base weights + lucky pot only; luck potion only affects totalChance above.
             var totalWeight = 0
             for p = 1, prefixCount + 1, 1 {
                 var w = mutCfg.GetPrefixBaseWeight(p)
                 if isLuckyPot { w = w + mutCfg.GetLuckyPotWeightBonus(p) }
-                if fertilizerLuckPercent > 0 {
-                    var goldBase = mutCfg.GetEnhancementWeightBonus(p)
-                    if goldBase > 0 {
-                        w = w + (goldBase * fertilizerLuckPercent) / potionRef
-                    }
-                }
                 totalWeight = totalWeight + w
             }
 
@@ -78,12 +69,6 @@ static graph GachaManager {
             for p = 1, prefixCount + 1, 1 {
                 var w = mutCfg.GetPrefixBaseWeight(p)
                 if isLuckyPot { w = w + mutCfg.GetLuckyPotWeightBonus(p) }
-                if fertilizerLuckPercent > 0 {
-                    var goldBase = mutCfg.GetEnhancementWeightBonus(p)
-                    if goldBase > 0 {
-                        w = w + (goldBase * fertilizerLuckPercent) / potionRef
-                    }
-                }
                 cumulative = cumulative + w
                 if prefixRoll <= cumulative {
                     if debugCfg.Mutation() { LogInfo("[MUTATION] PREFIX HIT -> " + mutCfg.GetPrefixName(p) + " (id=" + convert.ToString(p) + ") | finalWeight=" + convert.ToString(w) + "/" + convert.ToString(totalWeight) + " luckyPot=" + convert.ToString(isLuckyPot) + " fertLuck%=" + convert.ToString(fertilizerLuckPercent)) }

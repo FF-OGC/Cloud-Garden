@@ -44,6 +44,13 @@ static graph FarmActionAnimator {
             return
         }
 
+        if !gardenEnt<gardenData>.IsOwner(player) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: not garden owner") }
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
         var key = gardenEnt<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
         var state = gardenEnt<gardenData>.GetCellState(key)
 
@@ -72,12 +79,13 @@ static graph FarmActionAnimator {
         }
 
         var hasConsumable = false
+        var heldId = ""
         if player<backpackData> != nil {
             var activeSlot = player<backpackData>._ActiveQuickbarSlot
             var handle = player<backpackData>._QuickSlotRefs[activeSlot]
             if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
-                var heldId = player<backpackData>._ItemIDs[handle] as string
-                if itemCfg.IsConsumableItem(heldId) { hasConsumable = true }
+                heldId = player<backpackData>._ItemIDs[handle] as string
+                if itemCfg.IsFarmGrowConsumable(heldId) { hasConsumable = true }
             }
         }
 
@@ -90,9 +98,15 @@ static graph FarmActionAnimator {
                 return
             }
             if hasConsumable {
-                if gardenEnt<gardenData>.IsFertilized(key) {
-                    if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: already fertilized") }
-                    DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
+                if itemCfg.IsPotionLuckItem(heldId) && gardenEnt<gardenData>.HasLuckFertilizer(key) {
+                    if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: luck potion already used") }
+                    DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_LUCK_POTION"})
+                    player<playerCropData>._IsPerformingAction = false
+                    return
+                }
+                if itemCfg.IsPotionGrowItem(heldId) && gardenEnt<gardenData>.HasGrowthFertilizer(key) {
+                    if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: growth potion already used") }
+                    DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_GROWTH_POTION"})
                     player<playerCropData>._IsPerformingAction = false
                     return
                 }
@@ -136,6 +150,13 @@ static graph FarmActionAnimator {
 
         if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: not in slot") }
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        if !gardenEnt<gardenData>.IsOwner(player) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: not garden owner") }
             player<playerCropData>._IsPerformingAction = false
             return
         }

@@ -5,7 +5,7 @@ import "EditorGenLib.fcc" as gen
 static graph MarketConfig {
 
     func GetSellableItems() List<string> {
-        return List<string>{"crop_apple", "crop_carrot", "crop_tomato"}
+        return List<string>{"crop_apple", "crop_carrot", "crop_tomato", "crop_chili", "crop_onion"}
     }
 
     func IsSellable(itemId string) bool {
@@ -59,6 +59,8 @@ static graph MarketConfig {
         if itemId == "crop_apple" { return EResPrefab.crop_apple }
         if itemId == "crop_carrot" { return EResPrefab.crop_carrot }
         if itemId == "crop_tomato" { return EResPrefab.crop_tomato }
+        if itemId == "crop_chili" { return EResPrefab.crop_chili }
+        if itemId == "crop_onion" { return EResPrefab.crop_onion }
         return EResPrefab.seed_growed
     }
 

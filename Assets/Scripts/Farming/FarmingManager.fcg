@@ -20,6 +20,51 @@ import "../Gacha/GachaData.fcg" as gachaData
 [platform_server]
 static graph FarmingManager {
 
+    func _FindPotLuckVfxChild(potEntity entity<Entity>) entity<Entity> {
+        var n = itemCfg.GetPotLuckPotionVfxChildName()
+        var v = GetChildByName(potEntity, n)
+        if v != nil { return v }
+        return GetChildByName(potEntity, n + " ")
+    }
+
+    // Matches potion buffs on slot: grow VFX when growth pot applied, luck VFX when luck pot applied.
+    func SyncPotPotionVfxOnPot(gardenEnt entity<Entity>, key string) {
+        if gardenEnt == nil || gardenEnt<gardenData> == nil { return }
+        var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
+        if cs == nil || cs<cropSlot>.PotVisual == nil { return }
+        var potEntity = cs<cropSlot>.PotVisual as entity
+        if potEntity == nil { return }
+
+        var growVfx = GetChildByName(potEntity, itemCfg.GetPotGrowPotionVfxChildName())
+        var luckVfx = _FindPotLuckVfxChild(potEntity)
+
+        var spawnPos = gardenEnt<gardenData>.GetSpawnWorldPositionForSlotKey(key)
+        var py = spawnPos.Y + itemCfg.GetFarmLiftPlantY()
+        var worldPos = Vector3{spawnPos.X, py, spawnPos.Z}
+
+        var hasL = gardenEnt<gardenData>.HasLuckFertilizer(key)
+        var hasG = gardenEnt<gardenData>.HasGrowthFertilizer(key)
+
+        if growVfx != nil {
+            if hasG {
+                growVfx<Transform>.Position = worldPos
+                growVfx<Entity>.ActiveSelf = true
+            } else {
+                growVfx<Transform>.LocalPosition = Vector3{0.0, 0.0, 0.0}
+                growVfx<Entity>.ActiveSelf = false
+            }
+        }
+        if luckVfx != nil {
+            if hasL {
+                luckVfx<Transform>.Position = worldPos
+                luckVfx<Entity>.ActiveSelf = true
+            } else {
+                luckVfx<Transform>.LocalPosition = Vector3{0.0, 0.0, 0.0}
+                luckVfx<Entity>.ActiveSelf = false
+            }
+        }
+    }
+
     event OnExecuteFarmAction(player entity<Entity>) {
         if debugCfg.Farming() { LogInfo("[FarmingMgr] >>> OnExecuteFarmAction FIRED") }
 
@@ -120,82 +165,79 @@ static graph FarmingManager {
         DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
     }
 
-    // Potion only while CropGrowing (after plant). VFX world Y = same as plant in FarmVisualManager (spawn + GetFarmLiftPlantY).
+    // potion_luck: mutation chance only. potion_grow: remaining time only. Each can be used once per crop.
     func ProcessFertilize(player entity<Entity>, gardenEnt entity<Entity>, key string) {
-        var hasPotion = false
-
+        var holdItemId = ""
         if player<backpackData> != nil {
             var activeSlot = player<backpackData>._ActiveQuickbarSlot
             var handle = player<backpackData>._QuickSlotRefs[activeSlot]
             if handle != -1 && map.ContainKey(player<backpackData>._ItemIDs, handle) {
-                var holdItemId = player<backpackData>._ItemIDs[handle] as string
-                if itemCfg.IsConsumableItem(holdItemId) { hasPotion = true }
+                holdItemId = player<backpackData>._ItemIDs[handle] as string
             }
         }
 
-        if !hasPotion {
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] CropGrowing: no consumable to apply") }
+        if holdItemId == "" || !itemCfg.IsFarmGrowConsumable(holdItemId) {
+            if debugCfg.Farming() { LogInfo("[FarmingMgr] CropGrowing: no luck/grow potion in hand") }
             return
         }
 
-        if gardenEnt<gardenData>.IsFertilized(key) {
-            if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE ABORT: already fertilized, key=" + key) }
-            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_FERTILIZED"})
-            return
+        if itemCfg.IsPotionLuckItem(holdItemId) {
+            if gardenEnt<gardenData>.HasLuckFertilizer(key) {
+                if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE ABORT: luck potion already used key=" + key) }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_LUCK_POTION"})
+                return
+            }
+        } else if itemCfg.IsPotionGrowItem(holdItemId) {
+            if gardenEnt<gardenData>.HasGrowthFertilizer(key) {
+                if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE ABORT: growth potion already used key=" + key) }
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_ALREADY_GROWTH_POTION"})
+                return
+            }
         }
 
-        if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE growing crop") }
+        if debugCfg.Farming() { LogInfo("[FarmingMgr] FERTILIZE growing crop item=" + holdItemId) }
 
-        var activeSlot = player<backpackData>._ActiveQuickbarSlot
-        var handle = player<backpackData>._QuickSlotRefs[activeSlot]
-        var availableAmt = player<backpackData>._ItemAmounts[handle] as int
+        var activeSlot2 = player<backpackData>._ActiveQuickbarSlot
+        var handle2 = player<backpackData>._QuickSlotRefs[activeSlot2]
+        var availableAmt = player<backpackData>._ItemAmounts[handle2] as int
         if availableAmt < 1 { return }
 
         var isConsumed = backpackMgr.ConsumeActiveItem(player, 1)
         if !isConsumed { return }
 
-        var luckBonus = itemCfg.GetPotionLuckBonus()
-        var growthReduction = itemCfg.GetPotionGrowthReduction()
+        if itemCfg.IsPotionLuckItem(holdItemId) {
+            if !gardenEnt<gardenData>.TryApplyLuckFertilizer(key, itemCfg.GetPotionLuckMutationBonusPercent(), player) { return }
+        } else {
+            var growCut = itemCfg.GetPotionGrowTimeReduction()
+            if !gardenEnt<gardenData>.TryApplyGrowthFertilizer(key, growCut, player) { return }
 
-        if !gardenEnt<gardenData>.TrySetFertilized(key, luckBonus, growthReduction, player) { return }
-
-        var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
-        if cs != nil {
-            var now = gameMgr.GetGameTime()
-            var target = cs<cropSlot>.HarvestTime
-            if target > now {
-                var remaining = target - now
-                var newRemaining = remaining * (1.0 - growthReduction)
-                if newRemaining < 0.0 { newRemaining = 0.0 }
-                gardenEnt<gardenData>.TryUpdateHarvestTime(key, now + newRemaining, player)
-                if debugCfg.Farming() { LogInfo("[FarmingMgr] Growth time reduced, new target=" + convert.ToString(now + newRemaining)) }
-            }
-
-            var plantedF = cs<cropSlot>.PlantedSeed
-            var tEnd = cs<cropSlot>.HarvestTime
-            var tStart = cs<cropSlot>.GrowthStartTime
-            if plantedF != "" && tEnd > now {
-                var wantKey = itemCfg.GetGrowingPlantPrefabKey(plantedF, now, tStart, tEnd)
-                var seedKeyOnly = itemCfg.GetGrowingSeedPrefabKey(plantedF)
-                if wantKey != seedKeyOnly && cs<cropSlot>.PlantPrefabKey == seedKeyOnly {
-                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
-                    DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
+            var csGrow = gardenEnt<gardenData>.GetCropSlotByKey(key)
+            if csGrow != nil {
+                var now = gameMgr.GetGameTime()
+                var target = csGrow<cropSlot>.HarvestTime
+                if target > now {
+                    var remaining = target - now
+                    var newRemaining = remaining * (1.0 - growCut)
+                    if newRemaining < 0.0 { newRemaining = 0.0 }
+                    gardenEnt<gardenData>.TryUpdateHarvestTime(key, now + newRemaining, player)
+                    if debugCfg.Farming() { LogInfo("[FarmingMgr] Growth time reduced, new target=" + convert.ToString(now + newRemaining)) }
                 }
-            }
 
-            if cs<cropSlot>.PotVisual != nil {
-                var potEntity = cs<cropSlot>.PotVisual as entity
-                if potEntity != nil {
-                    var vfx = GetChildByName(potEntity, "Visual effects")
-                    if vfx != nil {
-                        var spawnPos = gardenEnt<gardenData>.GetSpawnWorldPositionForSlotKey(key)
-                        var py = spawnPos.Y + itemCfg.GetFarmLiftPlantY()
-                        vfx<Transform>.Position = Vector3{spawnPos.X, py, spawnPos.Z}
-                        vfx<Entity>.ActiveSelf = true
+                var plantedF = csGrow<cropSlot>.PlantedSeed
+                var tEnd = csGrow<cropSlot>.HarvestTime
+                var tStart = csGrow<cropSlot>.GrowthStartTime
+                if plantedF != "" && tEnd > now {
+                    var wantKey = itemCfg.GetGrowingPlantPrefabKey(plantedF, now, tStart, tEnd)
+                    var seedKeyOnly = itemCfg.GetGrowingSeedPrefabKey(plantedF)
+                    if wantKey != seedKeyOnly && csGrow<cropSlot>.PlantPrefabKey == seedKeyOnly {
+                        DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
+                        DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
                     }
                 }
             }
         }
+
+        SyncPotPotionVfxOnPot(gardenEnt, key)
         if debugCfg.Farming() { LogInfo("[FarmingMgr] Potion applied at key=" + key) }
     }
 
@@ -217,23 +259,12 @@ static graph FarmingManager {
         if debugCfg.Farming() { LogInfo("[FarmingMgr] AddItemWithMutation | result=" + isAdded) }
         if !isAdded { return }
 
-        var cs = gardenEnt<gardenData>.GetCropSlotByKey(key)
-        if cs != nil && cs<cropSlot>.PotVisual != nil {
-            var potEntity = cs<cropSlot>.PotVisual
-            if potEntity != nil {
-                var vfx = GetChildByName(potEntity, "Visual effects")
-                if vfx != nil {
-                    vfx<Transform>.LocalPosition = Vector3{0.0, 0.0, 0.0}
-                    vfx<Entity>.ActiveSelf = false
-                }
-            }
-        }
-
         if !gardenEnt<gardenData>.TryModifyCell(key, EFarmSlotState.PotReady, player) { return }
         DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
         DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
 
         gardenEnt<gardenData>.TryClearCrop(key, player)
+        SyncPotPotionVfxOnPot(gardenEnt, key)
         if debugCfg.Farming() { LogInfo("[FarmingMgr] Harvest complete") }
     }
 

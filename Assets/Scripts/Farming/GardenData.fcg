@@ -244,30 +244,42 @@ graph GardenData {
 
     func ClearFertilizerOnSlot(cs entity<gen.CropSlot>) {
         if cs == nil { return }
-        cs<cropSlot>.IsFertilized = false
         cs<cropSlot>.FertilizerLuckBonus = 0
         cs<cropSlot>.FertilizerGrowthReduction = 0.0
     }
 
-    func IsFertilized(key string) bool {
+    func HasLuckFertilizer(key string) bool {
         var cs = GetCropSlotByKey(key)
         if cs == nil { return false }
-        return cs<cropSlot>.IsFertilized
+        return cs<cropSlot>.FertilizerLuckBonus > 0
+    }
+
+    func HasGrowthFertilizer(key string) bool {
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        return cs<cropSlot>.FertilizerGrowthReduction > 0.0
     }
 
     func GetFertilizerLuckBonus(key string) int {
         var cs = GetCropSlotByKey(key)
         if cs == nil { return 0 }
-        if !cs<cropSlot>.IsFertilized { return 0 }
         return cs<cropSlot>.FertilizerLuckBonus
     }
 
-    func TrySetFertilized(key string, luckBonus int, growthReduction float, player entity<Entity>) bool {
+    func TryApplyLuckFertilizer(key string, luckBonus int, player entity<Entity>) bool {
         if !IsOwner(player) { return false }
         var cs = GetCropSlotByKey(key)
         if cs == nil { return false }
-        cs<cropSlot>.IsFertilized = true
+        if cs<cropSlot>.FertilizerLuckBonus > 0 { return false }
         cs<cropSlot>.FertilizerLuckBonus = luckBonus
+        return true
+    }
+
+    func TryApplyGrowthFertilizer(key string, growthReduction float, player entity<Entity>) bool {
+        if !IsOwner(player) { return false }
+        var cs = GetCropSlotByKey(key)
+        if cs == nil { return false }
+        if cs<cropSlot>.FertilizerGrowthReduction > 0.0 { return false }
         cs<cropSlot>.FertilizerGrowthReduction = growthReduction
         return true
     }

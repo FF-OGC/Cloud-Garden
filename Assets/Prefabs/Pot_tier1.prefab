@@ -131,7 +131,7 @@
           "entityVersion": 3
         },
         {
-          "_entityName": "Visual effects",
+          "_entityName": "Grow_Visual effects",
           "_tag": {
             "type": "SceneEditEntity",
             "resourceId": "Primitive/Empty"
@@ -185,7 +185,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 230,
+          "tempIndex": 461,
           "itemID": 224,
           "seParent": null,
           "ecaScripts": [
@@ -244,6 +244,121 @@
             "ModelMemory": 0,
             "AudioMemory": 0
           }
+        },
+        {
+          "_entityName": "Luck_Visual effects",
+          "_tag": {
+            "type": "SceneEditEntity",
+            "resourceId": "Primitive/Empty"
+          },
+          "_entityId": "ZDAEr6lW",
+          "children": [],
+          "prefabVariant": null,
+          "activeValue": {
+            "selfValue": false,
+            "valueTag": "activeValue"
+          },
+          "unlockedValue": {
+            "selfValue": true,
+            "valueTag": "unlockedValue"
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "scale": {
+            "x": 1,
+            "y": 0.5,
+            "z": 1
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "BTPath": [
+            null
+          ],
+          "visible": true,
+          "VisibilityLayer": 0,
+          "modelOptimization": 0,
+          "streamingLayer": "",
+          "attributes": [
+            2,
+            4
+          ],
+          "isTrigger": false,
+          "collidable": true,
+          "physicalLayer": 0,
+          "physicalMaterial": null,
+          "aoiSetting": 0,
+          "initialTypes": {},
+          "componentList": [],
+          "entityTagData": {
+            "tagPointers": []
+          },
+          "tempIndex": 462,
+          "itemID": 224,
+          "seParent": null,
+          "ecaScripts": [
+            null
+          ],
+          "ecaProps": {
+            "EffectEntityGenerator": {},
+            "ItemContainerGenerator": {},
+            "Entity": {},
+            "EffectEntity": {},
+            "Playable": {},
+            "Loopable": {},
+            "LevelObject": {},
+            "Transform": {},
+            "Visibility": {}
+          },
+          "propsData": {
+            "effectColor": {
+              "r": 255,
+              "g": 0,
+              "b": 0,
+              "a": 1
+            },
+            "playSpeed": 100,
+            "autoPlay": true,
+            "effectTypeResId": "",
+            "effectTexture": "VFX_2X2_Lightning003_BJ",
+            "effectTextureRef": {
+              "fileId": "dfdeb8fa298a474076518ab3d05faf81",
+              "filePath": "lib://fftextures/EffectTextures/Lightning.png",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "texture"
+            },
+            "effectTypeRef": {
+              "fileId": "EffectType_UGC_T_34_LY_WS_VFX1",
+              "filePath": "lib://ffEffects/T_34_LY_WS_VFX1",
+              "_tag": {
+                "type": "GFileRefer"
+              },
+              "fileType": "effecttype"
+            },
+            "effectType": "UGC_T_34_LY_WS_VFX1",
+            "isLoop": 1
+          },
+          "_performanceConfigData": {
+            "ItemID": 224,
+            "MeshCount": 0,
+            "MaterialCount": 0,
+            "AnimationCount": 0,
+            "BoneCount": 0,
+            "ParticleEmitterCount": 0,
+            "ParticleCount": 0,
+            "TextureMemory": 0,
+            "ModelMemory": 0,
+            "AudioMemory": 0
+          },
+          "editorLockValue": false,
+          "editorVisibleValue": true
         }
       ],
       "activeValue": {

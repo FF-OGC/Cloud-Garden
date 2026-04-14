@@ -25,7 +25,6 @@ graph CropSlot {
     MutationResult string
     IsLuckyPot bool
 
-    IsFertilized bool
     FertilizerLuckBonus int
     FertilizerGrowthReduction float
 
@@ -63,7 +62,6 @@ graph CropSlot {
         PlantPrefabKey = ""
         MutationResult = ""
         IsLuckyPot = false
-        IsFertilized = false
         FertilizerLuckBonus = 0
         FertilizerGrowthReduction = 0.0
     }

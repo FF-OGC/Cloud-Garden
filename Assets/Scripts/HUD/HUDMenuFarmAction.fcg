@@ -107,6 +107,10 @@ graph HUDMenuFarmAction {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             return
         }
+        if !floor<gardenData>.IsOwner(player as entity<Entity>) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
+            return
+        }
         player<playerCropData>._PotShopFromConsumableBtn = false
         DispatchEventToEntity(OnPlayerPotShopAction, globalEntity, PlatformType.Server, List<object>{player as entity<Entity>})
     }
@@ -129,6 +133,11 @@ graph HUDMenuFarmAction {
 
         if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR_ITEM"})
+            return
+        }
+
+        if !floor<gardenData>.IsOwner(player as entity<Entity>) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
             return
         }
 
@@ -160,6 +169,11 @@ graph HUDMenuFarmAction {
 
         if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
+            return
+        }
+
+        if !floor<gardenData>.IsOwner(player as entity<Entity>) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
             return
         }
 
@@ -265,11 +279,12 @@ graph HUDMenuFarmAction {
 
         var key = floor<gardenData>.SlotKeyFromIndex(thisEntity<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
+        var isOwnerGarden = floor<gardenData>.IsOwner(thisEntity as entity<Entity>)
 
         if state == EFarmSlotState.Cloud {
             SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
         } else if state == EFarmSlotState.PotReady {
-            if IsHoldingSeed(thisEntity) {
+            if isOwnerGarden && IsHoldingSeed(thisEntity) {
                 SetHarvestBtnState(COLOR_ACTIVE, "Plant", EResSprite.icon_plan)
             } else {
                 SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
@@ -277,7 +292,11 @@ graph HUDMenuFarmAction {
         } else if state == EFarmSlotState.CropGrowing {
             SetHarvestBtnState(COLOR_INACTIVE, "Growing", EResSprite.icon_plan)
         } else if state == EFarmSlotState.CropReady {
-            SetHarvestBtnState(COLOR_ACTIVE, "Harvest", EResSprite.icon_harvest)
+            if isOwnerGarden {
+                SetHarvestBtnState(COLOR_ACTIVE, "Harvest", EResSprite.icon_harvest)
+            } else {
+                SetHarvestBtnState(COLOR_INACTIVE, "Harvest", EResSprite.icon_harvest)
+            }
         } else {
             SetHarvestBtnState(COLOR_INACTIVE, "Plant", EResSprite.icon_plan)
         }
@@ -310,13 +329,24 @@ graph HUDMenuFarmAction {
 
         var key = floor<gardenData>.SlotKeyFromIndex(thisEntity<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
+        var isOwnerGarden = floor<gardenData>.IsOwner(thisEntity as entity<Entity>)
 
         if state == EFarmSlotState.Cloud {
-            _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
-            _PotText<UIWidgetLabel>.Content = "Buy"
+            if isOwnerGarden {
+                _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
+                _PotText<UIWidgetLabel>.Content = "Buy"
+            } else {
+                _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
+                _PotText<UIWidgetLabel>.Content = "Pot"
+            }
         } else if state == EFarmSlotState.PotReady {
-            _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
-            _PotText<UIWidgetLabel>.Content = "Change"
+            if isOwnerGarden {
+                _PotBtn<UIWidgetButton>.Color = COLOR_ACTIVE
+                _PotText<UIWidgetLabel>.Content = "Change"
+            } else {
+                _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
+                _PotText<UIWidgetLabel>.Content = "Pot"
+            }
         } else {
             _PotBtn<UIWidgetButton>.Color = COLOR_INACTIVE
             _PotText<UIWidgetLabel>.Content = "Pot"
@@ -364,8 +394,25 @@ graph HUDMenuFarmAction {
         var key = floor<gardenData>.SlotKeyFromIndex(thisEntity<playerCropData>.CurrentFarmSlotIndex)
         var state = floor<gardenData>.GetCellState(key)
 
-        if state == EFarmSlotState.CropGrowing && !floor<gardenData>.IsFertilized(key) {
-            _ConsumableBtn<UIWidgetButton>.Color = COLOR_ACTIVE
+        var heldConsumable = ""
+        if thisEntity<backpackData> != nil {
+            var h = thisEntity<backpackData>._QuickSlotRefs[thisEntity<backpackData>._ActiveQuickbarSlot]
+            if h != -1 && map.ContainKey(thisEntity<backpackData>._ItemIDs, h) {
+                heldConsumable = thisEntity<backpackData>._ItemIDs[h] as string
+            }
+        }
+
+        var isOwnerGarden = floor<gardenData>.IsOwner(thisEntity as entity<Entity>)
+
+        if state == EFarmSlotState.CropGrowing && isOwnerGarden {
+            var canUse = false
+            if itemCfg.IsPotionLuckItem(heldConsumable) && !floor<gardenData>.HasLuckFertilizer(key) { canUse = true }
+            if itemCfg.IsPotionGrowItem(heldConsumable) && !floor<gardenData>.HasGrowthFertilizer(key) { canUse = true }
+            if canUse {
+                _ConsumableBtn<UIWidgetButton>.Color = COLOR_ACTIVE
+            } else {
+                _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
+            }
         } else {
             _ConsumableBtn<UIWidgetButton>.Color = COLOR_INACTIVE
         }
@@ -399,6 +446,6 @@ graph HUDMenuFarmAction {
         if handle == -1 { return false }
         if !map.ContainKey(player<backpackData>._ItemIDs, handle) { return false }
         var heldId = player<backpackData>._ItemIDs[handle] as string
-        return itemCfg.IsConsumableItem(heldId)
+        return itemCfg.IsFarmGrowConsumable(heldId)
     }
 }

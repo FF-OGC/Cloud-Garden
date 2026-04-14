@@ -9,11 +9,13 @@ import "./MutationConfig.fcg" as mutCfg
 [platform_server]
 static graph ItemConfig {
     
-    // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool, 4 = Special Item
+    // Returns Item Category: 1 = Seed, 2 = Crop, 3 = Tool, 4 = Special Item (potions)
     func GetType(itemId string) int {
-        if itemId == "seed_apple" || itemId == "seed_tomato" || itemId == "seed_carrot" { return 1 }
-        if itemId == "crop_apple" || itemId == "crop_tomato" || itemId == "crop_carrot" { return 2 }
-        if itemId == "potion" { return 4 }
+        if itemId == "seed_apple" || itemId == "seed_tomato" || itemId == "seed_carrot" ||
+            itemId == "seed_chili" || itemId == "seed_onion" { return 1 }
+        if itemId == "crop_apple" || itemId == "crop_tomato" || itemId == "crop_carrot" ||
+            itemId == "crop_chili" || itemId == "crop_onion" { return 2 }
+        if itemId == "potion_luck" || itemId == "potion_grow" { return 4 }
         return 3
     }
 
@@ -34,6 +36,8 @@ static graph ItemConfig {
         if itemId == "seed_apple" { return 30.0 }
         if itemId == "seed_carrot" { return 45.0 }
         if itemId == "seed_tomato" { return 90.0 }
+        if itemId == "seed_chili" { return 50.0 }
+        if itemId == "seed_onion" { return 55.0 }
         return 60.0
     }
 
@@ -41,11 +45,17 @@ static graph ItemConfig {
     func GetFarmLiftPotY() float { return 0.05 }
     func GetFarmLiftPlantY() float { return 0.5 }
 
+    // Child names under PotVisual (Pot_tier1 / Pot_Tier2) for potion VFX.
+    func GetPotGrowPotionVfxChildName() string { return "Grow_Visual effects" }
+    func GetPotLuckPotionVfxChildName() string { return "Luck_Visual effects" }
+
     // Maps the Seed ID to its corresponding Crop ID yield
     func GetHarvestYield(seedId string) string {
         if seedId == "seed_apple" { return "crop_apple" }
         if seedId == "seed_carrot" { return "crop_carrot" }
         if seedId == "seed_tomato" { return "crop_tomato" }
+        if seedId == "seed_chili" { return "crop_chili" }
+        if seedId == "seed_onion" { return "crop_onion" }
         return "crop_default"
     }
 
@@ -53,11 +63,16 @@ static graph ItemConfig {
         if itemId == "seed_apple" { return "Apple Seed" }
         if itemId == "seed_carrot" { return "Carrot Seed" }
         if itemId == "seed_tomato" { return "Tomato Seed" }
+        if itemId == "seed_chili" { return "Chili Seed" }
+        if itemId == "seed_onion" { return "Onion Seed" }
         if itemId == "crop_apple" { return "Apple" }
         if itemId == "crop_carrot" { return "Carrot" }
         if itemId == "crop_tomato" { return "Tomato" }
+        if itemId == "crop_chili" { return "Chili" }
+        if itemId == "crop_onion" { return "Onion" }
         if itemId == "watering_can" { return "Watering Can" }
-        if itemId == "potion" { return "Growth Potion" }
+        if itemId == "potion_luck" { return "Mutation Luck Potion" }
+        if itemId == "potion_grow" { return "Growth Potion" }
         return itemId
     }
 
@@ -66,7 +81,10 @@ static graph ItemConfig {
         if itemId == "seed_apple" { return 20 }
         if itemId == "seed_carrot" { return 25 }
         if itemId == "seed_tomato" { return 35 }
-        if itemId == "potion" { return 50 }
+        if itemId == "seed_chili" { return 30 }
+        if itemId == "seed_onion" { return 28 }
+        if itemId == "potion_luck" { return 55 }
+        if itemId == "potion_grow" { return 45 }
         return 10
     }
 
@@ -74,6 +92,8 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return 50 }
         if itemId == "crop_carrot" { return 55 }
         if itemId == "crop_tomato" { return 60 }
+        if itemId == "crop_chili" { return 58 }
+        if itemId == "crop_onion" { return 52 }
         return 10
     }
 
@@ -84,10 +104,15 @@ static graph ItemConfig {
         if itemId == "seed_apple" { return EResSprite.seed_apple }
         if itemId == "seed_carrot" { return EResSprite.seed_carrot }
         if itemId == "seed_tomato" { return EResSprite.seed_tomato }
+        if itemId == "seed_chili" { return EResSprite.seed_chili }
+        if itemId == "seed_onion" { return EResSprite.seed_onion }
         if itemId == "crop_apple" { return EResSprite.crop_apple }
         if itemId == "crop_carrot" { return EResSprite.crop_carrot }
         if itemId == "crop_tomato" { return EResSprite.crop_tomato }
-        if itemId == "potion" { return EResSprite.potion_luck }
+        if itemId == "crop_chili" { return EResSprite.crop_chili }
+        if itemId == "crop_onion" { return EResSprite.crop_onion }
+        if itemId == "potion_luck" { return EResSprite.potion_luck }
+        if itemId == "potion_grow" { return EResSprite.potion_grow }
         return EResSprite.seed_apple 
     }
 
@@ -113,14 +138,17 @@ static graph ItemConfig {
         if seedId == "seed_apple" { return "seed_apple" }
         if seedId == "seed_carrot" { return "seed_carrot" }
         if seedId == "seed_tomato" { return "seed_tomato" }
+        if seedId == "seed_chili" { return "chili_seed" }
+        if seedId == "seed_onion" { return "onion_seed" }
         return "seed_model"
     }
 
     func GetGrowingStemPrefabKey(seedId string) string {
         if seedId == "seed_apple" { return "apple_stem" }
         if seedId == "seed_carrot" { return "carrot_stem" }
-        // Same pool key as seed until EditorGenLib exposes EResPrefab.tomato_stem (prefab registered as tomato_stem).
         if seedId == "seed_tomato" { return "tomato_stem" }
+        if seedId == "seed_chili" { return "chili_stem" }
+        if seedId == "seed_onion" { return "onion_stem" }
         return "seed_model"
     }
 
@@ -141,6 +169,8 @@ static graph ItemConfig {
             if seedId == "seed_apple" { return EResPrefab.crop_apple }
             if seedId == "seed_carrot" { return EResPrefab.crop_carrot }
             if seedId == "seed_tomato" { return EResPrefab.crop_tomato }
+            if seedId == "seed_chili" { return EResPrefab.crop_chili }
+            if seedId == "seed_onion" { return EResPrefab.crop_onion }
             return EResPrefab.seed_growed
         }
 
@@ -161,6 +191,8 @@ static graph ItemConfig {
             if seedId == "seed_apple" { return "crop_apple" }
             if seedId == "seed_carrot" { return "crop_carrot" }
             if seedId == "seed_tomato" { return "crop_tomato" }
+            if seedId == "seed_chili" { return "crop_chili" }
+            if seedId == "seed_onion" { return "crop_onion" }
             return "seed_growed"
         }
         return "seed_model"
@@ -168,25 +200,29 @@ static graph ItemConfig {
 
     // ==========================================
     // 3. POTION / SPECIAL ITEM CONFIG
+    // potion_luck: only raises chance to roll a mutation prefix (which prefix is rolled stays fair vs base weights).
+    // potion_grow: only reduces remaining grow time; does not affect mutation rolls.
     // ==========================================
-    func GetPotionLuckBonus() int { return 90 }
-    func GetPotionGrowthReduction() float { return 0.3 }
+    func GetPotionLuckMutationBonusPercent() int { return 90 }
+    func GetPotionGrowTimeReduction() float { return 0.35 }
 
-    // Extra roll weight on Golden vs base Golden weight when soil is fertilized (matches GachaManager weight math at full potion luck).
-    func GetPotionGoldWeightBonusPercent() int {
-        var baseW = mutCfg.GetPrefixBaseWeight(2)
-        var add = mutCfg.GetEnhancementWeightBonus(2)
-        if baseW < 1 { return 0 }
-        return ((add * 100) / baseW) as int
-    }
+    func IsPotionLuckItem(itemId string) bool { return itemId == "potion_luck" }
+    func IsPotionGrowItem(itemId string) bool { return itemId == "potion_grow" }
+    func IsFarmGrowConsumable(itemId string) bool { return IsPotionLuckItem(itemId) || IsPotionGrowItem(itemId) }
 
     func GetItemDescription(itemId string) string {
         if itemId == "seed_apple" { return "Plant to grow Apples" }
         if itemId == "seed_carrot" { return "Plant to grow Carrots" }
         if itemId == "seed_tomato" { return "Plant to grow Tomatoes" }
-        if itemId == "potion" {
-            var gPct = GetPotionGoldWeightBonusPercent()
-            return "Use while growing: +90% prefix | -30% remaining time | Golden +" + convert.ToString(gPct) + "%"
+        if itemId == "seed_chili" { return "Plant to grow Chilies" }
+        if itemId == "seed_onion" { return "Plant to grow Onions" }
+        if itemId == "potion_luck" {
+            return "Use on a growing crop: +" + convert.ToString(GetPotionLuckMutationBonusPercent()) +
+                "% chance to get a mutation prefix. Does not change growth time."
+        }
+        if itemId == "potion_grow" {
+            return "Use on a growing crop: reduces remaining grow time by " +
+                convert.ToString((GetPotionGrowTimeReduction() * 100.0) as int) + "%. Does not affect mutations."
         }
         return ""
     }

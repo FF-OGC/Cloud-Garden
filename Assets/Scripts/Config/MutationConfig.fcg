@@ -51,6 +51,8 @@ static graph MutationConfig {
         if seedId == "seed_apple" { return 3 }
         if seedId == "seed_carrot" { return 4 }
         if seedId == "seed_tomato" { return 5 }
+        if seedId == "seed_chili" { return 4 }
+        if seedId == "seed_onion" { return 4 }
         return 3
     }
 
@@ -79,7 +81,7 @@ static graph MutationConfig {
         return 0
     }
 
-    // Base extra weight for Golden prefix when fertilized; scaled by actual luck % / ItemConfig.GetPotionLuckBonus in GachaManager.
+    // Legacy: was used to skew Golden weight when a luck potion was applied; luck potion now only affects prefix hit chance in GachaManager.
     func GetEnhancementWeightBonus(prefixId int) int {
         if prefixId == 2 { return 15 }
         return 0
