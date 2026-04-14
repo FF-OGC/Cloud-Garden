@@ -2,14 +2,14 @@
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "1yb8a5ze",
+  "_entityId": "l414oncc",
   "children": [
     {
       "_tag": {
         "type": "UGCSceneEntity",
         "resourceId": ""
       },
-      "_entityId": "4lEDO8bm",
+      "_entityId": "GnVNsZ81",
       "children": [],
       "activeValue": {
         "selfValue": true,
@@ -43,10 +43,12 @@
       "VisibilityLayer": 0,
       "modelOptimization": 0,
       "streamingLayer": "",
-      "attributes": [],
+      "attributes": [
+        4
+      ],
       "isTrigger": false,
       "collidable": true,
-      "physicalLayer": 3,
+      "physicalLayer": 2,
       "physicalMaterial": null,
       "aoiSetting": 0,
       "initialTypes": {},
@@ -62,7 +64,7 @@
       "materials": [
         {
           "fileId": "k69ds2p0gka-mnim8acs-5fg6mei5v2",
-          "filePath": "Assets\\Materials\\PlantDefault.mat",
+          "filePath": "Assets\\Resources\\Texture\\PlantDefault.mat",
           "_tag": {
             "type": "GFileRefer"
           },
@@ -74,22 +76,22 @@
           "enable": true,
           "colliderType": "MeshCollider",
           "meshUUID": {
-            "fileId": "jdxy9x26dop-mcu5occ3-ikeey1s6n59-carrot_seedling.~@FFFUB",
-            "filePath": "fab://Assets\\Resources\\plants001.fbx\\carrot_seedling.mesh",
+            "fileId": "jdxy9x26dop-mcu5occ3-ikeey1s6n59-carrot_stem.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\plants001.fbx\\carrot_stem.mesh",
             "_tag": {
               "type": "GFileRefer"
             },
             "fileType": "mesh"
           },
           "position": {
-            "x": -0.021092116832733154,
-            "y": 0.1117253229022026,
-            "z": -0.027623802423477173
+            "x": 0.00533314049243927,
+            "y": 0.12422490119934082,
+            "z": 0.008695453405380249
           },
           "size": {
-            "x": 0.2343381643295288,
-            "y": 0.194608673453331,
-            "z": 0.2172340750694275
+            "x": 0.1570519506931305,
+            "y": 0.7035233974456787,
+            "z": 0.17120522260665894
           },
           "rotation": {
             "x": 0,
@@ -137,14 +139,14 @@
       "propsData": {},
       "entityVersion": 3,
       "mesh": {
-        "fileId": "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_seedling.~@FFFUB",
-        "filePath": "fab://Assets\\Resources\\FBX\\Plants\\plants001.fbx\\carrot_seedling.mesh",
+        "fileId": "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_stem.~@FFFUB",
+        "filePath": "fab://Assets\\Resources\\FBX\\Plants\\plants001.fbx\\carrot_stem.mesh",
         "_tag": {
           "type": "GFileRefer"
         },
         "fileType": "mesh"
       },
-      "_entityName": "carrot_seedling",
+      "_entityName": "carrot_stem",
       "prefabVariant": null
     }
   ],
@@ -160,6 +162,6 @@
   "editorLockValue": false,
   "editorVisibleValue": true,
   "discriminator": "ISceneLike",
-  "_entityName": "carrot_sterm"
+  "_entityName": "carrot_stem"
 }
-//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.16.4231768","c":{"FF":5001},"s":100}

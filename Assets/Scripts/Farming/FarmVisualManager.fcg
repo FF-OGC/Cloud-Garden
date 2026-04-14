@@ -68,7 +68,15 @@ static graph FarmVisualManager {
             return
         }
 
-        var prefabKey = itemCfg.GetPlantPrefabKey(plantedSeedId, newState)
+        var prefabKey = ""
+        if newState == EFarmSlotState.CropGrowing {
+            var now = gameMgr.GetGameTime()
+            var t0 = cs<cropSlot>.GrowthStartTime
+            var t1 = cs<cropSlot>.HarvestTime
+            prefabKey = itemCfg.GetGrowingPlantPrefabKey(plantedSeedId, now, t0, t1)
+        } else {
+            prefabKey = itemCfg.GetPlantPrefabKey(plantedSeedId, newState)
+        }
 
         if debugCfg.Farming() { LogInfo("[VISUAL-DBG] seed=" + plantedSeedId + " state=" + newState + " prefabKey=" + prefabKey) }
 

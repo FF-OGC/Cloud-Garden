@@ -87,7 +87,7 @@ static graph ItemConfig {
         if itemId == "crop_apple" { return EResSprite.crop_apple }
         if itemId == "crop_carrot" { return EResSprite.crop_carrot }
         if itemId == "crop_tomato" { return EResSprite.crop_tomato }
-        if itemId == "potion" { return EResSprite.item_buff_dirt }
+        if itemId == "potion" { return EResSprite.potion_luck }
         return EResSprite.seed_apple 
     }
 
@@ -95,15 +95,48 @@ static graph ItemConfig {
     // 2. 3D DICTIONARY (For Farming Visuals)
     // Returns the correct 3D prefab based on Seed ID and Growth State
     // ==========================================
+
+    // Resolves GrowthStartTime when missing (e.g. older saves): harvestEnd - configured growth duration.
+    func ResolveGrowthStartTime(seedId string, growthStart float, harvestEnd float) float {
+        if growthStart > 0.0 { return growthStart }
+        if harvestEnd <= 0.0 { return 0.0 }
+        return harvestEnd - GetGrowthTime(seedId)
+    }
+
+    func IsPastGrowingStemPhase(now float, growthStart float, harvestEnd float) bool {
+        if harvestEnd <= growthStart { return false }
+        var mid = growthStart + 0.5 * (harvestEnd - growthStart)
+        return now >= mid
+    }
+
+    func GetGrowingSeedPrefabKey(seedId string) string {
+        if seedId == "seed_apple" { return "seed_apple" }
+        if seedId == "seed_carrot" { return "seed_carrot" }
+        if seedId == "seed_tomato" { return "seed_tomato" }
+        return "seed_model"
+    }
+
+    func GetGrowingStemPrefabKey(seedId string) string {
+        if seedId == "seed_apple" { return "apple_stem" }
+        if seedId == "seed_carrot" { return "carrot_stem" }
+        // Same pool key as seed until EditorGenLib exposes EResPrefab.tomato_stem (prefab registered as tomato_stem).
+        if seedId == "seed_tomato" { return "tomato_stem" }
+        return "seed_model"
+    }
+
+    func GetGrowingPlantPrefabKey(seedId string, now float, growthStart float, harvestEnd float) string {
+        var t0 = ResolveGrowthStartTime(seedId, growthStart, harvestEnd)
+        if IsPastGrowingStemPhase(now, t0, harvestEnd) {
+            return GetGrowingStemPrefabKey(seedId)
+        }
+        return GetGrowingSeedPrefabKey(seedId)
+    }
+
     func GetPlantPrefab(seedId string, state int) PrefabID {
-        
         if state == EFarmSlotState.CropGrowing {
-            if seedId == "seed_apple" { return EResPrefab.seed_apple }
-            if seedId == "seed_carrot" { return EResPrefab.seed_carrot }
-            if seedId == "seed_tomato" { return EResPrefab.seed_tomato }
             return EResPrefab.seed_model
         }
-        
+
         if state == EFarmSlotState.CropReady {
             if seedId == "seed_apple" { return EResPrefab.crop_apple }
             if seedId == "seed_carrot" { return EResPrefab.crop_carrot }
@@ -119,13 +152,10 @@ static graph ItemConfig {
         return EResPrefab.pot_tier1
     }
 
-    // Pool key mirrors for CropVisualPool lookups
+    // Pool key mirrors for CropVisualPool lookups (CropGrowing: use GetGrowingPlantPrefabKey with times).
     func GetPlantPrefabKey(seedId string, state int) string {
         if state == EFarmSlotState.CropGrowing {
-            if seedId == "seed_apple" { return "seed_apple" }
-            if seedId == "seed_carrot" { return "seed_carrot" }
-            if seedId == "seed_tomato" { return "seed_tomato" }
-            return "seed_model"
+            return GetGrowingSeedPrefabKey(seedId)
         }
         if state == EFarmSlotState.CropReady {
             if seedId == "seed_apple" { return "crop_apple" }

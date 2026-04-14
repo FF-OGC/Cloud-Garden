@@ -76,6 +76,21 @@ static graph CropVisualPool {
         _Batch("seed_tomato", EResPrefab.seed_tomato, 5)
         WaitForMillisecond(100)
 
+        // stem (second half of CropGrowing): 15 each
+        _Batch("apple_stem", EResPrefab.apple_stem, 5)
+        WaitForMillisecond(100)
+        _Batch("apple_stem", EResPrefab.apple_stem, 5)
+        WaitForMillisecond(100)
+        _Batch("apple_stem", EResPrefab.apple_stem, 5)
+        WaitForMillisecond(100)
+
+        _Batch("carrot_stem", EResPrefab.carrot_stem, 5)
+        WaitForMillisecond(100)
+        _Batch("carrot_stem", EResPrefab.carrot_stem, 5)
+        WaitForMillisecond(100)
+        _Batch("carrot_stem", EResPrefab.carrot_stem, 5)
+        WaitForMillisecond(100)
+
         // crop_apple: 25 = 5+5+5+5+5
         _Batch("crop_apple", EResPrefab.crop_apple, 5)
         WaitForMillisecond(100)
@@ -176,6 +191,8 @@ static graph CropVisualPool {
         if key == "seed_apple" { return EResPrefab.seed_apple }
         if key == "seed_carrot" { return EResPrefab.seed_carrot }
         if key == "seed_tomato" { return EResPrefab.seed_tomato }
+        if key == "apple_stem" { return EResPrefab.apple_stem }
+        if key == "carrot_stem" { return EResPrefab.carrot_stem }
         if key == "crop_apple" { return EResPrefab.crop_apple }
         if key == "crop_carrot" { return EResPrefab.crop_carrot }
         if key == "crop_tomato" { return EResPrefab.crop_tomato }

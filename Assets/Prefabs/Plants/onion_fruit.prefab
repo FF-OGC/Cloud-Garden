@@ -2,14 +2,14 @@
   "_tag": {
     "type": "Prefab"
   },
-  "_entityId": "1yb8a5ze",
+  "_entityId": "aiCr27W8",
   "children": [
     {
       "_tag": {
         "type": "UGCSceneEntity",
         "resourceId": ""
       },
-      "_entityId": "4lEDO8bm",
+      "_entityId": "4hxD98To",
       "children": [],
       "activeValue": {
         "selfValue": true,
@@ -43,10 +43,13 @@
       "VisibilityLayer": 0,
       "modelOptimization": 0,
       "streamingLayer": "",
-      "attributes": [],
+      "attributes": [
+        2,
+        4
+      ],
       "isTrigger": false,
       "collidable": true,
-      "physicalLayer": 3,
+      "physicalLayer": 2,
       "physicalMaterial": null,
       "aoiSetting": 0,
       "initialTypes": {},
@@ -74,22 +77,22 @@
           "enable": true,
           "colliderType": "MeshCollider",
           "meshUUID": {
-            "fileId": "jdxy9x26dop-mcu5occ3-ikeey1s6n59-carrot_seedling.~@FFFUB",
-            "filePath": "fab://Assets\\Resources\\plants001.fbx\\carrot_seedling.mesh",
+            "fileId": "jdxy9x26dop-mcu5occ3-ikeey1s6n59-onion_stem.~@FFFUB",
+            "filePath": "fab://Assets\\Resources\\plants001.fbx\\onion_stem.mesh",
             "_tag": {
               "type": "GFileRefer"
             },
             "fileType": "mesh"
           },
           "position": {
-            "x": -0.021092116832733154,
-            "y": 0.1117253229022026,
-            "z": -0.027623802423477173
+            "x": 0,
+            "y": 0,
+            "z": 0
           },
           "size": {
-            "x": 0.2343381643295288,
-            "y": 0.194608673453331,
-            "z": 0.2172340750694275
+            "x": 1,
+            "y": 1,
+            "z": 1
           },
           "rotation": {
             "x": 0,
@@ -137,14 +140,14 @@
       "propsData": {},
       "entityVersion": 3,
       "mesh": {
-        "fileId": "lcm86439cx-mnimc877-8zw8oa8zrxk-carrot_seedling.~@FFFUB",
-        "filePath": "fab://Assets\\Resources\\FBX\\Plants\\plants001.fbx\\carrot_seedling.mesh",
+        "fileId": "lcm86439cx-mnimc877-8zw8oa8zrxk-onion_stem.~@FFFUB",
+        "filePath": "fab://Assets\\Resources\\FBX\\Plants\\plants001.fbx\\onion_stem.mesh",
         "_tag": {
           "type": "GFileRefer"
         },
         "fileType": "mesh"
       },
-      "_entityName": "carrot_seedling",
+      "_entityName": "onion_stem",
       "prefabVariant": null
     }
   ],
@@ -160,6 +163,6 @@
   "editorLockValue": false,
   "editorVisibleValue": true,
   "discriminator": "ISceneLike",
-  "_entityName": "carrot_sterm"
+  "_entityName": "onion_stem"
 }
 //"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

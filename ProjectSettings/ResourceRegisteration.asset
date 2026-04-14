@@ -340,6 +340,114 @@
           },
           "scriptName": "money_trigger",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "v903nr3z7b-mnyc5vyv-187a949tvtq",
+            "filePath": "Assets\\Prefabs\\Plants\\carrot_sterm.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "carrot_stem",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "7a7ucnee7og-mnyc5vy9-w03hp2gykyr",
+            "filePath": "Assets\\Prefabs\\Plants\\apple_stem.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "apple_stem",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "pc1x607qv6-mnyc8l59-ix00kr3h789",
+            "filePath": "Assets\\Prefabs\\Plants\\chili_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "chili_seed",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "s1a6w1b4za-mnyc8l5t-onf9cxd9oi",
+            "filePath": "Assets\\Prefabs\\Plants\\chili_stem.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "chili_stem",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "r6hpnl046x-mnyc8l4p-ifh1sitocjp",
+            "filePath": "Assets\\Prefabs\\Plants\\chili_fruit.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_chili",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "hdn2wiha1c-mnyc41p4-0q7qqtabpxnd",
+            "filePath": "Assets\\Prefabs\\Plants\\onion_seed.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "onion_seed",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "cwvsk8j5sot-mnyc41po-7215t7b0pea",
+            "filePath": "Assets\\Prefabs\\Plants\\onion_seedling.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "onion_stem",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "oq37mg1khnb-mnyc41qb-f1b9n8p6ry",
+            "filePath": "Assets\\Prefabs\\Plants\\onion_fruit.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "crop_onion",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "gdngfrcuqqr-mnyc5w0c-z9jkms2nx1o",
+            "filePath": "Assets\\Prefabs\\Plants\\tomato_stem.prefab",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "prefab"
+          },
+          "scriptName": "tomato_stem",
+          "children": []
         }
       ]
     },
@@ -411,7 +519,7 @@
             },
             "fileType": "texture"
           },
-          "scriptName": "item_buff_dirt",
+          "scriptName": "potion_luck",
           "children": []
         },
         {
@@ -532,6 +640,66 @@
             "fileType": "texture"
           },
           "scriptName": "icon_pot",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "9uj3629t915-mnybrlvu-0r0p593x3sg",
+            "filePath": "Assets\\Resources\\Sprites\\potion_grow.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "potion_grow",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "0x9p9fzggfdo-mnycizga-xf4aohvau7",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\fruit_onion.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_onion",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "6rwr189cql3-mnycizd2-vo9qnjz03rd",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\fruit_chili.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "crop_chili",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "xv151q0xy6-mnycizmo-dlfvx5d4vj",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\seed_onion.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_onion",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "2fpjtp7ccsc-mnycizjk-u6vlsc338mf",
+            "filePath": "Assets\\Resources\\Sprites\\Plants\\seed_chili.png",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "texture"
+          },
+          "scriptName": "seed_chili",
           "children": []
         }
       ]

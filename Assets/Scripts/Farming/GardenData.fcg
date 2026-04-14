@@ -176,12 +176,13 @@ graph GardenData {
         return cs<cropSlot>.PotSkinTier
     }
 
-    func TryPlantCrop(key string, seedId string, harvestTime float, cropPos Vector3, player entity<Entity>) bool {
+    func TryPlantCrop(key string, seedId string, harvestTime float, cropPos Vector3, growthStartTime float, player entity<Entity>) bool {
         if !IsOwner(player) { return false }
         var cs = GetCropSlotByKey(key)
         if cs == nil { return false }
         cs<cropSlot>.PlantedSeed = seedId
         cs<cropSlot>.HarvestTime = harvestTime
+        cs<cropSlot>.GrowthStartTime = growthStartTime
         cs<cropSlot>.CropPosition = cropPos
         list.Append(GrowingKeys, key)
         return true
@@ -230,6 +231,7 @@ graph GardenData {
         var cs = GetCropSlotByKey(key)
         if cs == nil { return false }
         cs<cropSlot>.HarvestTime = 0.0
+        cs<cropSlot>.GrowthStartTime = 0.0
         cs<cropSlot>.CropPosition = Vector3{0.0, 0.0, 0.0}
         cs<cropSlot>.PlantedSeed = ""
         cs<cropSlot>.MutationResult = ""

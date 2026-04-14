@@ -171,6 +171,18 @@ static graph FarmingManager {
                 if debugCfg.Farming() { LogInfo("[FarmingMgr] Growth time reduced, new target=" + convert.ToString(now + newRemaining)) }
             }
 
+            var plantedF = cs<cropSlot>.PlantedSeed
+            var tEnd = cs<cropSlot>.HarvestTime
+            var tStart = cs<cropSlot>.GrowthStartTime
+            if plantedF != "" && tEnd > now {
+                var wantKey = itemCfg.GetGrowingPlantPrefabKey(plantedF, now, tStart, tEnd)
+                var seedKeyOnly = itemCfg.GetGrowingSeedPrefabKey(plantedF)
+                if wantKey != seedKeyOnly && cs<cropSlot>.PlantPrefabKey == seedKeyOnly {
+                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
+                    DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
+                }
+            }
+
             if cs<cropSlot>.PotVisual != nil {
                 var potEntity = cs<cropSlot>.PotVisual as entity
                 if potEntity != nil {
@@ -282,7 +294,7 @@ static graph FarmingManager {
             var plantPos = gardenEnt<gardenData>.GetSpawnWorldPositionForSlotKey(key)
 
             if gardenEnt<gardenData>.TryModifyCell(key, EFarmSlotState.CropGrowing, player) {
-                gardenEnt<gardenData>.TryPlantCrop(key, holdItemId, harvestTime, plantPos, player)
+                gardenEnt<gardenData>.TryPlantCrop(key, holdItemId, harvestTime, plantPos, gameMgr.GetGameTime(), player)
 
                 DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
                 DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})

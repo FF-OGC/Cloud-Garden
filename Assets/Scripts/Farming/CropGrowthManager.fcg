@@ -37,6 +37,16 @@ static graph CropGrowthManager {
 
                         if state == EFarmSlotState.CropGrowing {
                             var targetTime = cs<cropSlot>.HarvestTime
+                            var plantedId = cs<cropSlot>.PlantedSeed
+                            if plantedId != "" && currentTime < targetTime {
+                                var t0 = cs<cropSlot>.GrowthStartTime
+                                var wantKey = itemCfg.GetGrowingPlantPrefabKey(plantedId, currentTime, t0, targetTime)
+                                var seedKey = itemCfg.GetGrowingSeedPrefabKey(plantedId)
+                                if wantKey != seedKey && cs<cropSlot>.PlantPrefabKey == seedKey {
+                                    DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.CropGrowing})
+                                    if debugCfg.Farming() { LogInfo("[CropGrowthManager] Growing → stem visual key=" + key + " want=" + wantKey) }
+                                }
+                            }
 
                             if currentTime >= targetTime {
                                 if cs<cropSlot>.PlantedSeed != "" {
