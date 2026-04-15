@@ -9,6 +9,10 @@ graph PlayerCropData {
     _IsPerformingAction bool = false
     // True only when HUD consumable_btn dispatched OnPlayerPotShopAction (fertilize). pot_btn clears this before dispatch.
     _PotShopFromConsumableBtn bool = false
+    // Set by FarmingManager.ProcessPaidPotGacha only; FarmSlotHintsHUD consumes on OnFarmCellStateChanged (bubble soil roll).
+    PendingPotSoilGacha bool = false
+    PendingPotSoilGachaKey string = ""
+    PendingPotSoilGachaSkinTier int = 0
 
     event OnAwake() {
         CurrentGarden = nil
@@ -16,5 +20,8 @@ graph PlayerCropData {
         InFarmPotTrigger = false
         _IsPerformingAction = false
         _PotShopFromConsumableBtn = false
+        PendingPotSoilGacha = false
+        PendingPotSoilGachaKey = ""
+        PendingPotSoilGachaSkinTier = 0
     }
 }

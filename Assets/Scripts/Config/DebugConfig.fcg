@@ -18,6 +18,8 @@ static graph DebugConfig {
     _DebugMutation bool = false
     _DebugMoneyDrop bool = false
     _DebugPrompt bool = false
+    // FarmSlotHintsHUD (SlotHints debug): 6x ChatBubble world hints on garden slots.
+    _DebugFarmSlotHints bool = false
 
     func All() bool { return _DebugAll }
     func Core() bool { return _DebugAll || _DebugCore }
@@ -31,4 +33,5 @@ static graph DebugConfig {
     func Mutation() bool { return _DebugAll || _DebugMutation }
     func MoneyDrop() bool { return _DebugAll || _DebugMoneyDrop }
     func Prompt() bool { return _DebugAll || _DebugPrompt }
+    func SlotHints() bool { return _DebugAll || _DebugFarmSlotHints }
 }

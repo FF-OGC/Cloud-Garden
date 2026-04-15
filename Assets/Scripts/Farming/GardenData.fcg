@@ -87,6 +87,13 @@ graph GardenData {
         return GetCropSlotAtIndex(SlotIndexFromKey(key))
     }
 
+    // False when slot missing or VisualAnchor unset — GetSpawnWorldPosition would fall back to garden center (wrong for world bubbles).
+    func SlotHasVisualAnchor(idx int) bool {
+        var cs = GetCropSlotAtIndex(idx)
+        if cs == nil { return false }
+        return cs<cropSlot>.VisualAnchor != nil
+    }
+
     func GetSpawnWorldPositionForSlotKey(key string) Vector3 {
         var cs = GetCropSlotByKey(key)
         if cs == nil {

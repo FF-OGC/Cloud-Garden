@@ -169,6 +169,14 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "fslohints7-mn32j8hu-w9farmslot1i",
+      "filePath": "Assets\\Scripts\\HUD\\FarmSlotHintsHUD.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,

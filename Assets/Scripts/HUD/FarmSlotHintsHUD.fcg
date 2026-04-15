@@ -1,0 +1,282 @@
+import "StdLibrary.fcc" as std
+import "List.fcc" as list
+import "Convert.fcc" as convert
+import "Hud.fcc" as hud
+
+import "../Farming/PlayerCropData.fcg" as playerCropData
+import "../Farming/GardenData.fcg" as gardenData
+import "../Config/FarmSlotHintConfig.fcg" as farmHintCfg
+import "../Config/DebugConfig.fcg" as debugCfg
+import "EditorGenLib.fcc" as EditorGenLib
+
+// 6x ChatBubble per player; only while on floor (CurrentGarden set via GardenTrigger / slot). VisualAnchor per slot; no anchor = bubble hidden.
+[platform_server]
+graph FarmSlotHintsHUD {
+
+    _BubbleUIs List<entity<CustomUI>> = nil
+    _MiddleLabels List<entity<UIWidget>> = nil
+    _InitDone bool = false
+
+    HINT_TICK_MS int = 1000
+    STAGGER_CREATE_MS int = 80
+    BUBBLE_WORLD_OFFSET_Y float = 1.8
+    SOIL_SPIN_STEPS int = 22
+    SOIL_TIER_HOLD_MS int = 3200
+    // Per-slot: soil gacha roll + hold (slots are independent — two bubbles can spin at once).
+    _SoilBusy0 bool = false
+    _SoilBusy1 bool = false
+    _SoilBusy2 bool = false
+    _SoilBusy3 bool = false
+    _SoilBusy4 bool = false
+    _SoilBusy5 bool = false
+
+    func SoilGachaBusyAt(idx int) bool {
+        if idx == 0 { return _SoilBusy0 }
+        if idx == 1 { return _SoilBusy1 }
+        if idx == 2 { return _SoilBusy2 }
+        if idx == 3 { return _SoilBusy3 }
+        if idx == 4 { return _SoilBusy4 }
+        if idx == 5 { return _SoilBusy5 }
+        return false
+    }
+
+    func SetSoilGachaBusyAt(idx int, busy bool) {
+        if idx == 0 { _SoilBusy0 = busy }
+        if idx == 1 { _SoilBusy1 = busy }
+        if idx == 2 { _SoilBusy2 = busy }
+        if idx == 3 { _SoilBusy3 = busy }
+        if idx == 4 { _SoilBusy4 = busy }
+        if idx == 5 { _SoilBusy5 = busy }
+    }
+
+    func ClearAllSoilGachaBusy() {
+        _SoilBusy0 = false
+        _SoilBusy1 = false
+        _SoilBusy2 = false
+        _SoilBusy3 = false
+        _SoilBusy4 = false
+        _SoilBusy5 = false
+    }
+
+    event OnAwake() {
+        if debugCfg.SlotHints() { LogInfo("[FarmSlotHints] OnAwake") }
+        start InitBubblesAsync()
+    }
+
+    async func InitBubblesAsync() {
+        _BubbleUIs = list.New(0, 8) as List<entity<CustomUI>>
+        _MiddleLabels = list.New(0, 8) as List<entity<UIWidget>>
+
+        var i = 0
+        while i < 6 {
+            CreateCustomUI(out var ui, thisEntity<Player>, EResUI.chatbubble)
+            if ui == nil {
+                if debugCfg.SlotHints() { LogWarning("[FarmSlotHints] CreateCustomUI failed slotIndex=" + convert.ToString(i)) }
+            }
+            if ui != nil {
+                ui<CustomUI>.Depth = 110 + i
+                ui<CustomUI>.IsBillboard = true
+                var top = GetWidgetByPath(thisEntity<Player>, ui, "/TopText")
+                if top != nil {
+                    top<Entity>.ActiveSelf = false
+                }
+                var mid = GetWidgetByPath(thisEntity<Player>, ui, "/MiddleText")
+                list.Append(_BubbleUIs, ui)
+                list.Append(_MiddleLabels, mid)
+                if debugCfg.SlotHints() { LogInfo("[FarmSlotHints] bubble " + convert.ToString(i) + " created") }
+            }
+            WaitForMillisecond(STAGGER_CREATE_MS)
+            i = i + 1
+        }
+
+        _InitDone = true
+        if debugCfg.SlotHints() { LogInfo("[FarmSlotHints] InitBubblesAsync done | tickMs=" + convert.ToString(HINT_TICK_MS)) }
+        start HintTickLoop()
+        RefreshAllBubbles()
+    }
+
+    async func HintTickLoop() {
+        if debugCfg.SlotHints() { LogInfo("[FarmSlotHints] HintTickLoop start") }
+        while true {
+            WaitForMillisecond(HINT_TICK_MS)
+            RefreshAllBubbles()
+        }
+    }
+
+    func UpdateBubbleWorldPositionsForGarden(floor entity<Entity>) {
+        if floor == nil || floor<gardenData> == nil { return }
+        if _BubbleUIs == nil { return }
+        var idx = 0
+        while idx < 6 {
+            var ui = _BubbleUIs[idx] as entity<CustomUI>
+            if ui != nil {
+                if !floor<gardenData>.SlotHasVisualAnchor(idx) {
+                    ui<CustomUI>.IsVisible = false
+                } else {
+                    var key = floor<gardenData>.SlotKeyFromIndex(idx)
+                    var pos = floor<gardenData>.GetSpawnWorldPositionForSlotKey(key)
+                    ui<CustomUI>.WorldPosition = Vector3{pos.X, pos.Y + BUBBLE_WORLD_OFFSET_Y, pos.Z}
+                }
+            }
+            idx = idx + 1
+        }
+    }
+
+    func RefreshAllBubbles() {
+        if !_InitDone { return }
+        if _BubbleUIs == nil || _MiddleLabels == nil { return }
+        if thisEntity<playerCropData> == nil { return }
+
+        var floor = thisEntity<playerCropData>.CurrentGarden
+        if floor == nil || floor<gardenData> == nil {
+            HideAllBubbles()
+            return
+        }
+
+        UpdateBubbleWorldPositionsForGarden(floor)
+
+        var idx = 0
+        while idx < 6 {
+            if SoilGachaBusyAt(idx) {
+                idx = idx + 1
+                continue
+            }
+            var key = floor<gardenData>.SlotKeyFromIndex(idx)
+            var st = floor<gardenData>.GetCellState(key)
+            SetBubbleSlot(idx, st, floor)
+            idx = idx + 1
+        }
+    }
+
+    func SetBubbleSlot(idx int, state int, floor entity<Entity>) {
+        if idx < 0 || idx >= 6 { return }
+        if SoilGachaBusyAt(idx) { return }
+        if list.Length(_BubbleUIs) <= idx || list.Length(_MiddleLabels) <= idx { return }
+
+        var ui = _BubbleUIs[idx] as entity<CustomUI>
+        var w = _MiddleLabels[idx] as entity<UIWidget>
+        if ui == nil { return }
+
+        if floor != nil && floor<gardenData> != nil && !floor<gardenData>.SlotHasVisualAnchor(idx) {
+            ui<CustomUI>.IsVisible = false
+            return
+        }
+
+        var line = farmHintCfg.GetSlotHintLine(state)
+        if w != nil {
+            w<UIWidgetLabel>.Content = line
+            w<UIWidgetLabel>.Color = farmHintCfg.GetDefaultMiddleLabelColor()
+        }
+        ui<CustomUI>.IsVisible = true
+    }
+
+    func HideAllBubbles() {
+        ClearAllSoilGachaBusy()
+        if _BubbleUIs == nil { return }
+        var j = 0
+        while j < list.Length(_BubbleUIs) {
+            var ui = _BubbleUIs[j] as entity<CustomUI>
+            if ui != nil {
+                ui<CustomUI>.IsVisible = false
+            }
+            j = j + 1
+        }
+    }
+
+    func StartSoilGachaRoll(slotIdx int, finalTier int, floor entity<Entity>) bool {
+        if slotIdx < 0 || slotIdx >= 6 { return false }
+        if SoilGachaBusyAt(slotIdx) { return false }
+        if _BubbleUIs == nil || list.Length(_BubbleUIs) <= slotIdx { return false }
+        var ui = _BubbleUIs[slotIdx] as entity<CustomUI>
+        var w = _MiddleLabels[slotIdx] as entity<UIWidget>
+        if ui == nil || w == nil { return false }
+        if floor != nil && floor<gardenData> != nil && !floor<gardenData>.SlotHasVisualAnchor(slotIdx) { return false }
+        SetSoilGachaBusyAt(slotIdx, true)
+        ui<CustomUI>.IsVisible = true
+        start RunSoilGachaRollAsync(slotIdx, finalTier, floor)
+        return true
+    }
+
+    async func RunSoilGachaRollAsync(slotIdx int, finalTier int, floor entity<Entity>) {
+        var w = _MiddleLabels[slotIdx] as entity<UIWidget>
+        if w == nil {
+            SetSoilGachaBusyAt(slotIdx, false)
+            return
+        }
+        var spinCol = farmHintCfg.GetSoilSpinTickColor()
+        var step = 0
+        while step < SOIL_SPIN_STEPS {
+            var flickTier = 1
+            if step % 2 == 1 {
+                flickTier = 2
+            }
+            w<UIWidgetLabel>.Content = farmHintCfg.GetSoilTierName(flickTier)
+            w<UIWidgetLabel>.Color = spinCol
+            var delayMs = 40 + step * 2
+            if delayMs > 130 {
+                delayMs = 130
+            }
+            WaitForMillisecond(delayMs)
+            step = step + 1
+        }
+        w<UIWidgetLabel>.Content = farmHintCfg.GetSoilTierName(finalTier)
+        w<UIWidgetLabel>.Color = farmHintCfg.GetSoilTierLabelColor(finalTier)
+        WaitForMillisecond(SOIL_TIER_HOLD_MS)
+        w<UIWidgetLabel>.Color = farmHintCfg.GetDefaultMiddleLabelColor()
+        w<UIWidgetLabel>.Content = farmHintCfg.GetSlotHintLine(EFarmSlotState.PotReady)
+        SetSoilGachaBusyAt(slotIdx, false)
+        if floor != nil && thisEntity<playerCropData> != nil && thisEntity<playerCropData>.CurrentGarden == floor {
+            var k = floor<gardenData>.SlotKeyFromIndex(slotIdx)
+            var st = floor<gardenData>.GetCellState(k)
+            SetBubbleSlot(slotIdx, st, floor)
+        }
+    }
+
+    event OnFarmCellStateChanged(floor entity<Entity>, slotKey string, newState int) {
+        if !_InitDone { return }
+        if thisEntity<playerCropData> == nil { return }
+        var cur = thisEntity<playerCropData>.CurrentGarden
+        if cur == nil || floor == nil || floor != cur { return }
+        if floor<gardenData> == nil { return }
+
+        var idx = floor<gardenData>.SlotIndexFromKey(slotKey)
+        if idx < 0 || idx >= 6 { return }
+        if debugCfg.SlotHints() {
+            LogInfo("[FarmSlotHints] OnFarmCellStateChanged | slotKey=" + slotKey + " idx=" + convert.ToString(idx) +
+                " newState=" + convert.ToString(newState))
+        }
+        UpdateBubbleWorldPositionsForGarden(floor)
+
+        if newState == EFarmSlotState.PotReady && thisEntity<playerCropData>.PendingPotSoilGacha &&
+            thisEntity<playerCropData>.PendingPotSoilGachaKey == slotKey {
+            var revealTier = thisEntity<playerCropData>.PendingPotSoilGachaSkinTier
+            thisEntity<playerCropData>.PendingPotSoilGacha = false
+            thisEntity<playerCropData>.PendingPotSoilGachaKey = ""
+            thisEntity<playerCropData>.PendingPotSoilGachaSkinTier = 0
+            if !StartSoilGachaRoll(idx, revealTier, floor) {
+                SetBubbleSlot(idx, newState, floor)
+            }
+            return
+        }
+        if SoilGachaBusyAt(idx) {
+            return
+        }
+        SetBubbleSlot(idx, newState, floor)
+    }
+
+    event OnPlayerEnterFloor(player entity<Player>, floor entity<Entity>) {
+        if player != thisEntity<Player> { return }
+        if debugCfg.SlotHints() {
+            var gn = ""
+            if floor != nil { gn = floor<Entity>.Name }
+            LogInfo("[FarmSlotHints] OnPlayerEnterFloor | garden=" + gn)
+        }
+        RefreshAllBubbles()
+    }
+
+    event OnPlayerLeaveFloor(player entity<Player>) {
+        if player != thisEntity<Player> { return }
+        if debugCfg.SlotHints() { LogInfo("[FarmSlotHints] OnPlayerLeaveFloor | RefreshAll (will hide if no garden)") }
+        RefreshAllBubbles()
+    }
+}

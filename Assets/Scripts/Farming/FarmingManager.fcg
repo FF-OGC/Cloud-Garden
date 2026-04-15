@@ -161,6 +161,10 @@ static graph FarmingManager {
 
         if !gardenEnt<gardenData>.TryModifyCell(key, EFarmSlotState.PotReady, player) { return }
 
+        player<playerCropData>.PendingPotSoilGacha = true
+        player<playerCropData>.PendingPotSoilGachaKey = key
+        player<playerCropData>.PendingPotSoilGachaSkinTier = skinTier
+
         DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
         DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
     }

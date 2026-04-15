@@ -1,0 +1,43 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+
+// Single-line hints for slot ChatBubble (MiddleText).
+[platform_server]
+static graph FarmSlotHintConfig {
+
+    // Match ChatBubble.ui MiddleText default (#000000) — white text on light bubble reads as blank.
+    COLOR_MIDDLE_DEFAULT Color = #000000
+    COLOR_SOIL_SPIN Color = #888888
+    COLOR_SOIL_TIER1 Color = #333333
+    COLOR_SOIL_TIER2 Color = #E8B4FF
+
+    func GetDefaultMiddleLabelColor() Color { return COLOR_MIDDLE_DEFAULT }
+
+    func GetSoilTierName(skinTier int) string {
+        if skinTier >= 2 { return "Soil Tier 2" }
+        return "Soil Tier 1"
+    }
+
+    func GetSoilTierLabelColor(skinTier int) Color {
+        if skinTier >= 2 { return COLOR_SOIL_TIER2 }
+        return COLOR_SOIL_TIER1
+    }
+
+    func GetSoilSpinTickColor() Color { return COLOR_SOIL_SPIN }
+
+    func GetSlotHintLine(state int) string {
+        if state == EFarmSlotState.Cloud {
+            return "Buy pot"
+        }
+        if state == EFarmSlotState.PotReady {
+            return "Change Pot / Plant"
+        }
+        if state == EFarmSlotState.CropGrowing {
+            return "Use Buff Items"
+        }
+        if state == EFarmSlotState.CropReady {
+            return "Harvest"
+        }
+        return ""
+    }
+}

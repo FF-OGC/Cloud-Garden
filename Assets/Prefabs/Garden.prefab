@@ -33,12 +33,12 @@
           "editorVisibleValue": true,
           "position": {
             "x": 0,
-            "y": 0.5,
+            "y": 2.570563554763794,
             "z": 0
           },
           "scale": {
             "x": 0.9800000190734863,
-            "y": 1,
+            "y": 6,
             "z": 0.9800000190734863
           },
           "rotation": {
@@ -1163,8 +1163,8 @@
                   },
                   "scale": {
                     "x": 4,
-                    "y": 9,
-                    "z": 1.2000000476837158
+                    "y": 25,
+                    "z": 1.2
                   },
                   "rotation": {
                     "x": 0,
@@ -1861,8 +1861,8 @@
                 },
                 "scale": {
                   "x": 4,
-                  "y": 9,
-                  "z": 1.2000000476837158
+                  "y": 25,
+                  "z": 1.2
                 },
                 "rotation": {
                   "x": 0,
@@ -2130,8 +2130,8 @@
                   },
                   "scale": {
                     "x": 4,
-                    "y": 9,
-                    "z": 1.2000000476837158
+                    "y": 25,
+                    "z": 1.2
                   },
                   "rotation": {
                     "x": 0,
@@ -2828,8 +2828,8 @@
                 },
                 "scale": {
                   "x": 4,
-                  "y": 9,
-                  "z": 1.2000000476837158
+                  "y": 25,
+                  "z": 1.2
                 },
                 "rotation": {
                   "x": 0,
@@ -3109,7 +3109,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 263,
+          "tempIndex": 658,
           "itemID": 169,
           "seParent": null,
           "ecaScripts": [
@@ -3261,7 +3261,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 264,
+          "tempIndex": 659,
           "itemID": 169,
           "seParent": null,
           "ecaScripts": [
