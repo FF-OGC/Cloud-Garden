@@ -90,6 +90,18 @@
           },
           "scriptName": "chatbubble",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "n02ib0kly3-mnztklu0-btf3ys34otp",
+            "filePath": "Assets\\UI\\ConfirmWidget.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "confirmwidget",
+          "children": []
         }
       ]
     },

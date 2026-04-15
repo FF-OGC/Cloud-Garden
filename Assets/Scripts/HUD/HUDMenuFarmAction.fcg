@@ -95,6 +95,10 @@ graph HUDMenuFarmAction {
 
     func HandlePotTap(player entity<Player>) {
         SyncFloorState()
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            return
+        }
         if !_IsOnFloor {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
             return
@@ -117,6 +121,10 @@ graph HUDMenuFarmAction {
 
     func HandleConsumableTap(player entity<Player>) {
         SyncFloorState()
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            return
+        }
         if !IsHoldingConsumable(player) {
             return
         }
@@ -154,6 +162,10 @@ graph HUDMenuFarmAction {
 
     func HandleHarvestTap(player entity<Player>) {
         SyncFloorState()
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            return
+        }
 
         if !_IsOnFloor {
             DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NOT_ON_FLOOR"})
@@ -221,6 +233,9 @@ graph HUDMenuFarmAction {
     event OnPlayerLeaveFloor(player entity<Player>) {
         if player != thisEntity<Player> { return }
         if debugCfg.Farming() { LogInfo("[HUDFarmAction] OnPlayerLeaveFloor") }
+        if thisEntity<playerCropData> != nil {
+            thisEntity<playerCropData>._PotShopFlowBusy = false
+        }
         SyncFloorState()
         UpdateHarvestBtn()
         UpdatePotBtn()

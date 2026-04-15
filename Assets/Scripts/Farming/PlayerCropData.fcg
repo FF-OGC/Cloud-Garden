@@ -13,6 +13,8 @@ graph PlayerCropData {
     PendingPotSoilGacha bool = false
     PendingPotSoilGachaKey string = ""
     PendingPotSoilGachaSkinTier int = 0
+    // True after pot purchase gacha runs until OnPotShopVisualReveal (soil spin + swap prefab). Blocks pot/plant/harvest/fertilize.
+    _PotShopFlowBusy bool = false
 
     event OnAwake() {
         CurrentGarden = nil
@@ -23,5 +25,6 @@ graph PlayerCropData {
         PendingPotSoilGacha = false
         PendingPotSoilGachaKey = ""
         PendingPotSoilGachaSkinTier = 0
+        _PotShopFlowBusy = false
     }
 }

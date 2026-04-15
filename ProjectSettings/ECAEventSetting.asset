@@ -499,6 +499,67 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_86389280"
+    },
+    "signal_77200110": {
+      "name": "OnShowPotPurchaseConfirm",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100032,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "mode",
+          "value": "Int",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_77200110"
+    },
+    "signal_77200111": {
+      "name": "OnPotPurchaseConfirmYes",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100033,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        }
+      ],
+      "propCount": 1,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_77200111"
+    },
+    "signal_86756108": {
+      "name": "OnPotShopVisualReveal",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100039,
+      "props": [
+        {
+          "name": "floor",
+          "value": "Entity",
+          "key": 1
+        },
+        {
+          "name": "slotkey",
+          "value": "String",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_86756108"
     }
   },
   "customName": {
@@ -506,6 +567,7 @@
     "OnBackpackDataChanged": "signal_76789303",
     "OnBuyItemResponse": "signal_74145831",
     "OnPlayerEnterStore": "signal_16737112",
+    "OnFarmCellStateChanged": "signal_60093422",
     "OnPlayerExitStore": "signal_98373386",
     "OnPlayerToggleStore": "signal_88875793",
     "OnPlayerEnterMarket": "signal_37131010",
@@ -524,7 +586,9 @@
     "OnPlayerPlantAction": "signal_22116220",
     "OnExecutePlantAction": "signal_73553884",
     "OnPlayerPotShopAction": "signal_86389280",
-    "OnFarmCellStateChanged": "signal_60093422"
+    "OnShowPotPurchaseConfirm": "signal_77200110",
+    "OnPotPurchaseConfirmYes": "signal_77200111",
+    "OnPotShopVisualReveal": "signal_86756108"
   },
   "children": []
 }

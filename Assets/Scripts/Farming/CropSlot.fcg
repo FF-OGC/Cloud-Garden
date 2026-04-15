@@ -19,6 +19,8 @@ graph CropSlot {
     CropPosition Vector3
 
     PotVisual entity<Entity>
+    // Paid pot shop: keep old prefab until soil UI reveals tier; FarmVisualManager skips spawn until OnPotShopVisualReveal.
+    PotShopDeferPotVisual bool = false
     PlantVisual entity<Entity>
     PlantPrefabKey string
 
@@ -58,6 +60,7 @@ graph CropSlot {
         GrowthStartTime = 0.0
         CropPosition = Vector3{0.0, 0.0, 0.0}
         PotVisual = nil
+        PotShopDeferPotVisual = false
         PlantVisual = nil
         PlantPrefabKey = ""
         MutationResult = ""

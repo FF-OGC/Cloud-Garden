@@ -6,6 +6,7 @@ import "Hud.fcc" as hud
 import "../Farming/PlayerCropData.fcg" as playerCropData
 import "../Farming/GardenData.fcg" as gardenData
 import "../Config/FarmSlotHintConfig.fcg" as farmHintCfg
+import "../Config/ItemConfig.fcg" as itemCfg
 import "../Config/DebugConfig.fcg" as debugCfg
 import "EditorGenLib.fcc" as EditorGenLib
 
@@ -183,6 +184,12 @@ graph FarmSlotHintsHUD {
         }
     }
 
+    func DispatchPotShopVisualReveal(floor entity<Entity>, slotIdx int) {
+        if floor == nil || floor<gardenData> == nil { return }
+        var k = floor<gardenData>.SlotKeyFromIndex(slotIdx)
+        DispatchEventToEntity(OnPotShopVisualReveal, globalEntity, PlatformType.Server, List<object>{floor, k})
+    }
+
     func StartSoilGachaRoll(slotIdx int, finalTier int, floor entity<Entity>) bool {
         if slotIdx < 0 || slotIdx >= 6 { return false }
         if SoilGachaBusyAt(slotIdx) { return false }
@@ -197,10 +204,27 @@ graph FarmSlotHintsHUD {
         return true
     }
 
+    async func RunPotSoilRevealAfterAnimDelay(slotIdx int, floor entity<Entity>, slotKey string, newState int) {
+        WaitForMillisecond(itemCfg.GetPotShopActionAnimDelayMs())
+        if thisEntity<playerCropData> == nil { return }
+        if !thisEntity<playerCropData>.PendingPotSoilGacha || thisEntity<playerCropData>.PendingPotSoilGachaKey != slotKey {
+            return
+        }
+        var revealTier = thisEntity<playerCropData>.PendingPotSoilGachaSkinTier
+        thisEntity<playerCropData>.PendingPotSoilGacha = false
+        thisEntity<playerCropData>.PendingPotSoilGachaKey = ""
+        thisEntity<playerCropData>.PendingPotSoilGachaSkinTier = 0
+        if !StartSoilGachaRoll(slotIdx, revealTier, floor) {
+            DispatchPotShopVisualReveal(floor, slotIdx)
+            SetBubbleSlot(slotIdx, newState, floor)
+        }
+    }
+
     async func RunSoilGachaRollAsync(slotIdx int, finalTier int, floor entity<Entity>) {
         var w = _MiddleLabels[slotIdx] as entity<UIWidget>
         if w == nil {
             SetSoilGachaBusyAt(slotIdx, false)
+            DispatchPotShopVisualReveal(floor, slotIdx)
             return
         }
         var spinCol = farmHintCfg.GetSoilSpinTickColor()
@@ -221,6 +245,7 @@ graph FarmSlotHintsHUD {
         }
         w<UIWidgetLabel>.Content = farmHintCfg.GetSoilTierName(finalTier)
         w<UIWidgetLabel>.Color = farmHintCfg.GetSoilTierLabelColor(finalTier)
+        DispatchPotShopVisualReveal(floor, slotIdx)
         WaitForMillisecond(SOIL_TIER_HOLD_MS)
         w<UIWidgetLabel>.Color = farmHintCfg.GetDefaultMiddleLabelColor()
         w<UIWidgetLabel>.Content = farmHintCfg.GetSlotHintLine(EFarmSlotState.PotReady)
@@ -249,13 +274,7 @@ graph FarmSlotHintsHUD {
 
         if newState == EFarmSlotState.PotReady && thisEntity<playerCropData>.PendingPotSoilGacha &&
             thisEntity<playerCropData>.PendingPotSoilGachaKey == slotKey {
-            var revealTier = thisEntity<playerCropData>.PendingPotSoilGachaSkinTier
-            thisEntity<playerCropData>.PendingPotSoilGacha = false
-            thisEntity<playerCropData>.PendingPotSoilGachaKey = ""
-            thisEntity<playerCropData>.PendingPotSoilGachaSkinTier = 0
-            if !StartSoilGachaRoll(idx, revealTier, floor) {
-                SetBubbleSlot(idx, newState, floor)
-            }
+            start RunPotSoilRevealAfterAnimDelay(idx, floor, slotKey, newState)
             return
         }
         if SoilGachaBusyAt(idx) {

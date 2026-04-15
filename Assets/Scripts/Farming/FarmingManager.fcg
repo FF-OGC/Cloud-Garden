@@ -87,6 +87,11 @@ static graph FarmingManager {
         var key = gardenEnt<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
         if debugCfg.Farming() { LogInfo("[FarmingMgr] key=" + key) }
 
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            return
+        }
+
         if !gardenEnt<gardenData>.IsOwner(player) {
             if debugCfg.Farming() { LogInfo("[FarmingMgr] ABORT: ownership validation failed") }
             return
@@ -121,7 +126,7 @@ static graph FarmingManager {
         }
     }
 
-    // isChangePot: true = reroll skin on existing empty pot (same cost/gacha as buy); clears pot visual first so prefab refreshes.
+    // isChangePot: true = reroll skin on existing pot (same cost/gacha as buy); old pot prefab stays until soil reveal + OnPotShopVisualReveal.
     func ProcessPaidPotGacha(player entity<Entity>, gardenEnt entity<Entity>, key string, isChangePot bool) {
         var potItemId = itemCfg.GetPotPurchaseItemId()
         if !currencyMgr.CanAffordItem(player as entity<Player>, potItemId, 1) {
@@ -145,11 +150,6 @@ static graph FarmingManager {
             gachaData.MarkNextPotSkinGuaranteed(player)
         }
 
-        if isChangePot {
-            gardenEnt<gardenData>.TryClearPotVisual(key)
-            if debugCfg.Farming() || debugCfg.Gacha() { LogInfo("[POT_SHOP] [FarmingMgr] change: cleared pot visual key=" + key) }
-        }
-
         var skinTier = gachaManager.RollPotSkinTier(player)
         if debugCfg.Farming() || debugCfg.Gacha() {
             LogInfo("[POT_SHOP] [FarmingMgr] pot skin roll tier=" + convert.ToString(skinTier) + " key=" + key + " mode=" + modeStr)
@@ -164,6 +164,13 @@ static graph FarmingManager {
         player<playerCropData>.PendingPotSoilGacha = true
         player<playerCropData>.PendingPotSoilGachaKey = key
         player<playerCropData>.PendingPotSoilGachaSkinTier = skinTier
+
+        var csShop = gardenEnt<gardenData>.GetCropSlotByKey(key)
+        if csShop != nil {
+            csShop<cropSlot>.PotShopDeferPotVisual = true
+        }
+
+        player<playerCropData>._PotShopFlowBusy = true
 
         DispatchEventToEntity(OnFarmCellStateChanged, globalEntity, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
         DispatchEventToEntity(OnFarmCellStateChanged, player, PlatformType.Server, List<object>{gardenEnt, key, EFarmSlotState.PotReady})
@@ -295,6 +302,11 @@ static graph FarmingManager {
 
         if !gardenEnt<gardenData>.IsOwner(player) {
             if debugCfg.Farming() { LogInfo("[FarmingMgr] PLANT ABORT: not owner") }
+            return
+        }
+
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
             return
         }
 

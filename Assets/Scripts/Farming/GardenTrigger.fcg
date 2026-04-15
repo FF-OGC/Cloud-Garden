@@ -37,11 +37,11 @@ graph GardenTrigger {
 
         if target != nil {
 
-            LogInfo("[GardenTrigger] OnTriggerEnter hit entity='" + target<Entity>.Name + "'")
+            if debugCfg.Farming() { LogInfo("[GardenTrigger] OnTriggerEnter hit entity='" + target<Entity>.Name + "'") }
 
         } else {
 
-            LogWarning("[GardenTrigger] OnTriggerEnter target is nil")
+            if debugCfg.Farming() { LogWarning("[GardenTrigger] OnTriggerEnter target is nil") }
 
         }
 
@@ -49,7 +49,7 @@ graph GardenTrigger {
 
         if Garden == nil {
 
-            LogWarning("[GardenTrigger] Garden is nil — assign GardenData ref on this entity's GardenTrigger Custom Component in editor")
+            if debugCfg.Farming() { LogWarning("[GardenTrigger] Garden is nil — assign GardenData ref on this entity's GardenTrigger Custom Component in editor") }
 
             return
 
@@ -61,7 +61,7 @@ graph GardenTrigger {
 
         if player == nil {
 
-            LogWarning("[GardenTrigger] Overlap is not a Player (wrong layer / cast failed). Fix collision matrix or who enters the trigger.")
+            if debugCfg.Farming() { LogWarning("[GardenTrigger] Overlap is not a Player (wrong layer / cast failed). Fix collision matrix or who enters the trigger.") }
 
             return
 
@@ -71,7 +71,7 @@ graph GardenTrigger {
 
         if player<playerCropData> == nil {
 
-            LogWarning("[GardenTrigger] Player has no PlayerCropData graph — add script to player prefab.")
+            if debugCfg.Farming() { LogWarning("[GardenTrigger] Player has no PlayerCropData graph — add script to player prefab.") }
 
             return
 
@@ -81,9 +81,10 @@ graph GardenTrigger {
 
         player<playerCropData>.CurrentGarden = Garden
 
-        LogInfo("[GardenTrigger] Enter garden OK: '" + Garden<Entity>.Name + "'")
-
-        if debugCfg.Farming() { LogInfo("[GardenTrigger] (verbose) player + Garden + PlayerCropData validated") }
+        if debugCfg.Farming() {
+            LogInfo("[GardenTrigger] Enter garden OK: '" + Garden<Entity>.Name + "'")
+            LogInfo("[GardenTrigger] (verbose) player + Garden + PlayerCropData validated")
+        }
 
 
 
@@ -97,7 +98,7 @@ graph GardenTrigger {
 
         if target != nil {
 
-            LogInfo("[GardenTrigger] OnTriggerLeave hit entity='" + target<Entity>.Name + "'")
+            if debugCfg.Farming() { LogInfo("[GardenTrigger] OnTriggerLeave hit entity='" + target<Entity>.Name + "'") }
 
         }
 
@@ -127,9 +128,10 @@ graph GardenTrigger {
 
         player<playerCropData>.InFarmPotTrigger = false
 
-        LogInfo("[GardenTrigger] Leave garden OK: '" + Garden<Entity>.Name + "'")
-
-        if debugCfg.Farming() { LogInfo("[GardenTrigger] (verbose) cleared CurrentGarden") }
+        if debugCfg.Farming() {
+            LogInfo("[GardenTrigger] Leave garden OK: '" + Garden<Entity>.Name + "'")
+            LogInfo("[GardenTrigger] (verbose) cleared CurrentGarden")
+        }
 
 
 

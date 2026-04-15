@@ -2,6 +2,7 @@ import "StdLibrary.fcc" as std
 import "EditorGenLib.fcc" as gen
 import "Player.fcc" as Player
 import "Map.fcc" as map
+import "Convert.fcc" as convert
 
 import "./PlayerCropData.fcg" as playerCropData
 import "../Services/AnimService.fcg" as animSvc
@@ -14,8 +15,6 @@ import "../Currency/CurrencyManager.fcg" as currencyMgr
 [platform_server]
 static graph FarmActionAnimator {
 
-    _ACTION_DELAY int = 1500
-
     event OnPlayerPotShopAction (player entity<Player>) {
         if player == nil { return }
         if player<playerCropData>._IsPerformingAction {
@@ -25,7 +24,61 @@ static graph FarmActionAnimator {
         start PerformAction(player)
     }
 
+    event OnPotPurchaseConfirmYes(player entity<Player>) {
+        if player == nil { return }
+        start RunPotShopPurchaseAfterConfirm(player)
+    }
+
+    async func RunPotShopPurchaseAfterConfirm(player entity<Entity>) {
+        var gardenEnt = player<playerCropData>.CurrentGarden
+        if gardenEnt == nil || gardenEnt<gardenData> == nil {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] confirm yes ABORT: no valid garden") }
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        if !player<playerCropData>.InFarmPotTrigger || player<playerCropData>.CurrentFarmSlotIndex < 0 {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] confirm yes ABORT: not in farm slot") }
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        if !gardenEnt<gardenData>.IsOwner(player) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_OTHER_PLAYER_GARDEN"})
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        var key = gardenEnt<gardenData>.SlotKeyFromIndex(player<playerCropData>.CurrentFarmSlotIndex)
+        var state = gardenEnt<gardenData>.GetCellState(key)
+        if state != EFarmSlotState.Cloud && state != EFarmSlotState.PotReady {
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] confirm yes ABORT: slot state changed") }
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        var potItemId = itemCfg.GetPotPurchaseItemId()
+        if !currencyMgr.CanAffordItem(player<Player>, potItemId, 1) {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_NO_GOLD_POT"})
+            player<playerCropData>._IsPerformingAction = false
+            return
+        }
+
+        if debugCfg.Farming() { LogInfo("[POT_SHOP] [FarmActionAnimator] confirm yes -> anim + OnExecuteFarmAction") }
+        DisableActions(player)
+        animSvc.PlayAnimOnce(player, "Farming")
+        DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
+        WaitForMillisecond(itemCfg.GetPotShopActionAnimDelayMs())
+        EnableActions(player)
+        player<playerCropData>._IsPerformingAction = false
+    }
+
     async func PerformAction(player entity<Entity>) {
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED: pot shop flow busy (spin/reveal)") }
+            return
+        }
         player<playerCropData>._IsPerformingAction = true
 
         var fromConsumableBtn = player<playerCropData>._PotShopFromConsumableBtn
@@ -60,7 +113,7 @@ static graph FarmActionAnimator {
             return
         }
 
-        // Pot button = Buy (Cloud) or Change (PotReady). Check gold before anim so we don't play dig on failure.
+        // Pot button = Buy (Cloud) or Change (PotReady). Confirm in UI first; gold checked here and again on confirm.
         if state == EFarmSlotState.Cloud || state == EFarmSlotState.PotReady {
             var potItemId = itemCfg.GetPotPurchaseItemId()
             if !currencyMgr.CanAffordItem(player<Player>, potItemId, 1) {
@@ -68,13 +121,10 @@ static graph FarmActionAnimator {
                 player<playerCropData>._IsPerformingAction = false
                 return
             }
-            if debugCfg.Farming() { LogInfo("[POT_SHOP] [FarmActionAnimator] pot shop anim | Cloud or PotReady (ignore hand item)") }
-            DisableActions(player)
-            animSvc.PlayAnimOnce(player, "Farming")
-            DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
-            WaitForMillisecond(_ACTION_DELAY)
-            EnableActions(player)
-            player<playerCropData>._IsPerformingAction = false
+            var confirmMode = 0
+            if state == EFarmSlotState.PotReady { confirmMode = 1 }
+            DispatchEventToEntity(OnShowPotPurchaseConfirm, player, PlatformType.Server, List<object>{player, confirmMode})
+            if debugCfg.Farming() { LogInfo("[POT_SHOP] [FarmActionAnimator] awaiting pot confirm | mode=" + convert.ToString(confirmMode)) }
             return
         }
 
@@ -113,7 +163,7 @@ static graph FarmActionAnimator {
                 DisableActions(player)
                 animSvc.PlayAnimOnce(player, "Farming")
                 DispatchEventToEntity(OnExecuteFarmAction, globalEntity, PlatformType.Server, List<object>{player})
-                WaitForMillisecond(_ACTION_DELAY)
+                WaitForMillisecond(itemCfg.GetPotShopActionAnimDelayMs())
                 EnableActions(player)
                 player<playerCropData>._IsPerformingAction = false
                 return
@@ -131,6 +181,11 @@ static graph FarmActionAnimator {
 
     event OnPlayerPlantAction(player entity<Player>) {
         if player == nil { return }
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: pot shop flow busy") }
+            return
+        }
         if player<playerCropData>._IsPerformingAction {
             if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant: already performing action") }
             return
@@ -139,6 +194,11 @@ static graph FarmActionAnimator {
     }
 
     async func PerformPlantAction(player entity<Entity>) {
+        if player<playerCropData>._PotShopFlowBusy {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_POT_SHOP_BUSY"})
+            if debugCfg.Farming() { LogInfo("[FarmActionAnimator] REJECTED plant async: pot shop flow busy") }
+            return
+        }
         player<playerCropData>._IsPerformingAction = true
 
         var gardenEnt = player<playerCropData>.CurrentGarden
@@ -175,7 +235,7 @@ static graph FarmActionAnimator {
 
         DispatchEventToEntity(OnExecutePlantAction, globalEntity, PlatformType.Server, List<object>{player})
 
-        WaitForMillisecond(_ACTION_DELAY)
+        WaitForMillisecond(itemCfg.GetPotShopActionAnimDelayMs())
 
         EnableActions(player)
 

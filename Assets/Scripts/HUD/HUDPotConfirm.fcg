@@ -1,0 +1,94 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+import "Convert.fcc" as convert
+
+import "../Config/ItemConfig.fcg" as itemCfg
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Farming/PlayerCropData.fcg" as playerCropData
+
+[platform_server]
+graph HUDPotConfirm {
+
+    _ConfirmUI entity<CustomUI> = nil
+
+    _MODE_BUY int = 0
+    _MODE_CHANGE int = 1
+
+    event OnAwake() {
+        CreateCustomUI(out var ui, thisEntity<Player>, EResUI.confirmwidget)
+        if ui != nil {
+            _ConfirmUI = ui
+            _ConfirmUI<CustomUI>.Depth = 250
+            _ConfirmUI<CustomUI>.IsVisible = false
+
+            if debugCfg.Farming() { LogInfo("[HUDPotConfirm] OnAwake | ui=" + convert.ToString(_ConfirmUI != nil)) }
+        } else {
+            if debugCfg.Farming() { LogWarning("[HUDPotConfirm] CreateCustomUI confirmwidget failed") }
+        }
+    }
+
+    event OnShowPotPurchaseConfirm(player entity<Player>, mode int) {
+        if player != thisEntity<Player> { return }
+        if _ConfirmUI == nil { return }
+
+        var potId = itemCfg.GetPotPurchaseItemId()
+        var price = itemCfg.GetBuyPrice(potId)
+        var priceStr = convert.ToString(price)
+
+        var titleW = GetWidgetByPath(thisEntity<Player>, _ConfirmUI, "/Confirm/Title/Label")
+        if titleW != nil {
+            if mode == _MODE_CHANGE {
+                titleW<UIWidgetLabel>.Content = "Change pot?"
+            } else {
+                titleW<UIWidgetLabel>.Content = "Buy a pot?"
+            }
+        }
+
+        var detailsW = GetWidgetByPath(thisEntity<Player>, _ConfirmUI, "/Confirm/ConfirmDetails")
+        if detailsW != nil {
+            if mode == _MODE_CHANGE {
+                detailsW<UIWidgetLabel>.Content = "Spend " + priceStr + " gold to roll a new pot look?"
+            } else {
+                detailsW<UIWidgetLabel>.Content = "Spend " + priceStr + " gold to place a pot here?"
+            }
+        }
+
+        _ConfirmUI<CustomUI>.IsVisible = true
+        if debugCfg.Farming() { LogInfo("[HUDPotConfirm] shown | mode=" + convert.ToString(mode)) }
+    }
+
+    func HideConfirm() {
+        if _ConfirmUI != nil {
+            _ConfirmUI<CustomUI>.IsVisible = false
+        }
+    }
+
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
+        if player != thisEntity<Player> { return }
+        if !HasComponent(button, typeof(MyButton)) { return }
+
+        var btnType = button<MyButton>.Type
+        if btnType != "pot_confirm_yes" && btnType != "pot_confirm_no" && btnType != "pot_confirm_close" {
+            return
+        }
+
+        if _ConfirmUI == nil || !_ConfirmUI<CustomUI>.IsVisible {
+            return
+        }
+
+        if btnType == "pot_confirm_yes" {
+            HideConfirm()
+            DispatchEventToEntity(OnPotPurchaseConfirmYes, globalEntity, PlatformType.Server, List<object>{player})
+            if debugCfg.Farming() { LogInfo("[HUDPotConfirm] YES -> proceed pot shop") }
+            return
+        }
+
+        HideConfirm()
+        if player<playerCropData> != nil {
+            player<playerCropData>._IsPerformingAction = false
+        }
+        if debugCfg.Farming() { LogInfo("[HUDPotConfirm] NO/Close -> cancelled") }
+    }
+}

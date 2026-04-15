@@ -33,6 +33,7 @@ graph HudPrompt {
         "PROMPT_STORE_NO_GOLD": "Not enough gold to buy this!",
         "PROMPT_STORE_NO_STOCK": "This item is out of stock!",
         "PROMPT_STORE_BACKPACK_FULL": "Your backpack is full!",
+        "PROMPT_POT_SHOP_BUSY": "Wait for the pot roll to finish first!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
@@ -57,6 +58,7 @@ graph HudPrompt {
         "PROMPT_STORE_NO_GOLD": #FABF00,
         "PROMPT_STORE_NO_STOCK": #FABF00,
         "PROMPT_STORE_BACKPACK_FULL": #FABF00,
+        "PROMPT_POT_SHOP_BUSY": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>

@@ -2,9 +2,11 @@ import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "Convert.fcc" as convert
 import "EditorGenLib.fcc" as gen
+import "Player.fcc" as Player
 
 import "./GardenData.fcg" as gardenData
 import "./CropSlot.fcg" as cropSlot
+import "./PlayerCropData.fcg" as playerCropData
 import "../Core/GameManager.fcg" as gameMgr
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Config/ItemConfig.fcg" as itemCfg
@@ -40,21 +42,12 @@ static graph FarmVisualManager {
 
             ReturnPlantToPool(floor, key)
 
-            if cs<cropSlot>.PotVisual == nil {
-                var skinTier = floor<gardenData>.GetPotSkinTier(key)
-                var potPrefab = itemCfg.GetPotPrefabForSkinTier(skinTier)
-
-                CreateFromPrefab(out var potObj, potPrefab)
-                if potObj != nil {
-                    potObj<Transform>.Position = potPos
-                    cs<cropSlot>.PotVisual = potObj
-                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned pot visual tier=" + convert.ToString(skinTier) + " key=" + key) }
-                } else {
-                    if debugCfg.Farming() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn pot prefab") }
-                }
-            } else {
-                if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Pot visual already exists for key=" + key) }
+            if cs<cropSlot>.PotShopDeferPotVisual {
+                if debugCfg.Farming() { LogInfo("[FarmVisualMgr] pot shop: keep existing pot prefab until soil reveal | key=" + key) }
+                return
             }
+
+            SpawnPotVisualIfMissing(floor, key, potPos)
             return
         }
 
@@ -109,6 +102,77 @@ static graph FarmVisualManager {
         } else {
             if debugCfg.Farming() { LogError("[VISUAL-DBG] FAIL: plantObj is NIL for prefabKey=" + prefabKey) }
         }
+    }
+
+    func SpawnPotVisualIfMissing(floor entity<Entity>, key string, potPos Vector3) {
+        if floor == nil || floor<gardenData> == nil { return }
+        var cs = floor<gardenData>.GetCropSlotByKey(key)
+        if cs == nil { return }
+        if cs<cropSlot>.PotVisual != nil {
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Pot visual already exists for key=" + key) }
+            return
+        }
+        var skinTier = floor<gardenData>.GetPotSkinTier(key)
+        var potPrefab = itemCfg.GetPotPrefabForSkinTier(skinTier)
+        CreateFromPrefab(out var potObj, potPrefab)
+        if potObj != nil {
+            potObj<Transform>.Position = potPos
+            cs<cropSlot>.PotVisual = potObj
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Spawned pot visual tier=" + convert.ToString(skinTier) + " key=" + key) }
+        } else {
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] ERROR: Failed to spawn pot prefab") }
+        }
+    }
+
+    func ClearPotShopFlowBusyForFloorOwner(floor entity<Entity>) {
+        if floor == nil || floor<gardenData> == nil { return }
+        var ow = floor<gardenData>.Owner
+        if ow == nil { return }
+        var pl = ow as entity<Player>
+        if pl != nil && pl<playerCropData> != nil {
+            pl<playerCropData>._PotShopFlowBusy = false
+        }
+    }
+
+    // After soil gacha UI shows the final tier: destroy old pot (if any) and spawn prefab for rolled GetPotSkinTier.
+    event OnPotShopVisualReveal(floor entity<Entity>, slotKey string) {
+        if floor == nil || floor<gardenData> == nil { return }
+        var cs = floor<gardenData>.GetCropSlotByKey(slotKey)
+        if cs == nil { return }
+        if !cs<cropSlot>.PotShopDeferPotVisual {
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] OnPotShopVisualReveal ignored (not deferred) key=" + slotKey) }
+            ClearPotShopFlowBusyForFloorOwner(floor)
+            return
+        }
+        if floor<gardenData>.GetCellState(slotKey) != EFarmSlotState.PotReady {
+            cs<cropSlot>.PotShopDeferPotVisual = false
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] OnPotShopVisualReveal skip: not PotReady key=" + slotKey) }
+            ClearPotShopFlowBusyForFloorOwner(floor)
+            return
+        }
+        cs<cropSlot>.PotShopDeferPotVisual = false
+
+        var spawnPos = floor<gardenData>.GetSpawnWorldPositionForSlotKey(slotKey)
+        var liftPotY = itemCfg.GetFarmLiftPotY()
+        var potPos = Vector3{spawnPos.X, spawnPos.Y + liftPotY, spawnPos.Z}
+
+        if cs<cropSlot>.PotVisual != nil {
+            var oldPot = cs<cropSlot>.PotVisual as entity
+            if oldPot != nil { Destroy(oldPot) }
+            cs<cropSlot>.PotVisual = nil
+        }
+
+        var skinTier = floor<gardenData>.GetPotSkinTier(slotKey)
+        var potPrefab = itemCfg.GetPotPrefabForSkinTier(skinTier)
+        CreateFromPrefab(out var potObj, potPrefab)
+        if potObj != nil {
+            potObj<Transform>.Position = potPos
+            cs<cropSlot>.PotVisual = potObj
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] Pot shop visual reveal tier=" + convert.ToString(skinTier) + " key=" + slotKey) }
+        } else {
+            if debugCfg.Farming() { LogInfo("[FarmVisualMgr] OnPotShopVisualReveal FAILED spawn prefab key=" + slotKey) }
+        }
+        ClearPotShopFlowBusyForFloorOwner(floor)
     }
 
     func ReturnPlantToPool(floor entity<Entity>, cellKey string) {

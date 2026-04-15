@@ -333,5 +333,8 @@ static graph ItemConfig {
 
     func GetPotPurchaseItemId() string { return "pot_purchase" }
 
+    // Aligns pot prefab spawn + soil bubble reveal with FarmActionAnimator dig/farming window (ms).
+    func GetPotShopActionAnimDelayMs() int { return 1500 }
+
     func IsConsumableItem(itemId string) bool { return GetType(itemId) == 4 }
 }

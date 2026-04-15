@@ -229,6 +229,7 @@ graph GardenData {
             if oldPot != nil { Destroy(oldPot) }
             cs<cropSlot>.PotVisual = nil
         }
+        cs<cropSlot>.PotShopDeferPotVisual = false
         cs<cropSlot>.IsLuckyPot = false
         cs<cropSlot>.PotSkinTier = 1
     }
