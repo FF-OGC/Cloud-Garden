@@ -56,7 +56,7 @@ static graph MarketManager {
             }
         }
 
-        start SpawnInfoBoard(marketEntity, marketEntity<marketData>._Owner)
+        start SpawnInfoBoard(marketEntity)
         currencyVisualManager.SpawnMoneyTrigger(marketEntity)
         start DelayedMaintain(marketEntity)
         if debugCfg.Market() { LogInfo("[MarketManager] RegisterMarket OK | market registered. Total=" + convert.ToString(list.Length(_Markets))) }
@@ -91,14 +91,31 @@ static graph MarketManager {
         var market = GetMarketForZone(zone)
         if market != nil && market<marketData> != nil {
             market<marketData>._Owner = player
-            start SpawnInfoBoard(market, player)
+            start SpawnInfoBoard(market)
             if debugCfg.Market() { LogInfo("[MarketManager] AssignMarketOwner | zone assigned to player") }
         }
     }
 
-    async func SpawnInfoBoard(market entity<Entity>, owner entity<Player>) {
+    func ResolveInfoBoardOwner(market entity<Entity>) entity<Player> {
+        if market == nil || market<marketData> == nil { return nil }
+        var o = market<marketData>._Owner
+        if o != nil { return o }
+        var fz = market<marketData>._FarmZone
+        if fz != nil && fz<FarmZoneData> != nil && fz<FarmZoneData>.Owner != nil {
+            return fz<FarmZoneData>.Owner as entity<Player>
+        }
+        return nil
+    }
+
+    async func SpawnInfoBoard(market entity<Entity>) {
+        if market == nil || market<marketData> == nil { return }
+        market<marketData>._InfoBoardSpawnGeneration = market<marketData>._InfoBoardSpawnGeneration + 1
+        var spawnGen = market<marketData>._InfoBoardSpawnGeneration
         WaitForMillisecond(500)
-        if market == nil { return }
+        if market == nil || market<marketData> == nil { return }
+        if spawnGen != market<marketData>._InfoBoardSpawnGeneration { return }
+
+        var resolvedOwner = ResolveInfoBoardOwner(market)
 
         if market<marketData>._InfoBoard != nil {
             Destroy(market<marketData>._InfoBoard)
@@ -122,7 +139,7 @@ static graph MarketManager {
         infoBoard<Transform>.Rotation = Vector3{0, rotY + 180.0, 0}
 
         var displayName = "X"
-        if owner != nil { displayName = owner<Player>.NickName }
+        if resolvedOwner != nil { displayName = resolvedOwner<Player>.NickName }
 
         var textFront = GetChildByName(infoBoard, "Text object_frontside")
         var textBack = GetChildByName(infoBoard, "Text object_backside")
@@ -138,8 +155,8 @@ static graph MarketManager {
 
         market<marketData>._InfoBoard = infoBoard
         if debugCfg.Market() {
-            if owner != nil {
-                LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + owner<Player>.NickName)
+            if resolvedOwner != nil {
+                LogInfo("[MarketManager] SpawnInfoBoard OK | owner: " + resolvedOwner<Player>.NickName)
             } else {
                 LogInfo("[MarketManager] SpawnInfoBoard OK | unclaimed (showing 'X')")
             }

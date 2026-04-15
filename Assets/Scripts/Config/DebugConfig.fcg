@@ -8,7 +8,7 @@ static graph DebugConfig {
     // Zone register, player join/init, teleport, market poll — needed to verify GameManager + ownership before farming.
     _DebugCore bool = false
     // GardenData wire, triggers, FarmingManager, HUD farm taps, growth tick, visuals — main switch for the new garden flow.
-    _DebugFarming bool = true
+    _DebugFarming bool = false
     _DebugMarket bool = false
     _DebugStore bool = false
     _DebugBackpack bool = false

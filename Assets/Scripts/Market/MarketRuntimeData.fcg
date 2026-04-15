@@ -29,6 +29,8 @@ graph MarketRuntimeData {
     _ActiveProduceMutStrs List<string> = nil
 
     _InfoBoard entity<Entity> = nil
+    // Incremented on each SpawnInfoBoard start; stale async runs skip after Wait so only the latest build wins.
+    _InfoBoardSpawnGeneration int = 0
 
     _PendingMoney int = 0
     _MoneyLayers List<entity<Entity>> = nil

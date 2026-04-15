@@ -185,7 +185,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 463,
+          "tempIndex": 502,
           "itemID": 224,
           "seParent": null,
           "ecaScripts": [
@@ -255,7 +255,7 @@
           "children": [],
           "prefabVariant": null,
           "activeValue": {
-            "selfValue": true,
+            "selfValue": false,
             "valueTag": "activeValue"
           },
           "unlockedValue": {
@@ -298,7 +298,7 @@
           "entityTagData": {
             "tagPointers": []
           },
-          "tempIndex": 464,
+          "tempIndex": 503,
           "itemID": 224,
           "seParent": null,
           "ecaScripts": [

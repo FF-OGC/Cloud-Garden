@@ -43,7 +43,9 @@
       "VisibilityLayer": 0,
       "modelOptimization": 0,
       "streamingLayer": "",
-      "attributes": [],
+      "attributes": [
+        4
+      ],
       "isTrigger": false,
       "collidable": true,
       "physicalLayer": 3,
@@ -160,6 +162,6 @@
   "editorLockValue": false,
   "editorVisibleValue": true,
   "discriminator": "ISceneLike",
-  "_entityName": "carrot_sterm"
+  "_entityName": "carrot_stem"
 }
 //"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}

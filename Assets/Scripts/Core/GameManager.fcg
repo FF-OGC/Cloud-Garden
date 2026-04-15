@@ -15,6 +15,7 @@ import "../Market/MarketManager.fcg" as marketManager
 import "../Currency/CurrencyManager.fcg" as currencyManager
 import "../Store/StoreManager.fcg" as storeManager
 import "../Config/DebugConfig.fcg" as debugCfg
+import "../Config/StoreConfig.fcg" as storeCfg
 import "LevelObject.fcc" as LevelObject
 [platform_server]
 static graph GameManager {
@@ -108,8 +109,8 @@ static graph GameManager {
     }
 
     async func WaitAndInitPlayer(player entity<Player>) {
-        // Wait until at least one farm zone has registered
-        var maxWait = 30
+        // Wait until at least one farm zone has registered (longer window for 4-player / slow clients)
+        var maxWait = 90
         var waited = 0
         while list.Length(_FarmZones) == 0 && waited < maxWait {
             WaitForMillisecond(500)
@@ -117,11 +118,10 @@ static graph GameManager {
         }
 
         if list.Length(_FarmZones) == 0 {
-            if debugCfg.Core() { LogWarning("[GameManager] Timeout: No farm zones registered!") }
-            return
+            if debugCfg.Core() { LogWarning("[GameManager] Timeout: No farm zones registered — skipping zone claim & teleport; still granting starter items.") }
+        } else {
+            if debugCfg.Core() { LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones)) }
         }
-
-        if debugCfg.Core() { LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones)) }
 
         var zCount = list.Length(_FarmZones)
         var assignedZone entity<Entity> = nil
@@ -173,63 +173,81 @@ static graph GameManager {
                 }
             }
         }
-        
-        // 3. Teleport to the left of customer queue, facing market
-        if assignedZone != nil {
-            var market = assignedZone<FarmZoneData>.Market
+
+        // If every plot is taken (e.g. 4 farm zones, 4 owners), still anchor off first zone for stall teleport
+        var zoneForTeleport entity<Entity> = assignedZone
+        if zoneForTeleport == nil && zCount > 0 {
+            zoneForTeleport = _FarmZones[0]
+            if debugCfg.Core() { LogWarning("[GameManager] No unclaimed farm zone; trying teleport near first zone.") }
+        }
+
+        // 3. Teleport beside own / overflow market stall when transforms are valid; else beside global store (config)
+        var spawnSucceeded = false
+        if zoneForTeleport != nil {
+            var market = zoneForTeleport<FarmZoneData>.Market
             if market != nil {
-                // Poll until market Transform is actually loaded (position != 0,0,0)
                 var posWait = 0
                 var mPos = market<Transform>.Position
-                while mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 && posWait < 20 {
+                while mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 && posWait < 40 {
                     WaitForMillisecond(500)
                     posWait = posWait + 1
                     mPos = market<Transform>.Position
                 }
 
                 if mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 {
-                    if debugCfg.Core() { LogWarning("[GameManager] Market position still (0,0,0) after polling, using zone fallback") }
-                    var zonePos = assignedZone<Transform>.Position
+                    if debugCfg.Core() { LogWarning("[GameManager] Market position still (0,0,0) after polling, trying zone pivot") }
+                    var zonePos = zoneForTeleport<Transform>.Position
                     var zonePosWait = 0
-                    while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 10 {
+                    while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 20 {
                         WaitForMillisecond(500)
                         zonePosWait = zonePosWait + 1
-                        zonePos = assignedZone<Transform>.Position
+                        zonePos = zoneForTeleport<Transform>.Position
                     }
-                    Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
+                    if zonePos.X != 0.0 || zonePos.Y != 0.0 || zonePos.Z != 0.0 {
+                        Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
+                        spawnSucceeded = true
+                    }
                 } else {
                     var rotY = market<Transform>.Rotation.Y
                     var c = math.Cos(rotY)
                     var s = math.Sin(rotY)
-                    // Local offset: left of queue (-X), in front of market (-Z)
                     var localOff = Vector3{-3.0, 0.0, -4.0}
                     var ox = localOff.X * c + localOff.Z * s
                     var oz = -localOff.X * s + localOff.Z * c
                     var spawnPos = Vector3{mPos.X + ox, mPos.Y, mPos.Z + oz}
                     var facing = GetPlayerOrientation(spawnPos, mPos)
                     Teleport(player, spawnPos, facing)
+                    spawnSucceeded = true
                     if debugCfg.Core() { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
                 }
             } else {
-                var zonePos = assignedZone<Transform>.Position
+                var zonePos = zoneForTeleport<Transform>.Position
                 var zonePosWait = 0
-                while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 10 {
+                while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 20 {
                     WaitForMillisecond(500)
                     zonePosWait = zonePosWait + 1
-                    zonePos = assignedZone<Transform>.Position
+                    zonePos = zoneForTeleport<Transform>.Position
                 }
-                Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
+                if zonePos.X != 0.0 || zonePos.Y != 0.0 || zonePos.Z != 0.0 {
+                    Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
+                    spawnSucceeded = true
+                }
             }
         }
 
+        if !spawnSucceeded {
+            TeleportFallbackBesideStore(player)
+            if debugCfg.Core() { LogWarning("[GameManager] Farm teleport unavailable or invalid transforms — TeleportFallbackBesideStore (beside store / hub).") }
+        }
+
         // 4. Add Seeds to Backpack
-        backpackManager.AddItem(player, "seed_apple", 20)
-        backpackManager.AddItem(player, "seed_carrot", 15)
-        backpackManager.AddItem(player, "seed_tomato", 10)
-        backpackManager.AddItem(player, "seed_chili", 8)
-        backpackManager.AddItem(player, "seed_onion", 8)
-        backpackManager.AddItem(player, "potion_luck", 5)
-        backpackManager.AddItem(player, "potion_grow", 5)
+        backpackManager.AddItem(player, "seed_apple", 1)
+        backpackManager.AddItem(player, "seed_carrot", 1)
+        backpackManager.AddItem(player, "seed_tomato", 1)
+        backpackManager.AddItem(player, "seed_chili", 1)
+        backpackManager.AddItem(player, "seed_onion", 1)
+        backpackManager.AddItem(player, "potion_luck", 1)
+        backpackManager.AddItem(player, "potion_grow", 1)
         if debugCfg.Core() { LogInfo("[GameManager] Added starting seeds to backpack.") }
 
         currencyManager.InitPlayerCurrency(player, 500)
@@ -240,6 +258,13 @@ static graph GameManager {
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
         var orientation Vector3 = math.Normalize(Vector3{centerPoint.X - spawnPoint.X, 0, centerPoint.Z - spawnPoint.Z})
         return orientation
+    }
+
+    func TeleportFallbackBesideStore(player entity<Player>) {
+        if player == nil { return }
+        var p = storeCfg.GetJoinFallbackBesideStorePosition()
+        var f = storeCfg.GetJoinFallbackBesideStoreFacing()
+        Teleport(player, p, f)
     }
 
     async func DebugSpawnAtHub() {

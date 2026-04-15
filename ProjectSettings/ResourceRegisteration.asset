@@ -78,6 +78,18 @@
           },
           "scriptName": "prompt",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "t3mloxosmlp-mnyfovno-t8jjytyzyp",
+            "filePath": "Assets\\UI\\ChatBubble.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "chatbubble",
+          "children": []
         }
       ]
     },

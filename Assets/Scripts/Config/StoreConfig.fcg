@@ -2,6 +2,15 @@ import "StdLibrary.fcc" as std
 import "List.fcc" as list
 
 static graph StoreConfig {
+
+    // --- Join fallback (when farm zone / market transforms are missing or invalid) ---
+    // Tune to match your level: beside the global store / hub (StoreTrigger area).
+    func GetJoinFallbackBesideStorePosition() Vector3 {
+        return Vector3{2.0, 201.0, 0.0}
+    }
+    func GetJoinFallbackBesideStoreFacing() Vector3 {
+        return Vector3{0.0, 0.0, 0.0}
+    }
     // --- Restock cycle (seconds) ---
     func GetRestockCycleSeconds() int { return 60 }
 
