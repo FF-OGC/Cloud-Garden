@@ -96,6 +96,15 @@ static graph MarketManager {
         }
     }
 
+    func ClearMarketOwner(zone entity<Entity>) {
+        var market = GetMarketForZone(zone)
+        if market != nil && market<marketData> != nil {
+            market<marketData>._Owner = nil
+            start SpawnInfoBoard(market)
+            if debugCfg.Market() { LogInfo("[MarketManager] ClearMarketOwner | stall released") }
+        }
+    }
+
     func ResolveInfoBoardOwner(market entity<Entity>) entity<Player> {
         if market == nil || market<marketData> == nil { return nil }
         var o = market<marketData>._Owner

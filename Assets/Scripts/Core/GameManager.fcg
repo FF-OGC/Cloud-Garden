@@ -25,8 +25,17 @@ static graph GameManager {
     
     // Dynamically populated at runtime by FarmZoneRegister. No Editor setup needed!
     _FarmZones List<entity<Entity>> = nil
+    // Unclaimed zones available to assign (RegisterZone appends; claim pops front; quit appends back).
+    _AvailableFarmZonePool List<entity<Entity>> = nil
     _AllFloorsInWorld List<entity<Entity>> = nil
     _ConnectedPlayers List<entity<Player>> = nil
+    // Prevents duplicate OnPlayerJoin from running WaitAndInitPlayer twice (2nd run sees empty pool → shop teleport).
+    _JoinInitStartedForPlayer List<entity<Player>> = nil
+    // After join spawn Teleport runs once (farm or shop), skip further teleport — avoids double teleports from duplicate inits.
+    _FarmJoinTeleportDonePlayers List<entity<Player>> = nil
+    _FarmJoinTeleportDoneNicks List<string> = nil
+    // After farm zones register: wait this many ms before assign + join Teleport (GlobalBase reference ~10s; 0 = skip).
+    _JoinSpawnSettleDelayMs int = 10000
 
     func GetGameTime() float { return _GameTime }
 
@@ -35,8 +44,12 @@ static graph GameManager {
         
         // Initialize empty lists to receive data dynamically
         _FarmZones = list.New(0, 10) as List<entity<Entity>>
+        _AvailableFarmZonePool = list.New(0, 10) as List<entity<Entity>>
         _AllFloorsInWorld = list.New(0, 10) as List<entity<Entity>>
         _ConnectedPlayers = list.New(0, 10) as List<entity<Player>>
+        _JoinInitStartedForPlayer = list.New(0, 10) as List<entity<Player>>
+        _FarmJoinTeleportDonePlayers = list.New(0, 10) as List<entity<Player>>
+        _FarmJoinTeleportDoneNicks = list.New(0, 10) as List<string>
         
         start cropPool.InitPool()
         start StartGlobalClock()
@@ -62,7 +75,8 @@ static graph GameManager {
         
         if zoneObj == nil { return }
         
-        list.Append(_FarmZones, zoneObj)                                                                            
+        list.Append(_FarmZones, zoneObj)
+        list.Append(_AvailableFarmZonePool, zoneObj)
         zoneManager.InitializeZone(zoneObj)
         
         // Collect floors
@@ -94,14 +108,130 @@ static graph GameManager {
 
     func GetConnectedPlayers() List<entity<Player>> { return _ConnectedPlayers }
 
+    func HasFarmJoinTeleportCompleted(player entity<Player>) bool {
+        if player == nil { return false }
+        if list.IndexOf(_FarmJoinTeleportDonePlayers, player) != -1 { return true }
+        var nick = player<Player>.NickName
+        if nick != "" && list.IndexOf(_FarmJoinTeleportDoneNicks, nick) != -1 { return true }
+        return false
+    }
+
+    func MarkFarmJoinTeleportCompleted(player entity<Player>) {
+        if player == nil { return }
+        if list.IndexOf(_FarmJoinTeleportDonePlayers, player) == -1 {
+            list.Append(_FarmJoinTeleportDonePlayers, player)
+        }
+        var nick = player<Player>.NickName
+        if nick != "" && list.IndexOf(_FarmJoinTeleportDoneNicks, nick) == -1 {
+            list.Append(_FarmJoinTeleportDoneNicks, nick)
+        }
+    }
+
+    func ClearFarmJoinTeleportCompletedForPlayer(player entity<Player>) {
+        if player == nil { return }
+        var pi = list.IndexOf(_FarmJoinTeleportDonePlayers, player)
+        if pi != -1 { list.Remove(_FarmJoinTeleportDonePlayers, pi) }
+        var nick = player<Player>.NickName
+        if nick != "" {
+            var ni = list.IndexOf(_FarmJoinTeleportDoneNicks, nick)
+            if ni != -1 { list.Remove(_FarmJoinTeleportDoneNicks, ni) }
+        }
+    }
+
+    // Re-append any registered zone that has no owner but is missing from the pool (fixes desync / leaked pops).
+    func RepairAvailableFarmZonePool() {
+        var zCount = list.Length(_FarmZones)
+        var added = 0
+        for i = 0, zCount, 1 {
+            var zone = _FarmZones[i]
+            if zone == nil || zone<gen.FarmZoneData> == nil { continue }
+            if zone<gen.FarmZoneData>.Owner != nil { continue }
+            if list.IndexOf(_AvailableFarmZonePool, zone) == -1 {
+                list.Append(_AvailableFarmZonePool, zone)
+                added = added + 1
+            }
+        }
+        if debugCfg.Core() && added > 0 { LogInfo("[GameManager] RepairAvailableFarmZonePool | re-queued " + added + " unowned zone(s).") }
+    }
+
     event OnUserQuitOrUserMatchEnd(player entity<Player>) {
         if player == nil { return }
+        ReleaseFarmZoneForPlayer(player)
         var idx = list.IndexOf(_ConnectedPlayers, player)
         if idx != -1 { list.Remove(_ConnectedPlayers, idx) }
+        var jIdx = list.IndexOf(_JoinInitStartedForPlayer, player)
+        if jIdx != -1 { list.Remove(_JoinInitStartedForPlayer, jIdx) }
+        ClearFarmJoinTeleportCompletedForPlayer(player)
         if debugCfg.Core() { LogInfo("[GameManager] Player left. Connected: " + list.Length(_ConnectedPlayers)) }
     }
 
+    func RebindFarmZoneOwnershipToPlayerEntity(zone entity<Entity>, player entity<Player>) {
+        if zone == nil || player == nil || zone<gen.FarmZoneData> == nil { return }
+        zone<gen.FarmZoneData>.Owner = player
+        var floors = zone<FarmZoneData>.Floors
+        if floors != nil {
+            var fCount = list.Length(floors)
+            for j = 0, fCount, 1 {
+                if floors[j]<gen.GardenData> != nil { floors[j]<gen.GardenData>.Owner = player }
+            }
+        }
+        marketManager.AssignMarketOwner(zone, player)
+    }
+
+    // Same human, new Player entity (respawn / slow load): Owner still points at old entity — reclaim by NickName so we do not fall through to empty pool + shop teleport.
+    func TryResolveAssignedZoneForPlayerIdentity(player entity<Player>) entity<Entity> {
+        if player == nil { return nil }
+        var pn = player<Player>.NickName
+        var zCount = list.Length(_FarmZones)
+        for i = 0, zCount, 1 {
+            var zone = _FarmZones[i]
+            if zone == nil || zone<gen.FarmZoneData> == nil { continue }
+            var ow = zone<gen.FarmZoneData>.Owner
+            if ow == nil { continue }
+            if ow == player {
+                return zone
+            }
+            var owPlayer = ow as entity<Player>
+            if pn != "" && owPlayer != nil && owPlayer<Player>.NickName == pn {
+                RebindFarmZoneOwnershipToPlayerEntity(zone, player)
+                if debugCfg.Core() { LogInfo("[GameManager] Resolved farm zone by NickName (rebound to current Player entity).") }
+                return zone
+            }
+        }
+        return nil
+    }
+
+    func ReleaseFarmZoneForPlayer(player entity<Player>) {
+        if player == nil { return }
+        var zCount = list.Length(_FarmZones)
+        for i = 0, zCount, 1 {
+            var zone = _FarmZones[i]
+            if zone == nil || zone<gen.FarmZoneData> == nil { continue }
+            if zone<gen.FarmZoneData>.Owner != player { continue }
+
+            zone<gen.FarmZoneData>.Owner = nil
+            var floors = zone<FarmZoneData>.Floors
+            if floors != nil {
+                var fCount = list.Length(floors)
+                for j = 0, fCount, 1 {
+                    if floors[j]<gen.GardenData> != nil { floors[j]<gen.GardenData>.Owner = nil }
+                }
+            }
+            marketManager.ClearMarketOwner(zone)
+            if list.IndexOf(_AvailableFarmZonePool, zone) == -1 {
+                list.Append(_AvailableFarmZonePool, zone)
+            }
+            if debugCfg.Core() { LogInfo("[GameManager] Released farm zone to pool | zone='" + zone<Entity>.Name + "' pool=" + list.Length(_AvailableFarmZonePool)) }
+            return
+        }
+    }
+
     event OnPlayerJoin(player entity<Player>) {
+        if player == nil { return }
+        if list.IndexOf(_ConnectedPlayers, player) != -1 {
+            if debugCfg.Core() { LogWarning("[GameManager] Duplicate OnPlayerJoin ignored (same player already connected).") }
+            return
+        }
         list.Append(_ConnectedPlayers, player)
         if debugCfg.Core() { LogInfo("[GameManager] Player joined. Connected: " + list.Length(_ConnectedPlayers)) }
 
@@ -109,6 +239,13 @@ static graph GameManager {
     }
 
     async func WaitAndInitPlayer(player entity<Player>) {
+        if player == nil { return }
+        if list.IndexOf(_JoinInitStartedForPlayer, player) != -1 {
+            if debugCfg.Core() { LogWarning("[GameManager] Duplicate OnPlayerJoin — skipping extra WaitAndInitPlayer (avoids empty-pool shop teleport).") }
+            return
+        }
+        list.Append(_JoinInitStartedForPlayer, player)
+
         // Wait until at least one farm zone has registered (longer window for 4-player / slow clients)
         var maxWait = 90
         var waited = 0
@@ -123,28 +260,28 @@ static graph GameManager {
             if debugCfg.Core() { LogInfo("[GameManager] Zones registered after " + (waited * 500) + "ms. FarmZones: " + list.Length(_FarmZones)) }
         }
 
+        if _JoinSpawnSettleDelayMs > 0 {
+            WaitForMillisecond(_JoinSpawnSettleDelayMs)
+            if debugCfg.Core() { LogInfo("[GameManager] Join spawn settle delay done (" + _JoinSpawnSettleDelayMs + "ms).") }
+        }
+
         var zCount = list.Length(_FarmZones)
         var assignedZone entity<Entity> = nil
         var isFreshZoneClaim bool = false
         
-        // 1. Check session ownership
-        for i = 0, zCount, 1 {
-            var zone = _FarmZones[i]
-            if zone != nil && zone<gen.FarmZoneData> != nil && zone<gen.FarmZoneData>.Owner == player {
-                assignedZone = zone
-                break
-            }
-        }
+        // 1. Zone already for this user: same Player ref, or same NickName with a new Player entity (avoids 2nd init → empty pool → shop).
+        assignedZone = TryResolveAssignedZoneForPlayerIdentity(player)
         
-        // 2. Assign unclaimed land
+        // 2. Claim from pool (FIFO) after repair; then direct scan if pool was out of sync
         if assignedZone == nil {
-            for i = 0, zCount, 1 {
-                var zone = _FarmZones[i]
-                if zone != nil && zone<gen.FarmZoneData> != nil && zone<gen.FarmZoneData>.Owner == nil {
-                    
+            RepairAvailableFarmZonePool()
+            var poolLen = list.Length(_AvailableFarmZonePool)
+            if poolLen > 0 {
+                var zone = _AvailableFarmZonePool[0]
+                if zone != nil && zone<gen.FarmZoneData> != nil {
+                    list.RemoveAt(_AvailableFarmZonePool, 0)
                     zone<gen.FarmZoneData>.Owner = player
                     var floors = zone<FarmZoneData>.Floors
-                    
                     if floors != nil {
                         var fCount = list.Length(floors)
                         for j = 0, fCount, 1 { 
@@ -154,10 +291,42 @@ static graph GameManager {
                     assignedZone = zone
                     isFreshZoneClaim = true
                     marketManager.AssignMarketOwner(zone, player)
-                    if debugCfg.Core() { LogInfo("[GameManager] Assigned new Farm Zone + Market to player.") }
-                    break
+                    if debugCfg.Core() { LogInfo("[GameManager] Assigned Farm Zone from pool + Market | pool remaining=" + list.Length(_AvailableFarmZonePool)) }
                 }
             }
+        }
+
+        if assignedZone == nil {
+            RepairAvailableFarmZonePool()
+            for i = 0, zCount, 1 {
+                var zone = _FarmZones[i]
+                if zone == nil || zone<gen.FarmZoneData> == nil { continue }
+                if zone<gen.FarmZoneData>.Owner != nil { continue }
+                zone<gen.FarmZoneData>.Owner = player
+                var floors = zone<FarmZoneData>.Floors
+                if floors != nil {
+                    var fCount = list.Length(floors)
+                    for j = 0, fCount, 1 {
+                        if floors[j]<gen.GardenData> != nil { floors[j]<gen.GardenData>.Owner = player }
+                    }
+                }
+                var pIdx = list.IndexOf(_AvailableFarmZonePool, zone)
+                if pIdx != -1 { list.RemoveAt(_AvailableFarmZonePool, pIdx) }
+                assignedZone = zone
+                isFreshZoneClaim = true
+                marketManager.AssignMarketOwner(zone, player)
+                if debugCfg.Core() { LogInfo("[GameManager] Assigned first unowned registered zone (pool repair path) | zone='" + zone<Entity>.Name + "'") }
+                break
+            }
+        }
+
+        // Last-chance identity resolve after pool/direct (handles ordering with another coroutine or late Owner replication).
+        if assignedZone == nil {
+            assignedZone = TryResolveAssignedZoneForPlayerIdentity(player)
+        }
+
+        if assignedZone == nil && debugCfg.Core() {
+            LogWarning("[GameManager] No farm zone could be assigned (all owned or none registered) — shop fallback.")
         }
 
         if assignedZone != nil {
@@ -174,70 +343,19 @@ static graph GameManager {
             }
         }
 
-        // If every plot is taken (e.g. 4 farm zones, 4 owners), still anchor off first zone for stall teleport
-        var zoneForTeleport entity<Entity> = assignedZone
-        if zoneForTeleport == nil && zCount > 0 {
-            zoneForTeleport = _FarmZones[0]
-            if debugCfg.Core() { LogWarning("[GameManager] No unclaimed farm zone; trying teleport near first zone.") }
-        }
-
-        // 3. Teleport beside own / overflow market stall when transforms are valid; else beside global store (config)
-        var spawnSucceeded = false
-        if zoneForTeleport != nil {
-            var market = zoneForTeleport<FarmZoneData>.Market
-            if market != nil {
-                var posWait = 0
-                var mPos = market<Transform>.Position
-                while mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 && posWait < 40 {
-                    WaitForMillisecond(500)
-                    posWait = posWait + 1
-                    mPos = market<Transform>.Position
-                }
-
-                if mPos.X == 0.0 && mPos.Y == 0.0 && mPos.Z == 0.0 {
-                    if debugCfg.Core() { LogWarning("[GameManager] Market position still (0,0,0) after polling, trying zone pivot") }
-                    var zonePos = zoneForTeleport<Transform>.Position
-                    var zonePosWait = 0
-                    while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 20 {
-                        WaitForMillisecond(500)
-                        zonePosWait = zonePosWait + 1
-                        zonePos = zoneForTeleport<Transform>.Position
-                    }
-                    if zonePos.X != 0.0 || zonePos.Y != 0.0 || zonePos.Z != 0.0 {
-                        Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
-                        spawnSucceeded = true
-                    }
-                } else {
-                    var rotY = market<Transform>.Rotation.Y
-                    var c = math.Cos(rotY)
-                    var s = math.Sin(rotY)
-                    var localOff = Vector3{-3.0, 0.0, -4.0}
-                    var ox = localOff.X * c + localOff.Z * s
-                    var oz = -localOff.X * s + localOff.Z * c
-                    var spawnPos = Vector3{mPos.X + ox, mPos.Y, mPos.Z + oz}
-                    var facing = GetPlayerOrientation(spawnPos, mPos)
-                    Teleport(player, spawnPos, facing)
-                    spawnSucceeded = true
-                    if debugCfg.Core() { LogInfo("[GameManager] Teleported player (market loaded after " + (posWait * 500) + "ms extra)") }
-                }
+        // 3. Join spawn: exactly one Teleport per session (farm OR shop), after setup — same idea as PlayerBaseSetUp → TeleportToHome once (no second resolve / no double Perform).
+        if !HasFarmJoinTeleportCompleted(player) {
+            if assignedZone != nil {
+                PerformFarmJoinTeleport(player, assignedZone)
+                MarkFarmJoinTeleportCompleted(player)
+                if debugCfg.Core() { LogInfo("[GameManager] Join spawn: single farm Teleport done.") }
             } else {
-                var zonePos = zoneForTeleport<Transform>.Position
-                var zonePosWait = 0
-                while zonePos.X == 0.0 && zonePos.Y == 0.0 && zonePos.Z == 0.0 && zonePosWait < 20 {
-                    WaitForMillisecond(500)
-                    zonePosWait = zonePosWait + 1
-                    zonePos = zoneForTeleport<Transform>.Position
-                }
-                if zonePos.X != 0.0 || zonePos.Y != 0.0 || zonePos.Z != 0.0 {
-                    Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
-                    spawnSucceeded = true
-                }
+                TeleportFallbackBesideStore(player)
+                MarkFarmJoinTeleportCompleted(player)
+                if debugCfg.Core() { LogWarning("[GameManager] Join spawn: no farm zone — single shop Teleport fallback.") }
             }
-        }
-
-        if !spawnSucceeded {
-            TeleportFallbackBesideStore(player)
-            if debugCfg.Core() { LogWarning("[GameManager] Farm teleport unavailable or invalid transforms — TeleportFallbackBesideStore (beside store / hub).") }
+        } else if debugCfg.Core() {
+            LogInfo("[GameManager] Join spawn teleport already completed — skipping (no second Teleport).")
         }
 
         // 4. Add Seeds to Backpack
@@ -258,6 +376,29 @@ static graph GameManager {
     func GetPlayerOrientation(spawnPoint Vector3, centerPoint Vector3) Vector3 {
         var orientation Vector3 = math.Normalize(Vector3{centerPoint.X - spawnPoint.X, 0, centerPoint.Z - spawnPoint.Z})
         return orientation
+    }
+
+    func PerformFarmJoinTeleport(player entity<Player>, zone entity<Entity>) bool {
+        if player == nil || zone == nil { return false }
+        var market = zone<FarmZoneData>.Market
+        if market != nil {
+            var mPos = market<Transform>.Position
+            var rotY = market<Transform>.Rotation.Y
+            var c = math.Cos(rotY)
+            var s = math.Sin(rotY)
+            var localOff = Vector3{-3.0, 0.0, -4.0}
+            var ox = localOff.X * c + localOff.Z * s
+            var oz = -localOff.X * s + localOff.Z * c
+            var spawnPos = Vector3{mPos.X + ox, mPos.Y, mPos.Z + oz}
+            var facing = GetPlayerOrientation(spawnPos, mPos)
+            Teleport(player, spawnPos, facing)
+            if debugCfg.Core() { LogInfo("[GameManager] Teleported player beside market '" + market<Entity>.Name + "'.") }
+            return true
+        }
+        var zonePos = zone<Transform>.Position
+        Teleport(player, Vector3{zonePos.X + 5.0, zonePos.Y, zonePos.Z}, Vector3{0.0, 0.0, 0.0})
+        if debugCfg.Core() { LogInfo("[GameManager] No Market on zone — teleported beside zone pivot.") }
+        return true
     }
 
     func TeleportFallbackBesideStore(player entity<Player>) {
