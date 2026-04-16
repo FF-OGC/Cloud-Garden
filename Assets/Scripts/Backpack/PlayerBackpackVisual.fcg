@@ -202,8 +202,13 @@ graph PlayerBackpackVisual {
             var itemSuffixObj = GetWidgetByPath(thisEntity<Player>, _BackpackUI, slotPath + "/item_suffix")
             if itemSuffixObj != nil {
                 if isCrop {
-                    itemSuffixObj<UIWidgetLabel>.Alpha = 1.0
-                    itemSuffixObj<UIWidgetLabel>.Content = itemCfg.GetSuffixText(mutStr)
+                    var suffixTxt = itemCfg.GetSuffixText(mutStr)
+                    if suffixTxt != "" {
+                        itemSuffixObj<UIWidgetLabel>.Alpha = 1.0
+                        itemSuffixObj<UIWidgetLabel>.Content = suffixTxt
+                    } else {
+                        itemSuffixObj<UIWidgetLabel>.Alpha = 0.0
+                    }
                 } else {
                     itemSuffixObj<UIWidgetLabel>.Alpha = 0.0
                 }
@@ -304,8 +309,13 @@ graph PlayerBackpackVisual {
                 prefixObj<UIWidgetLabel>.Color = mutCfg.GetPrefixColor(prefixId)
             }
             if suffixObj != nil {
-                suffixObj<UIWidgetLabel>.Alpha = 1.0
-                suffixObj<UIWidgetLabel>.Content = itemCfg.GetSuffixText(mutStr)
+                var suffixTxt = itemCfg.GetSuffixText(mutStr)
+                if suffixTxt != "" {
+                    suffixObj<UIWidgetLabel>.Alpha = 1.0
+                    suffixObj<UIWidgetLabel>.Content = suffixTxt
+                } else {
+                    suffixObj<UIWidgetLabel>.Alpha = 0.0
+                }
             }
         } else {
             if prefixObj != nil { prefixObj<UIWidgetLabel>.Alpha = 0.0 }

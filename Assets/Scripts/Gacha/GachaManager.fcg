@@ -13,6 +13,7 @@ import "../Config/DebugConfig.fcg" as debugCfg
 static graph GachaManager {
 
     func RollSuffixTier() int {
+        if debugCfg.MutationSuffixDisabled() { return 0 }
         var totalWeight = mutCfg.GetSuffixTotalWeight()
         var roll = math.RandomInt(1, totalWeight)
         var cumulative = 0

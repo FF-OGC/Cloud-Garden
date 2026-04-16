@@ -366,7 +366,25 @@ static graph GameManager {
         backpackManager.AddItem(player, "seed_onion", 1)
         backpackManager.AddItem(player, "potion_luck", 1)
         backpackManager.AddItem(player, "potion_grow", 1)
-        if debugCfg.Core() { LogInfo("[GameManager] Added starting seeds to backpack.") }
+
+        // Starter crops: each fruit type ×3 — Silver, Golden, Rainbow (no suffix tier while MutationSuffixDisabled).
+        backpackManager.AddItemWithMutation(player, "crop_apple", 1, "p1s0")
+        backpackManager.AddItemWithMutation(player, "crop_apple", 1, "p2s0")
+        backpackManager.AddItemWithMutation(player, "crop_apple", 1, "p3s0")
+        backpackManager.AddItemWithMutation(player, "crop_carrot", 1, "p1s0")
+        backpackManager.AddItemWithMutation(player, "crop_carrot", 1, "p2s0")
+        backpackManager.AddItemWithMutation(player, "crop_carrot", 1, "p3s0")
+        backpackManager.AddItemWithMutation(player, "crop_tomato", 1, "p1s0")
+        backpackManager.AddItemWithMutation(player, "crop_tomato", 1, "p2s0")
+        backpackManager.AddItemWithMutation(player, "crop_tomato", 1, "p3s0")
+        backpackManager.AddItemWithMutation(player, "crop_chili", 1, "p1s0")
+        backpackManager.AddItemWithMutation(player, "crop_chili", 1, "p2s0")
+        backpackManager.AddItemWithMutation(player, "crop_chili", 1, "p3s0")
+        backpackManager.AddItemWithMutation(player, "crop_onion", 1, "p1s0")
+        backpackManager.AddItemWithMutation(player, "crop_onion", 1, "p2s0")
+        backpackManager.AddItemWithMutation(player, "crop_onion", 1, "p3s0")
+
+        if debugCfg.Core() { LogInfo("[GameManager] Added starting seeds + mutated starter crops to backpack.") }
 
         currencyManager.InitPlayerCurrency(player, 500)
 

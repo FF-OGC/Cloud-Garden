@@ -4,6 +4,7 @@ import "Convert.fcc" as convert
 import "Math.fcc" as math
 
 import "./MutationConfig.fcg" as mutCfg
+import "./DebugConfig.fcg" as debugCfg
 
 // [platform_client]
 [platform_server]
@@ -238,14 +239,15 @@ static graph ItemConfig {
     func ParseMutationPrefix(mutStr string) int {
         if mutStr == "" { return 0 }
         // Format: "p{X}s{Y}" - extract X (single digit after 'p')
-        if mutStr == "p0s1" || mutStr == "p0s2" || mutStr == "p0s3" { return 0 }
-        if mutStr == "p1s1" || mutStr == "p1s2" || mutStr == "p1s3" { return 1 }
-        if mutStr == "p2s1" || mutStr == "p2s2" || mutStr == "p2s3" { return 2 }
-        if mutStr == "p3s1" || mutStr == "p3s2" || mutStr == "p3s3" { return 3 }
+        if mutStr == "p0s0" || mutStr == "p0s1" || mutStr == "p0s2" || mutStr == "p0s3" { return 0 }
+        if mutStr == "p1s0" || mutStr == "p1s1" || mutStr == "p1s2" || mutStr == "p1s3" { return 1 }
+        if mutStr == "p2s0" || mutStr == "p2s1" || mutStr == "p2s2" || mutStr == "p2s3" { return 2 }
+        if mutStr == "p3s0" || mutStr == "p3s1" || mutStr == "p3s2" || mutStr == "p3s3" { return 3 }
         return 0
     }
 
     func ParseMutationSuffix(mutStr string) int {
+        if debugCfg.MutationSuffixDisabled() { return 0 }
         if mutStr == "" { return 0 }
         if mutStr == "p0s1" || mutStr == "p1s1" || mutStr == "p2s1" || mutStr == "p3s1" { return 1 }
         if mutStr == "p0s2" || mutStr == "p1s2" || mutStr == "p2s2" || mutStr == "p3s2" { return 2 }
