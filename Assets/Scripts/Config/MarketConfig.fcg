@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "EditorGenLib.fcc" as gen
+import "Math.fcc" as math
 
 static graph MarketConfig {
 
@@ -68,6 +69,22 @@ static graph MarketConfig {
         if level <= 1 { return 1 }
         if level == 2 { return 3 }
         return 5
+    }
+
+    // Average crop units per customer visit at this stall level (visit duration is fixed — higher avg = faster throughput).
+    func GetStallAvgUnitsPerSaleForLevel(level int) float {
+        var mn = GetCustomerMinAmountForStallLevel(level) as float
+        var mx = GetCustomerMaxAmountForStallLevel(level) as float
+        return (mn + mx) / 2.0
+    }
+
+    // UI: % increase in average units sold per visit when upgrading fromLevel → toLevel.
+    func GetStallSellingSpeedPercentGainForUpgrade(fromLevel int, toLevel int) int {
+        var a = GetStallAvgUnitsPerSaleForLevel(fromLevel)
+        var b = GetStallAvgUnitsPerSaleForLevel(toLevel)
+        if a <= 0.0 { return 0 }
+        var pct = ((b - a) / a) * 100.0
+        return math.Floor(pct + 0.5) as int
     }
 
     func GetMaxTableSlots() int { return 5 }

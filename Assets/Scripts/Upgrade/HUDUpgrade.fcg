@@ -1,0 +1,57 @@
+import "StdLibrary.fcc" as std
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+import "Convert.fcc" as convert
+
+import "./PlayerUpgradeVisual.fcg" as playerUpgradeVisual
+import "../Config/UpgradeConfig.fcg" as upgradeCfg
+import "../Services/MarketService.fcg" as marketService
+import "../Currency/CurrencyService.fcg" as currencyService
+import "../Config/DebugConfig.fcg" as debugCfg
+
+[platform_server]
+graph HUDUpgrade {
+
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
+        if player<playerUpgradeVisual> == nil { return }
+        if !HasComponent(button, typeof(MyButton)) { return }
+
+        var btnType = button<MyButton>.Type
+        if debugCfg.Upgrade() { LogInfo("[HUDUpgrade] tap type=" + btnType) }
+
+        if btnType == "upgrade" || btnType == "upgrade_show" || btnType == "toggle_upgrade" || btnType == "show_upgrade" || btnType == "stall_upgrade" {
+            player<playerUpgradeVisual>.ToggleUpgradePanel()
+            return
+        }
+
+        if btnType == "upgrade_close" {
+            player<playerUpgradeVisual>.CloseUpgradePanel()
+            return
+        }
+
+        if btnType == "upgrade_receive" {
+            var market = player<playerUpgradeVisual>.GetOwnedMarket()
+            if market == nil {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_NO_STALL"})
+                return
+            }
+
+            var curLv = marketService.GetStallLevel(market) as int
+            if curLv >= upgradeCfg.GetStallMaxLevel() as int {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_MAX_LEVEL"})
+                return
+            }
+
+            var cost = upgradeCfg.GetStallUpgradeCostGold(curLv) as int
+            var bal = currencyService.GetBalance(player) as int
+            if bal < cost {
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_NOT_ENOUGH_MONEY"})
+                return
+            }
+
+            DispatchEventToEntity(OnRequestStallUpgrade, globalEntity, PlatformType.Server, List<object>{player, market})
+            return
+        }
+    }
+}

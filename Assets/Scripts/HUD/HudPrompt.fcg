@@ -36,6 +36,10 @@ graph HudPrompt {
         "PROMPT_STORE_NO_STOCK": "This item is out of stock!",
         "PROMPT_STORE_BACKPACK_FULL": "Your backpack is full!",
         "PROMPT_POT_SHOP_BUSY": "Wait for the pot roll to finish first!",
+        "PROMPT_UPGRADE_NOT_ENOUGH_MONEY": "Not enough gold to upgrade the stall!",
+        "PROMPT_UPGRADE_MAX_LEVEL": "Your stall is already at max level!",
+        "PROMPT_UPGRADE_NO_STALL": "Claim a farm with a market stall first!",
+        "PROMPT_UPGRADE_NOT_OWNER": "You can't upgrade a stall that isn't yours!",
     }
 
     PROMPT_COLORS Map<string, Color> = Map<string, Color>{
@@ -63,6 +67,10 @@ graph HudPrompt {
         "PROMPT_STORE_NO_STOCK": #FABF00,
         "PROMPT_STORE_BACKPACK_FULL": #FABF00,
         "PROMPT_POT_SHOP_BUSY": #FABF00,
+        "PROMPT_UPGRADE_NOT_ENOUGH_MONEY": #FABF00,
+        "PROMPT_UPGRADE_MAX_LEVEL": #FABF00,
+        "PROMPT_UPGRADE_NO_STALL": #FABF00,
+        "PROMPT_UPGRADE_NOT_OWNER": #FABF00,
     }
 
     _PromptHUD entity<CustomUI>
@@ -79,7 +87,8 @@ graph HudPrompt {
         CreateCustomUI(out var promptHud, thisEntity<Player>, EResUI.prompt)
         if promptHud != nil {
             _PromptHUD = promptHud
-            _PromptHUD<CustomUI>.Depth = 200
+            // Above upgrade panel (240), pot confirm (250), and other gameplay HUDs so feedback is never hidden.
+            _PromptHUD<CustomUI>.Depth = 320
 
             var container entity<UIWidget> = GetChildByIndex(_PromptHUD, 0) as entity<UIWidget>
             if container != nil {

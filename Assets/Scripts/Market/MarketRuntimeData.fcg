@@ -43,7 +43,7 @@ graph MarketRuntimeData {
     _MoneyTriggerEntity entity<Entity> = nil
 
     // Stall upgrade: 1..3. Drives max stack rows on table (3/4/5) + customer buy amount bands. Start at 1 = three table rows.
-    _StallLevel int = 2
+    _StallLevel int = 1
 
     // SlotVisualAnchor entities (index 0..4), from CC MarketSlot.VisualAnchor — hydrated once.
     _TableVisualAnchors List<entity<Entity>> = nil

@@ -1,0 +1,174 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+import "Hud.fcc" as hud
+
+import "../Core/GameManager.fcg" as gameManager
+import "../Config/DebugConfig.fcg" as debugCfg
+import "../Services/MarketService.fcg" as marketService
+import "../Market/MarketRuntimeData.fcg" as marketData
+import "../Currency/CurrencyService.fcg" as currencyService
+import "../Config/UpgradeConfig.fcg" as upgradeCfg
+
+[platform_server]
+graph PlayerUpgradeVisual {
+
+    _UpgradeUI entity<CustomUI> = nil
+    // Floating HUD button (UpgradeButton.ui) — same idea as store_btn; always shown when panel is closed.
+    _UpgradeBtnUI entity<CustomUI> = nil
+
+    _IsOpen bool = false
+
+    // Upgrade.ui: stall widgets sit under "Details/UpgradeContent". CustomUI root may be scene UIRoot
+    // (path prefix "Upgrade") or the inner panel — resolve both.
+    STALL_BLOCK string = "/Details/UpgradeContent"
+
+    event OnAwake() {
+        CreateCustomUI(out var uiInstance, thisEntity<Player>, EResUI.upgradewidget)
+        if uiInstance != nil {
+            _UpgradeUI = uiInstance
+            _UpgradeUI<CustomUI>.Depth = 240
+            _UpgradeUI<CustomUI>.IsVisible = false
+            _IsOpen = false
+
+            if debugCfg.Upgrade() { LogInfo("[PlayerUpgradeVisual] Upgrade UI created") }
+        } else {
+            if debugCfg.Upgrade() { LogError("[PlayerUpgradeVisual] CreateCustomUI(EResUI.upgradewidget) failed — register Upgrade.ui in editor resources") }
+        }
+
+        CreateCustomUI(out var btnInstance, thisEntity<Player>, EResUI.upgrade_btn)
+        if btnInstance != nil {
+            _UpgradeBtnUI = btnInstance
+            _UpgradeBtnUI<CustomUI>.Depth = 120
+            _SyncFloatingUpgradeButton()
+            if debugCfg.Upgrade() { LogInfo("[PlayerUpgradeVisual] UpgradeButton HUD created") }
+        } else {
+            if debugCfg.Upgrade() { LogError("[PlayerUpgradeVisual] CreateCustomUI(EResUI.upgrade_btn) failed — register UpgradeButton.ui as upgrade_btn in editor resources") }
+        }
+    }
+
+    func _ResolveUpgradeWidget(pathFromInnerPanel string) entity<UIWidget> {
+        if _UpgradeUI == nil { return nil }
+        var w = GetWidgetByPath(thisEntity<Player>, _UpgradeUI, "/Upgrade" + pathFromInnerPanel) as entity<UIWidget>
+        if w != nil { return w }
+        w = GetWidgetByPath(thisEntity<Player>, _UpgradeUI, pathFromInnerPanel) as entity<UIWidget>
+        if w != nil { return w }
+        return nil
+    }
+
+    // Stall widgets: current Upgrade.ui uses Details/UpgradeContent; older layouts may use /UpgradeContent only.
+    func _ResolveStallWidget(tail string) entity<UIWidget> {
+        var w = _ResolveUpgradeWidget(STALL_BLOCK + tail)
+        if w != nil { return w }
+        return _ResolveUpgradeWidget("/UpgradeContent" + tail)
+    }
+
+    func _SyncFloatingUpgradeButton() {
+        if _UpgradeBtnUI == nil { return }
+        _UpgradeBtnUI<CustomUI>.IsVisible = !_IsOpen
+    }
+
+    func ToggleUpgradePanel() {
+        if _UpgradeUI == nil { return }
+        _IsOpen = !_IsOpen
+        _UpgradeUI<CustomUI>.IsVisible = _IsOpen
+        _SyncFloatingUpgradeButton()
+        if _IsOpen {
+            RefreshStallUpgradeUI()
+        }
+        if debugCfg.Upgrade() { LogInfo("[PlayerUpgradeVisual] ToggleUpgradePanel _IsOpen=" + convert.ToString(_IsOpen)) }
+    }
+
+    func CloseUpgradePanel() {
+        if _UpgradeUI == nil { return }
+        _IsOpen = false
+        _UpgradeUI<CustomUI>.IsVisible = false
+        _SyncFloatingUpgradeButton()
+    }
+
+    func GetOwnedMarket() entity<Entity> {
+        var zone = gameManager.TryResolveAssignedZoneForPlayerIdentity(thisEntity<Player>)
+        if zone == nil || zone<gen.FarmZoneData> == nil { return nil }
+        return zone<gen.FarmZoneData>.Market as entity<Entity>
+    }
+
+    func RefreshStallUpgradeUI() {
+        if _UpgradeUI == nil { return }
+
+        var market = GetOwnedMarket()
+        var curLabel = _ResolveStallWidget("/CurrentLevel")
+        var nextLabel = _ResolveStallWidget("/NextLevel")
+        var detailLabel = _ResolveStallWidget("/UpgradeDetails")
+        var pctLabel = _ResolveStallWidget("/BGProgess/PercentProgess")
+        var fillImg = _ResolveStallWidget("/BGProgess/Progess")
+        var receiveText = _ResolveStallWidget("/ReceiveButton/Label")
+
+        if market == nil || market<marketData> == nil {
+            if curLabel != nil { curLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiDash() }
+            if nextLabel != nil { nextLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiDash() }
+            if detailLabel != nil { detailLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiNoStallDetail() }
+            if pctLabel != nil { pctLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiPercentNoStall() }
+            if fillImg != nil { fillImg<UIWidgetImage>.FillAmount = 0.0 }
+            if receiveText != nil { receiveText<UIWidgetLabel>.Content = upgradeCfg.GetReceiveLabelReady() }
+            return
+        }
+
+        market<marketData>.EnsureInit()
+        var curLv = marketService.GetStallLevel(market) as int
+        var maxLv = upgradeCfg.GetStallMaxLevel() as int
+
+        if curLabel != nil { curLabel<UIWidgetLabel>.Content = upgradeCfg.FormatLevelLabel(curLv) }
+
+        if curLv >= maxLv {
+            if nextLabel != nil { nextLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiDash() }
+            if detailLabel != nil { detailLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiMaxStallDetail() }
+            if pctLabel != nil { pctLabel<UIWidgetLabel>.Content = upgradeCfg.GetUiPercentAtMax() }
+            if fillImg != nil { fillImg<UIWidgetImage>.FillAmount = 1.0 }
+            if receiveText != nil { receiveText<UIWidgetLabel>.Content = upgradeCfg.GetReceiveLabelMaxLevel() }
+            return
+        }
+
+        var nextLv = (curLv + 1) as int
+        if nextLabel != nil { nextLabel<UIWidgetLabel>.Content = upgradeCfg.FormatLevelLabel(nextLv) }
+
+        if detailLabel != nil {
+            detailLabel<UIWidgetLabel>.Content = upgradeCfg.GetStallNextLevelBenefitDetail(curLv)
+        }
+
+        var needGold = upgradeCfg.GetStallUpgradeCostGold(curLv) as int
+        var haveGold = currencyService.GetBalance(thisEntity<Player>) as int
+
+        if pctLabel != nil {
+            pctLabel<UIWidgetLabel>.Content = upgradeCfg.FormatStallGoldProgress(haveGold, needGold)
+        }
+
+        var fillAmt = 0.0
+        if needGold > 0 {
+            fillAmt = (haveGold as float) / (needGold as float)
+            if fillAmt < 0.0 { fillAmt = 0.0 }
+            if fillAmt > 1.0 { fillAmt = 1.0 }
+        }
+        if fillImg != nil { fillImg<UIWidgetImage>.FillAmount = fillAmt }
+
+        if receiveText != nil {
+            if haveGold < needGold {
+                receiveText<UIWidgetLabel>.Content = upgradeCfg.GetReceiveLabelNeedGold(needGold)
+            } else {
+                receiveText<UIWidgetLabel>.Content = upgradeCfg.GetReceiveLabelReady()
+            }
+        }
+    }
+
+    event OnCurrencySync(player entity<Player>, balance int) {
+        if player != thisEntity<Player> { return }
+        if _IsOpen {
+            RefreshStallUpgradeUI()
+        }
+    }
+
+    event OnUpgradeStallResponse(player entity<Player>, success bool, reason string, market entity<Entity>) {
+        if player != thisEntity<Player> { return }
+        if debugCfg.Upgrade() { LogInfo("[PlayerUpgradeVisual] OnUpgradeStallResponse success=" + convert.ToString(success) + " reason=" + reason) }
+        RefreshStallUpgradeUI()
+    }
+}

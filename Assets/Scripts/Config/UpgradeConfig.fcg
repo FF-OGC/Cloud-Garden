@@ -1,0 +1,71 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+
+import "./MarketConfig.fcg" as marketCfg
+
+[platform_server]
+static graph UpgradeConfig {
+
+    // --- Stall upgrade rules (tune here) ---
+    STALL_MAX_LEVEL int = 3
+
+    // Gold to pay when upgrading FROM this level (1->2 pays at cur=1, 2->3 at cur=2).
+    func GetStallUpgradeCostGold(currentLevel int) int {
+        if currentLevel <= 1 { return 500 }
+        if currentLevel == 2 { return 1000 }
+        return 0
+    }
+
+    func GetStallMaxLevel() int { return STALL_MAX_LEVEL }
+
+    // --- UI copy (stall tab / upgrade panel) ---
+
+    func GetUiDash() string { return "—" }
+
+    func GetUiNoStallDetail() string {
+        return "Own a farm with a market stall to see upgrade details."
+    }
+
+    func GetUiMaxStallDetail() string {
+        return "Stall is at max level — no further upgrades."
+    }
+
+    // UpgradeDetails: next level — extra table rows + % faster selling (from larger avg order size at same visit duration).
+    func GetStallNextLevelBenefitDetail(currentLevel int) string {
+        var maxLv = GetStallMaxLevel() as int
+        if currentLevel >= maxLv {
+            return GetUiMaxStallDetail()
+        }
+        var nextLv = (currentLevel + 1) as int
+        var capCur = marketCfg.GetTableStackCapacityForStallLevel(currentLevel) as int
+        var capNext = marketCfg.GetTableStackCapacityForStallLevel(nextLv) as int
+        var slotAdd = (capNext - capCur) as int
+        if slotAdd < 0 { slotAdd = 0 }
+        var speedPct = marketCfg.GetStallSellingSpeedPercentGainForUpgrade(currentLevel, nextLv) as int
+        var slotNoun = "slots"
+        if slotAdd == 1 {
+            slotNoun = "slot"
+        }
+        return "+" + convert.ToString(slotAdd) + " sell " + slotNoun + "\n•" + convert.ToString(speedPct) + "% selling speed"
+    }
+
+    func FormatLevelLabel(level int) string {
+        return "Lv. " + convert.ToString(level)
+    }
+
+    func FormatStallGoldProgress(haveGold int, needGold int) string {
+        return convert.ToString(haveGold) + "/" + convert.ToString(needGold) + "$"
+    }
+
+    func GetUiPercentNoStall() string { return "0/0$" }
+
+    func GetUiPercentAtMax() string { return GetUiDash() }
+
+    func GetReceiveLabelReady() string { return "Upgrade" }
+
+    func GetReceiveLabelNeedGold(needGold int) string {
+        return "Need " + convert.ToString(needGold) + "$"
+    }
+
+    func GetReceiveLabelMaxLevel() string { return "Max level" }
+}

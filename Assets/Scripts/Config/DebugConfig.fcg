@@ -20,6 +20,7 @@ static graph DebugConfig {
     _DebugMutation bool = false
     _DebugMoneyDrop bool = false
     _DebugPrompt bool = false
+    _DebugUpgrade bool = false
     // FarmSlotHintsHUD (SlotHints debug): 6x ChatBubble world hints on garden slots.
     _DebugFarmSlotHints bool = false
     // When true: no suffix roll / UI / sell multiplier from L/XL/XXL; prefix unchanged. Set false to restore suffix.
@@ -38,6 +39,7 @@ static graph DebugConfig {
     func Mutation() bool { return _DebugAll || _DebugMutation }
     func MoneyDrop() bool { return _DebugAll || _DebugMoneyDrop }
     func Prompt() bool { return _DebugAll || _DebugPrompt }
+    func Upgrade() bool { return _DebugAll || _DebugUpgrade }
     func SlotHints() bool { return _DebugAll || _DebugFarmSlotHints }
     func MutationSuffixDisabled() bool { return _MutationSuffixDisabled }
 }

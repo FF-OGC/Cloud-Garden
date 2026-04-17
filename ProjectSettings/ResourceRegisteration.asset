@@ -112,7 +112,19 @@
             },
             "fileType": "ui"
           },
-          "scriptName": "Upgrade",
+          "scriptName": "upgradewidget",
+          "children": []
+        },
+        {
+          "refer": {
+            "fileId": "mfplmqvhhag-mo2s4kz1-4zijkpqoj6",
+            "filePath": "Assets\\UI\\UpgradeButton.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "upgrade_btn",
           "children": [],
           "_isNewInSession": true
         }

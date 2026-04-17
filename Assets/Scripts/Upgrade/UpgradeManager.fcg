@@ -1,0 +1,57 @@
+import "StdLibrary.fcc" as std
+import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
+
+import "../Config/UpgradeConfig.fcg" as upgradeCfg
+import "../Market/MarketManager.fcg" as marketManager
+import "../Market/MarketRuntimeData.fcg" as marketData
+import "../Services/MarketService.fcg" as marketService
+import "../Currency/CurrencyService.fcg" as currencyService
+import "../Currency/CurrencyManager.fcg" as currencyManager
+import "../Config/DebugConfig.fcg" as debugCfg
+
+[platform_server]
+static graph UpgradeManager {
+
+    event OnRequestStallUpgrade(player entity<Player>, market entity<Entity>) {
+        if player == nil || market == nil { return }
+        if market<marketData> == nil {
+            if debugCfg.Upgrade() { LogWarning("[UpgradeManager] OnRequestStallUpgrade | market has no MarketRuntimeData") }
+            return
+        }
+        market<marketData>.EnsureInit()
+        if market<marketData>._Owner == nil || market<marketData>._Owner != player {
+            if debugCfg.Upgrade() { LogWarning("[UpgradeManager] OnRequestStallUpgrade | not stall owner") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_NOT_OWNER"})
+            DispatchEventToEntity(OnUpgradeStallResponse, player, PlatformType.Server, List<object>{player, false, "not_owner", market})
+            return
+        }
+
+        var curLv = marketService.GetStallLevel(market) as int
+        var maxLv = upgradeCfg.GetStallMaxLevel() as int
+        if curLv >= maxLv {
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_MAX_LEVEL"})
+            DispatchEventToEntity(OnUpgradeStallResponse, player, PlatformType.Server, List<object>{player, false, "max_level", market})
+            return
+        }
+
+        var cost = upgradeCfg.GetStallUpgradeCostGold(curLv) as int
+        if cost <= 0 {
+            DispatchEventToEntity(OnUpgradeStallResponse, player, PlatformType.Server, List<object>{player, false, "no_cost", market})
+            return
+        }
+
+        if !currencyService.SubtractBalance(player, cost) {
+            if debugCfg.Upgrade() { LogInfo("[UpgradeManager] OnRequestStallUpgrade | insufficient gold need=" + convert.ToString(cost)) }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_UPGRADE_NOT_ENOUGH_MONEY"})
+            DispatchEventToEntity(OnUpgradeStallResponse, player, PlatformType.Server, List<object>{player, false, "no_money", market})
+            return
+        }
+
+        currencyManager.SyncCurrencyToPlayer(player)
+        marketManager.SetStallLevel(market, (curLv + 1) as int)
+
+        if debugCfg.Upgrade() { LogInfo("[UpgradeManager] Stall upgraded " + convert.ToString(curLv) + " -> " + convert.ToString(curLv + 1) + " cost=" + convert.ToString(cost)) }
+        DispatchEventToEntity(OnUpgradeStallResponse, player, PlatformType.Server, List<object>{player, true, "ok", market})
+    }
+}

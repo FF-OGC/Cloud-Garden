@@ -582,6 +582,60 @@
       "apiTargetV2": "both",
       "version": 45,
       "key": "signal_44161842"
+    },
+    "signal_87235770": {
+      "name": "OnRequestStallUpgrade",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100050,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "market",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 2,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_87235770"
+    },
+    "signal_83269228": {
+      "name": "OnUpgradeStallResponse",
+      "eventType": 0,
+      "enitityType": "Component",
+      "typeID": 100052,
+      "props": [
+        {
+          "name": "player",
+          "value": "Player",
+          "key": 1
+        },
+        {
+          "name": "success",
+          "value": "Bool",
+          "key": 3
+        },
+        {
+          "name": "reason",
+          "value": "String",
+          "key": 4
+        },
+        {
+          "name": "market",
+          "value": "Entity",
+          "key": 2
+        }
+      ],
+      "propCount": 4,
+      "apiTargetV2": "both",
+      "version": 45,
+      "key": "signal_83269228"
     }
   },
   "customName": {
@@ -611,7 +665,9 @@
     "OnShowPotPurchaseConfirm": "signal_77200110",
     "OnPotPurchaseConfirmYes": "signal_77200111",
     "OnPotShopVisualReveal": "signal_86756108",
-    "OnRequestQuicksell": "signal_44161842"
+    "OnRequestQuicksell": "signal_44161842",
+    "OnRequestStallUpgrade": "signal_87235770",
+    "OnUpgradeStallResponse": "signal_83269228"
   },
   "children": []
 }

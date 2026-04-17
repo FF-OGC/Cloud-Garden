@@ -193,6 +193,22 @@
         "type": "GFileRefer"
       },
       "fileType": "ugcscript"
+    },
+    {
+      "fileId": "aa9tnxp91vi-mo2s2dwh-qysc5vx708f",
+      "filePath": "Assets\\Scripts\\Upgrade\\PlayerUpgradeVisual.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
+    },
+    {
+      "fileId": "6u6owhg2ya-mo2s2dvr-cfkh9qu7s2",
+      "filePath": "Assets\\Scripts\\Upgrade\\HUDUpgrade.fcg",
+      "_tag": {
+        "type": "GFileRefer"
+      },
+      "fileType": "ugcscript"
     }
   ],
   "avatarInfo": null,
@@ -439,4 +455,4 @@
   "genderType": 0,
   "usePDV2": false
 }
-//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4335043","c":{"FF":5001},"s":100}
