@@ -102,6 +102,19 @@
           },
           "scriptName": "confirmwidget",
           "children": []
+        },
+        {
+          "refer": {
+            "fileId": "a9jh15jvssw-mo2fyejy-5p72sb5q6nv",
+            "filePath": "Assets\\UI\\Upgrade.ui",
+            "_tag": {
+              "type": "GFileRefer"
+            },
+            "fileType": "ui"
+          },
+          "scriptName": "Upgrade",
+          "children": [],
+          "_isNewInSession": true
         }
       ]
     },
@@ -860,4 +873,4 @@
   },
   "children": []
 }
-//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4335043","c":{"FF":5001},"s":100}

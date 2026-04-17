@@ -10,6 +10,8 @@ static graph DebugConfig {
     // GardenData wire, triggers, FarmingManager, HUD farm taps, growth tick, visuals — main switch for the new garden flow.
     _DebugFarming bool = false
     _DebugMarket bool = false
+    // Quicksell only (OnRequestQuicksell + QUICKSELLDBG). Does not enable general market tick / queue / transaction logs.
+    _DebugMarketQuicksell bool = false
     _DebugStore bool = false
     _DebugBackpack bool = false
     _DebugGrid bool = false
@@ -21,12 +23,13 @@ static graph DebugConfig {
     // FarmSlotHintsHUD (SlotHints debug): 6x ChatBubble world hints on garden slots.
     _DebugFarmSlotHints bool = false
     // When true: no suffix roll / UI / sell multiplier from L/XL/XXL; prefix unchanged. Set false to restore suffix.
-    _MutationSuffixDisabled bool = true
+    _MutationSuffixDisabled bool = false
 
     func All() bool { return _DebugAll }
     func Core() bool { return _DebugAll || _DebugCore }
     func Farming() bool { return _DebugAll || _DebugFarming }
     func Market() bool { return _DebugAll || _DebugMarket }
+    func MarketQuicksell() bool { return _DebugAll || _DebugMarketQuicksell }
     func Store() bool { return _DebugAll || _DebugStore }
     func Backpack() bool { return _DebugAll || _DebugBackpack }
     func Grid() bool { return _DebugAll || _DebugGrid }

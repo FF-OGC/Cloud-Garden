@@ -55,28 +55,34 @@ graph HUDMarketAction {
         }
     }
 
-    event OnMarketSellTapped(player entity<Player>) {
-        if debugCfg.Market() { LogInfo("[HUDMarketAction] OnMarketSellTapped FIRED | player=" + convert.ToString(player != nil) + " isMe=" + convert.ToString(player == thisEntity<Player>)) }
+    // Market HUD uses Utils/Button.fcg + MyButton.Type: "market_sell" | "market_quicksell" (same pattern as Backpack / Store).
+    event OnPlayerTapButton(button entity<UIWidgetButton>, player entity<Player>) {
+        if player == nil || button == nil { return }
+        if player != thisEntity<Player> { return }
+        if !HasComponent(button, typeof(MyButton)) { return }
 
-        if player == nil { return }
-        if player != thisEntity<Player> {
-            if debugCfg.Market() { LogInfo("[HUDMarketAction] SKIP: not my player") }
+        var btnType = button<MyButton>.Type
+        if btnType != "market_sell" && btnType != "market_quicksell" {
             return
         }
 
-        if debugCfg.Market() { LogInfo("[HUDMarketAction] CHECK | _IsInZone=" + convert.ToString(_IsInZone) + " _CurrentMarket=" + convert.ToString(_CurrentMarket != nil)) }
+        if debugCfg.Market() { LogInfo("[HUDMarketAction] OnPlayerTapButton | btnType=" + btnType + " zone=" + convert.ToString(_IsInZone)) }
 
         if !_IsInZone || _CurrentMarket == nil {
-            if debugCfg.Market() { LogWarning("[HUDMarketAction] ABORT: not in zone or no current market") }
+            if debugCfg.Market() { LogWarning("[HUDMarketAction] ABORT: not in zone or no market") }
             return
         }
-
         if _CurrentMarket<marketData> == nil || _CurrentMarket<marketData>._Owner == nil || _CurrentMarket<marketData>._Owner != player {
-            if debugCfg.Market() { LogWarning("[HUDMarketAction] ABORT: player is NOT the owner of this market stall") }
+            if debugCfg.Market() { LogWarning("[HUDMarketAction] ABORT: not stall owner") }
             return
         }
 
-        if debugCfg.Market() { LogInfo("[HUDMarketAction] Sell tapped -> dispatching OnRequestRestock") }
-        DispatchEventToEntity(OnRequestRestock, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, _CurrentMarket})
+        if btnType == "market_sell" {
+            if debugCfg.Market() { LogInfo("[HUDMarketAction] -> OnRequestRestock") }
+            DispatchEventToEntity(OnRequestRestock, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, _CurrentMarket})
+        }else {
+            if debugCfg.Market() { LogInfo("[HUDMarketAction] -> OnRequestQuicksell") }
+            DispatchEventToEntity(OnRequestQuicksell, globalEntity, PlatformType.Server, List<object>{thisEntity<Player>, _CurrentMarket})
+        }
     }
 }

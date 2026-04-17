@@ -6,50 +6,105 @@ import "../Market/MarketRuntimeData.fcg" as marketData
 import "../Core/GameManager.fcg" as gameManager
 import "../Config/DebugConfig.fcg" as debugCfg
 import "../Config/ItemConfig.fcg" as itemCfg
+import "../Config/MarketConfig.fcg" as marketCfg
 
 [platform_server]
 static graph MarketService {
 
-    func AddToTable(market entity<Entity>, itemId string, amount int) {
-        AddToTableWithMutation(market, itemId, amount, "")
+    func GetStallLevel(market entity<Entity>) int {
+        if market == nil || market<marketData> == nil { return 1 }
+        market<marketData>.EnsureInit()
+        var lv = market<marketData>._StallLevel as int
+        if lv < 1 { return 1 }
+        if lv > 3 { return 3 }
+        return lv
     }
 
-    func AddToTableWithMutation(market entity<Entity>, itemId string, amount int, mutStr string) {
-        if market == nil || amount <= 0 { return }
-        if market<marketData> == nil { return }
+    func AddToTable(market entity<Entity>, itemId string, amount int) bool {
+        return AddToTableWithMutation(market, itemId, amount, "")
+    }
+
+    // True if this item+mutation can be placed: merges into an existing stack, or a new row is allowed by stall level capacity.
+    func _GetTableSlotCap(market entity<Entity>) int {
+        var level = GetStallLevel(market) as int
+        return marketCfg.GetTableStackCapacityForStallLevel(level) as int
+    }
+
+    func _IsTableSlotEmpty(market entity<Entity>, slot int) bool {
+        if slot < 0 || slot >= 5 { return true }
+        var iid = market<marketData>._TableItemIDs[slot] as string
+        var amt = market<marketData>._TableItemAmounts[slot] as int
+        if iid == "" { return true }
+        if amt <= 0 { return true }
+        return false
+    }
+
+    func CanAddToTableWithMutation(market entity<Entity>, itemId string, mutStr string) bool {
+        if market == nil || market<marketData> == nil { return false }
         market<marketData>.EnsureInit()
 
-        // Find existing entry matching both itemId and mutStr
-        var count = list.Length(market<marketData>._TableItemIDs)
-        var foundIndex = -1
-        for i = 0, count, 1 {
-            if market<marketData>._TableItemIDs[i] as string == itemId {
-                var existingMut = ""
-                if i < list.Length(market<marketData>._TableMutations) {
-                    existingMut = market<marketData>._TableMutations[i] as string
-                }
-                if existingMut == mutStr {
-                    foundIndex = i
-                    break
-                }
+        var cap = _GetTableSlotCap(market) as int
+        // Merge into existing same stack (one slot only holds that pair).
+        for s = 0, cap, 1 {
+            if _IsTableSlotEmpty(market, s) { continue }
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var m = ""
+            if s < list.Length(market<marketData>._TableMutations) {
+                m = market<marketData>._TableMutations[s] as string
             }
+            if m == mutStr { return true }
         }
 
-        if foundIndex != -1 {
-            var current = market<marketData>._TableItemAmounts[foundIndex] as int
-            var newTotal = (current + amount) as int
-            market<marketData>._TableItemAmounts[foundIndex] = newTotal
-            if debugCfg.Market() { LogInfo("[MarketService] AddToTable | " + itemId + " mut=" + mutStr + " +" + convert.ToString(amount) + " total=" + convert.ToString(newTotal)) }
-        } else {
-            list.Append(market<marketData>._TableItemIDs, itemId)
-            list.Append(market<marketData>._TableItemAmounts, amount)
-            list.Append(market<marketData>._TableMutations, mutStr)
-            if debugCfg.Market() { LogInfo("[MarketService] AddToTable | NEW " + itemId + " mut=" + mutStr + " amount=" + convert.ToString(amount)) }
+        var used = 0
+        for s = 0, cap, 1 {
+            if !_IsTableSlotEmpty(market, s) { used = used + 1 }
         }
+        if used >= cap {
+            if debugCfg.Market() { LogInfo("[MarketService] CanAddToTable | FULL used=" + convert.ToString(used) + " cap=" + convert.ToString(cap)) }
+            return false
+        }
+        return true
     }
 
-    // Gold if we remove `amount` of itemId in the same order as RemoveFromTableAny (per-stack mutation). Call BEFORE RemoveFromTable.
-    // Walks a static snapshot with i++ after each consumed row (equivalent to RemoveAt collapsing the list).
+    func AddToTableWithMutation(market entity<Entity>, itemId string, amount int, mutStr string) bool {
+        if market == nil || amount <= 0 { return false }
+        if market<marketData> == nil { return false }
+        market<marketData>.EnsureInit()
+
+        var cap = _GetTableSlotCap(market) as int
+
+        for s = 0, cap, 1 {
+            if _IsTableSlotEmpty(market, s) { continue }
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var m = ""
+            if s < list.Length(market<marketData>._TableMutations) {
+                m = market<marketData>._TableMutations[s] as string
+            }
+            if m != mutStr { continue }
+            var current = market<marketData>._TableItemAmounts[s] as int
+            market<marketData>._TableItemAmounts[s] = (current + amount) as int
+            if debugCfg.Market() { LogInfo("[MarketService] AddToTable MERGE slot=" + convert.ToString(s) + " " + itemId + " mut=" + mutStr) }
+            return true
+        }
+
+        if !CanAddToTableWithMutation(market, itemId, mutStr) {
+            return false
+        }
+
+        for s = 0, cap, 1 {
+            if !_IsTableSlotEmpty(market, s) { continue }
+            market<marketData>._TableItemIDs[s] = itemId as string
+            market<marketData>._TableItemAmounts[s] = amount as int
+            if s < list.Length(market<marketData>._TableMutations) {
+                market<marketData>._TableMutations[s] = mutStr as string
+            }
+            if debugCfg.Market() { LogInfo("[MarketService] AddToTable NEW slot=" + convert.ToString(s) + " " + itemId + " mut=" + mutStr) }
+            return true
+        }
+        return false
+    }
+
+    // Gold for removing `amount` of itemId across fixed slots (slot order 0..4).
     func ComputeGoldForRemoval(market entity<Entity>, itemId string, amount int) int {
         if market == nil || amount <= 0 { return 0 }
         if market<marketData> == nil { return 0 }
@@ -57,30 +112,114 @@ static graph MarketService {
 
         var remaining = amount
         var totalGold = 0
-        var n = list.Length(market<marketData>._TableItemIDs)
-        var i = 0
-        while i < n && remaining > 0 {
-            if market<marketData>._TableItemIDs[i] as string != itemId {
-                i = i + 1
-                continue
-            }
-            var current = market<marketData>._TableItemAmounts[i] as int
+        for s = 0, 5, 1 {
+            if remaining <= 0 { break }
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var current = market<marketData>._TableItemAmounts[s] as int
             var mut = ""
-            if i < list.Length(market<marketData>._TableMutations) {
-                mut = market<marketData>._TableMutations[i] as string
+            if s < list.Length(market<marketData>._TableMutations) {
+                mut = market<marketData>._TableMutations[s] as string
             }
             var unit = itemCfg.GetMarketUnitSellPrice(itemId, mut)
             if current <= remaining {
                 totalGold = totalGold + (unit * current)
                 remaining = remaining - current
-                i = i + 1
             } else {
                 totalGold = totalGold + (unit * remaining)
                 remaining = 0
-                i = i + 1
             }
         }
         return totalGold
+    }
+
+    // Amount on the single table slot that holds this itemId + mutation (fixed-slot table).
+    func GetTableAmountForMutation(market entity<Entity>, itemId string, mutStr string) int {
+        if market == nil || market<marketData> == nil { return 0 }
+        market<marketData>.EnsureInit()
+        for s = 0, 5, 1 {
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var m = ""
+            if s < list.Length(market<marketData>._TableMutations) {
+                m = market<marketData>._TableMutations[s] as string
+            }
+            if m == mutStr {
+                return market<marketData>._TableItemAmounts[s] as int
+            }
+        }
+        return 0
+    }
+
+    func ComputeGoldForRemovalForMutation(market entity<Entity>, itemId string, mutStr string, amount int) int {
+        if market == nil || amount <= 0 { return 0 }
+        if market<marketData> == nil { return 0 }
+        market<marketData>.EnsureInit()
+        var rowAmt = GetTableAmountForMutation(market, itemId, mutStr) as int
+        if rowAmt <= 0 { return 0 }
+        var take = amount
+        if take > rowAmt { take = rowAmt as int }
+        var unit = itemCfg.GetMarketUnitSellPrice(itemId, mutStr)
+        return (unit * take) as int
+    }
+
+    func RemoveFromTableWithMutation(market entity<Entity>, itemId string, mutStr string, amount int) bool {
+        if market == nil || amount <= 0 { return false }
+        if market<marketData> == nil { return false }
+        market<marketData>.EnsureInit()
+        for s = 0, 5, 1 {
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var m = ""
+            if s < list.Length(market<marketData>._TableMutations) {
+                m = market<marketData>._TableMutations[s] as string
+            }
+            if m != mutStr { continue }
+            var current = market<marketData>._TableItemAmounts[s] as int
+            var take = amount
+            if take > current { take = current as int }
+            if take <= 0 { return false }
+            if take >= current {
+                market<marketData>._TableItemIDs[s] = "" as string
+                market<marketData>._TableItemAmounts[s] = 0 as int
+                if s < list.Length(market<marketData>._TableMutations) {
+                    market<marketData>._TableMutations[s] = "" as string
+                }
+            } else {
+                market<marketData>._TableItemAmounts[s] = current - take
+            }
+            if debugCfg.Market() { LogInfo("[MarketService] RemoveFromTableWithMutation slot=" + convert.ToString(s) + " " + itemId + " mut=" + mutStr + " -" + convert.ToString(take)) }
+            return true
+        }
+        return false
+    }
+
+    func GetSellableTableRowCount(market entity<Entity>) int {
+        if market == nil || market<marketData> == nil { return 0 }
+        market<marketData>.EnsureInit()
+        var cap = _GetTableSlotCap(market) as int
+        var nRows = 0
+        for s = 0, cap, 1 {
+            if _IsTableSlotEmpty(market, s) { continue }
+            var iid = market<marketData>._TableItemIDs[s] as string
+            if !marketCfg.IsSellable(iid) { continue }
+            nRows = nRows + 1
+        }
+        return nRows
+    }
+
+    // Returns physical table slot index 0..4 (only scans slots unlocked by stall level).
+    func GetNthSellableTableRowIndex(market entity<Entity>, ordinal int) int {
+        if market == nil || market<marketData> == nil { return -1 }
+        if ordinal < 0 { return -1 }
+        market<marketData>.EnsureInit()
+        var cap = _GetTableSlotCap(market) as int
+        var seen = 0
+        for s = 0, cap, 1 {
+            if _IsTableSlotEmpty(market, s) { continue }
+            var iid = market<marketData>._TableItemIDs[s] as string
+            if !marketCfg.IsSellable(iid) { continue }
+            if seen == ordinal { return s }
+            seen = seen + 1
+        }
+        return -1
     }
 
     func RemoveFromTable(market entity<Entity>, itemId string, amount int) bool {
@@ -93,27 +232,23 @@ static graph MarketService {
         market<marketData>.EnsureInit()
 
         var remaining = amount
-        var count = list.Length(market<marketData>._TableItemIDs)
-        var i = 0
-        while i < count && remaining > 0 {
-            if market<marketData>._TableItemIDs[i] as string == itemId {
-                var current = market<marketData>._TableItemAmounts[i] as int
-                if current <= remaining {
-                    remaining = remaining - current
-                    list.RemoveAt(market<marketData>._TableItemIDs, i)
-                    list.RemoveAt(market<marketData>._TableItemAmounts, i)
-                    list.RemoveAt(market<marketData>._TableMutations, i)
-                    count = count - 1
-                } else {
-                    market<marketData>._TableItemAmounts[i] = current - remaining
-                    remaining = 0
-                    i = i + 1
+        for s = 0, 5, 1 {
+            if remaining <= 0 { break }
+            if market<marketData>._TableItemIDs[s] as string != itemId { continue }
+            var current = market<marketData>._TableItemAmounts[s] as int
+            if current <= remaining {
+                remaining = remaining - current
+                market<marketData>._TableItemIDs[s] = "" as string
+                market<marketData>._TableItemAmounts[s] = 0 as int
+                if s < list.Length(market<marketData>._TableMutations) {
+                    market<marketData>._TableMutations[s] = "" as string
                 }
             } else {
-                i = i + 1
+                market<marketData>._TableItemAmounts[s] = current - remaining
+                remaining = 0
             }
         }
-        if debugCfg.Market() { LogInfo("[MarketService] RemoveFromTable | " + itemId + " -" + convert.ToString(amount) + " rem=" + convert.ToString(remaining)) }
+        if debugCfg.Market() { LogInfo("[MarketService] RemoveFromTableAny | " + itemId + " rem=" + convert.ToString(remaining)) }
         return remaining < amount
     }
 
@@ -123,23 +258,23 @@ static graph MarketService {
         market<marketData>.EnsureInit()
 
         var total = 0
-        var count = list.Length(market<marketData>._TableItemIDs)
-        for i = 0, count, 1 {
-            if market<marketData>._TableItemIDs[i] as string == itemId {
-                total = total + (market<marketData>._TableItemAmounts[i] as int)
+        for s = 0, 5, 1 {
+            if market<marketData>._TableItemIDs[s] as string == itemId {
+                total = total + (market<marketData>._TableItemAmounts[s] as int)
             }
         }
         return total
     }
 
-    func GetTableMutationAtIndex(market entity<Entity>, index int) string {
+    func GetTableMutationAtIndex(market entity<Entity>, slotIndex int) string {
         if market == nil { return "" }
         if market<marketData> == nil { return "" }
-        if index < 0 || index >= list.Length(market<marketData>._TableMutations) { return "" }
-        return market<marketData>._TableMutations[index] as string
+        if slotIndex < 0 || slotIndex >= 5 { return "" }
+        if slotIndex >= list.Length(market<marketData>._TableMutations) { return "" }
+        return market<marketData>._TableMutations[slotIndex] as string
     }
 
-    func SetCustomer(market entity<Entity>, slot int, id int, itemId string, amount int) {
+    func SetCustomer(market entity<Entity>, slot int, id int, itemId string, amount int, mutStr string) {
         if market == nil { return }
         if market<marketData> == nil || slot < 0 || slot >= 5 { return }
         market<marketData>.EnsureInit()
@@ -147,7 +282,10 @@ static graph MarketService {
         market<marketData>._QueueCustomerIDs[slot] = id as int
         market<marketData>._QueueItemIDs[slot] = itemId as string
         market<marketData>._QueueItemAmounts[slot] = amount as int
-        if debugCfg.Market() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId) }
+        if market<marketData>._QueueItemMutations != nil && slot < list.Length(market<marketData>._QueueItemMutations) {
+            market<marketData>._QueueItemMutations[slot] = mutStr as string
+        }
+        if debugCfg.Market() { LogInfo("[MarketService] SetCustomer | slot=" + convert.ToString(slot) + " id=" + convert.ToString(id) + " wants " + convert.ToString(amount) + "x " + itemId + " mut=" + mutStr) }
     }
 
     func ClearCustomer(market entity<Entity>, slot int) {
@@ -157,6 +295,9 @@ static graph MarketService {
         market<marketData>._QueueCustomerIDs[slot] = -1 as int
         market<marketData>._QueueItemIDs[slot] = "" as string
         market<marketData>._QueueItemAmounts[slot] = 0 as int
+        if market<marketData>._QueueItemMutations != nil && slot < list.Length(market<marketData>._QueueItemMutations) {
+            market<marketData>._QueueItemMutations[slot] = "" as string
+        }
     }
 
     func ShiftQueueForward(market entity<Entity>) {
@@ -168,12 +309,19 @@ static graph MarketService {
             var cid = market<marketData>._QueueCustomerIDs[i] as int
             var citem = market<marketData>._QueueItemIDs[i] as string
             var camt = market<marketData>._QueueItemAmounts[i] as int
+            var cmut = ""
+            if market<marketData>._QueueItemMutations != nil && i < list.Length(market<marketData>._QueueItemMutations) {
+                cmut = market<marketData>._QueueItemMutations[i] as string
+            }
             var cnpc = market<marketData>._SlotNPCs[i] as entity<Entity>
 
             var prevSlot = (i - 1) as int
             market<marketData>._QueueCustomerIDs[prevSlot] = cid as int
             market<marketData>._QueueItemIDs[prevSlot] = citem as string
             market<marketData>._QueueItemAmounts[prevSlot] = camt as int
+            if market<marketData>._QueueItemMutations != nil && prevSlot < list.Length(market<marketData>._QueueItemMutations) {
+                market<marketData>._QueueItemMutations[prevSlot] = cmut as string
+            }
             market<marketData>._SlotNPCs[prevSlot] = cnpc
         }
         ClearCustomer(market, 4)
@@ -201,22 +349,5 @@ static graph MarketService {
             }
         }
         return count
-    }
-
-    func GetItemsWithStock(market entity<Entity>) List<string> {
-        var result = list.New(0, 5) as List<string>
-        if market == nil { return result }
-        if market<marketData> == nil { return result }
-        market<marketData>.EnsureInit()
-
-        var count = list.Length(market<marketData>._TableItemIDs) as int
-        for i = 0, count, 1 {
-            var amount = market<marketData>._TableItemAmounts[i] as int
-            if amount > 0 {
-                var itemId = market<marketData>._TableItemIDs[i] as string
-                list.Append(result, itemId)
-            }
-        }
-        return result
     }
 }

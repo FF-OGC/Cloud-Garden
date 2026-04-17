@@ -40,6 +40,10 @@ graph HUDStore {
         var slotIndex = actualBtn<MyButton>.Arg0
         if debugCfg.Store() { LogInfo("[HUDStore] Processing btnType=" + btnType + " slotIndex=" + convert.ToString(slotIndex)) }
 
+        if btnType == "market_sell" || btnType == "market_quicksell" {
+            return
+        }
+
         if btnType == "store_slot" {
             player<playerStoreVisual>.HandleSlotPressed(slotIndex)
         } else if btnType == "store_increase" {

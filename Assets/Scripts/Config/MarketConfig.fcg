@@ -17,8 +17,10 @@ static graph MarketConfig {
         return false
     }
 
-    func GetTransactionTimeMs(itemId string) int {
-        return 1000
+    // One fixed duration per customer visit: same whether they buy 1 unit or max for their stall level.
+    // Higher stall level → larger min/max order size elsewhere → faster stock drain without longer waits here.
+    func GetTransactionDurationMs() int {
+        return 3000
     }
 
     func GetQueueSize() int { return 5 }
@@ -36,24 +38,89 @@ static graph MarketConfig {
         return Vector3{0, 0, -14}
     }
 
-    func GetTableItemOffset(index int) Vector3 {
-        if index == 0 { return Vector3{-1.0, 1, 0} }
-        if index == 1 { return Vector3{-0.3, 1, 0} }
-        if index == 2 { return Vector3{0.4, 1, 0} }
-        if index == 3 { return Vector3{1.1, 1, 0} }
+    // World-space offset per fixed table slot index 0..4 (not per crop type).
+    func GetTableSlotOffset(slotIndex int) Vector3 {
+        if slotIndex == 0 { return Vector3{-1.0, 1, 0} }
+        if slotIndex == 1 { return Vector3{-0.3, 1, 0} }
+        if slotIndex == 2 { return Vector3{0.4, 1, 0} }
+        if slotIndex == 3 { return Vector3{1.1, 1, 0} }
         return Vector3{1.8, 1, 0}
     }
 
-    // Extra offset when the same crop type has multiple mutation stacks on the table (local X spread)
-    func GetMutationSpreadOffset(slotInGroup int, groupSize int) Vector3 {
-        if groupSize <= 1 { return Vector3{0, 0, 0} }
-        var spacing = 0.32
-        var half = (groupSize - 1) * spacing * 0.5
-        var x = -half + slotInGroup * spacing
-        return Vector3{x, 0, 0}
+    func GetTableItemOffset(index int) Vector3 {
+        return GetTableSlotOffset(index)
+    }
+
+    // Max distinct stack rows on stall table (itemId + mutation) by stall upgrade level.
+    func GetTableStackCapacityForStallLevel(level int) int {
+        if level <= 1 { return 3 }
+        if level == 2 { return 4 }
+        return 5
+    }
+
+    func GetCustomerMinAmountForStallLevel(level int) int {
+        if level <= 1 { return 1 }
+        if level == 2 { return 2 }
+        return 3
+    }
+
+    func GetCustomerMaxAmountForStallLevel(level int) int {
+        if level <= 1 { return 1 }
+        if level == 2 { return 3 }
+        return 5
     }
 
     func GetMaxTableSlots() int { return 5 }
+
+    // Logical table row index (0..cap-1) -> SlotVisualAnchor index (0..4). Depends on stall level; see market table visual plan.
+    func GetTableVisualAnchorIndexForLogicalSlot(stallLevel int, logicalSlot int) int {
+        var lv = stallLevel
+        if lv < 1 { lv = 1 }
+        if lv > 3 { lv = 3 }
+        var cap = GetTableStackCapacityForStallLevel(lv) as int
+        if logicalSlot < 0 || logicalSlot >= cap { return -1 }
+        if lv <= 1 {
+            if logicalSlot == 0 { return 0 }
+            if logicalSlot == 1 { return 2 }
+            if logicalSlot == 2 { return 4 }
+            return -1
+        }
+        if lv == 2 {
+            if logicalSlot == 0 { return 0 }
+            if logicalSlot == 1 { return 1 }
+            if logicalSlot == 2 { return 2 }
+            if logicalSlot == 3 { return 4 }
+            return -1
+        }
+        return logicalSlot
+    }
+
+    // Which SlotVisualAnchor indices (0..4) are shown for this stall level. Others stay hidden (ActiveSelf false).
+    func IsSlotVisualAnchorUnlockedForStallLevel(stallLevel int, anchorIndex int) bool {
+        if anchorIndex < 0 || anchorIndex > 4 { return false }
+        var lv = stallLevel
+        if lv < 1 { lv = 1 }
+        if lv > 3 { lv = 3 }
+        if lv <= 1 {
+            return anchorIndex == 0 || anchorIndex == 2 || anchorIndex == 4
+        }
+        if lv == 2 {
+            return anchorIndex != 3
+        }
+        return true
+    }
+
+    // Local offset (relative to market forward) added on top of anchor position so produce clears the marker disc.
+    func GetTableProduceNudgeForAnchor(anchorIndex int) Vector3 {
+        var y = 0.14
+        var z = 0.06
+        var x = 0.0
+        if anchorIndex == 1 {
+            y = 0.18
+            z = 0.1
+        }
+        return Vector3{x, y, z}
+    }
 
     func GetProducePrefab(itemId string) PrefabID {
         if itemId == "crop_apple" { return EResPrefab.crop_apple }
@@ -68,9 +135,8 @@ static graph MarketConfig {
         return EResPrefab.npc_customer
     }
 
-    func GetCustomerMinAmount() int { return 1 }
-    // TEMP: 1 fruit per customer per sale (was 5); types still rotate via MarketManager FillSlot.
-    func GetCustomerMaxAmount() int { return 1 }
+    func GetCustomerMinAmount() int { return GetCustomerMinAmountForStallLevel(1) }
+    func GetCustomerMaxAmount() int { return GetCustomerMaxAmountForStallLevel(1) }
 
     func GetNPCTweenTimeMs() int { return 2000 }
 

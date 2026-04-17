@@ -1,6 +1,7 @@
 import "StdLibrary.fcc" as std
 import "List.fcc" as list
 import "Convert.fcc" as convert
+import "EditorGenLib.fcc" as gen
 
 import "../Core/GameManager.fcg" as gameManager
 import "../Config/DebugConfig.fcg" as debugCfg
@@ -11,12 +12,15 @@ graph MarketRuntimeData {
     _FarmZone entity<Entity> = nil
     _Owner entity<Player> = nil
 
+    // Fixed 5 table slots (index 0..4). Each slot holds at most one (itemId + mutation) stack.
+    // Empty slot: itemId "" and amount 0.
     _TableItemIDs List<string> = nil
     _TableItemAmounts List<int> = nil
     _TableMutations List<string> = nil
 
     _QueueCustomerIDs List<int> = nil
     _QueueItemIDs List<string> = nil
+    _QueueItemMutations List<string> = nil
     _QueueItemAmounts List<int> = nil
 
     _NextCustomerID int = 1
@@ -24,9 +28,11 @@ graph MarketRuntimeData {
     _IsInitialized bool = false
 
     _SlotNPCs List<entity<Entity>> = nil
-    _ActiveProduceModels List<entity<Entity>> = nil
-    _ActiveProduceItemIDs List<string> = nil
-    _ActiveProduceMutStrs List<string> = nil
+
+    // One pooled produce model per table slot (nil = no visual for that slot).
+    _TableSlotProduceModels List<entity<Entity>> = nil
+    // Pool key (itemId) for returning model to the correct prefab pool when slot clears.
+    _TableSlotProducePoolKeys List<string> = nil
 
     _InfoBoard entity<Entity> = nil
     // Incremented on each SpawnInfoBoard start; stale async runs skip after Wait so only the latest build wins.
@@ -36,12 +42,68 @@ graph MarketRuntimeData {
     _MoneyLayers List<entity<Entity>> = nil
     _MoneyTriggerEntity entity<Entity> = nil
 
+    // Stall upgrade: 1..3. Drives max stack rows on table (3/4/5) + customer buy amount bands. Start at 1 = three table rows.
+    _StallLevel int = 2
+
+    // SlotVisualAnchor entities (index 0..4), from CC MarketSlot.VisualAnchor — hydrated once.
+    _TableVisualAnchors List<entity<Entity>> = nil
+    _VisualAnchorsHydrated bool = false
+
     event OnAwake() {
         EnsureInit()
     }
 
+    func HydrateMarketSlotRefs() {
+        if _VisualAnchorsHydrated { return }
+        _VisualAnchorsHydrated = true
+
+        var ser = thisEntity as entity<gen.MarketSlot>
+        if ser == nil {
+            if debugCfg.Market() { LogWarning("[MarketRuntimeData] HydrateMarketSlotRefs | no gen.MarketSlot on entity '" + thisEntity<Entity>.Name + "'") }
+            return
+        }
+        var lst = ser<gen.MarketSlot>.VisualAnchor
+        if lst == nil {
+            if debugCfg.Market() { LogWarning("[MarketRuntimeData] HydrateMarketSlotRefs | VisualAnchor list nil") }
+            return
+        }
+        var al = lst as List<entity<Entity>>
+        if al == nil {
+            if debugCfg.Market() { LogWarning("[MarketRuntimeData] HydrateMarketSlotRefs | VisualAnchor cast failed") }
+            return
+        }
+        var n = list.Length(al) as int
+        _TableVisualAnchors = list.New(0, n) as List<entity<Entity>>
+        for i = 0, n, 1 {
+            list.Append(_TableVisualAnchors, al[i] as entity<Entity>)
+        }
+        if debugCfg.Market() { LogInfo("[MarketRuntimeData] HydrateMarketSlotRefs | count=" + convert.ToString(n)) }
+    }
+
+    func _ClampStallLevel() {
+        if _StallLevel < 1 { _StallLevel = 1 }
+        if _StallLevel > 3 { _StallLevel = 3 }
+    }
+
     func EnsureInit() {
-        if _IsInitialized { return }
+        HydrateMarketSlotRefs()
+        _ClampStallLevel()
+        if _IsInitialized {
+            if _QueueItemMutations == nil {
+                _QueueItemMutations = List<string>{}
+                for i = 0, 5, 1 { list.Append(_QueueItemMutations, "") }
+            }
+            if _TableSlotProduceModels == nil {
+                _TableSlotProduceModels = List<entity<Entity>>{}
+                _TableSlotProducePoolKeys = List<string>{}
+                for i = 0, 5, 1 {
+                    list.Append(_TableSlotProduceModels, nil)
+                    list.Append(_TableSlotProducePoolKeys, "")
+                }
+            }
+            _MigrateToFixedTableSlotsIfNeeded()
+            return
+        }
 
         _TableItemIDs = List<string>{}
         _TableItemAmounts = List<int>{}
@@ -49,23 +111,78 @@ graph MarketRuntimeData {
 
         _QueueCustomerIDs = List<int>{}
         _QueueItemIDs = List<string>{}
+        _QueueItemMutations = List<string>{}
         _QueueItemAmounts = List<int>{}
 
         _SlotNPCs = List<entity<Entity>>{}
-        _ActiveProduceModels = List<entity<Entity>>{}
-        _ActiveProduceItemIDs = List<string>{}
-        _ActiveProduceMutStrs = List<string>{}
+        _TableSlotProduceModels = List<entity<Entity>>{}
+        _TableSlotProducePoolKeys = List<string>{}
+
+        for i = 0, 5, 1 {
+            list.Append(_TableItemIDs, "")
+            list.Append(_TableItemAmounts, 0)
+            list.Append(_TableMutations, "")
+            list.Append(_TableSlotProduceModels, nil)
+            list.Append(_TableSlotProducePoolKeys, "")
+        }
 
         for i = 0, 5, 1 {
             list.Append(_QueueCustomerIDs, -1)
             list.Append(_QueueItemIDs, "")
+            list.Append(_QueueItemMutations, "")
             list.Append(_QueueItemAmounts, 0)
             list.Append(_SlotNPCs, nil)
         }
 
         _MoneyLayers = List<entity<Entity>>{}
 
+        _ClampStallLevel()
         _IsInitialized = true
         if debugCfg.Market() { LogInfo("[MarketRuntimeData] Initialized on entity.") }
+    }
+
+    // Legacy: dynamic-append table rows -> pack into fixed slots 0..4 (no reordering of remaining into gaps).
+    func _MigrateToFixedTableSlotsIfNeeded() {
+        if _TableItemIDs == nil { return }
+        var L = list.Length(_TableItemIDs) as int
+        if L == 5 { return }
+
+        var packId = list.New(0, 5) as List<string>
+        var packAmt = list.New(0, 5) as List<int>
+        var packMut = list.New(0, 5) as List<string>
+
+        for i = 0, L, 1 {
+            var amt = _TableItemAmounts[i] as int
+            if amt <= 0 { continue }
+            var iid = _TableItemIDs[i] as string
+            if iid == "" { continue }
+            var m = ""
+            if i < list.Length(_TableMutations) {
+                m = _TableMutations[i] as string
+            }
+            list.Append(packId, iid)
+            list.Append(packAmt, amt)
+            list.Append(packMut, m)
+        }
+
+        _TableItemIDs = List<string>{}
+        _TableItemAmounts = List<int>{}
+        _TableMutations = List<string>{}
+
+        for s = 0, 5, 1 {
+            list.Append(_TableItemIDs, "")
+            list.Append(_TableItemAmounts, 0)
+            list.Append(_TableMutations, "")
+        }
+
+        var pc = list.Length(packId) as int
+        for s = 0, pc, 1 {
+            if s >= 5 { break }
+            _TableItemIDs[s] = packId[s] as string
+            _TableItemAmounts[s] = packAmt[s] as int
+            _TableMutations[s] = packMut[s] as string
+        }
+
+        if debugCfg.Market() { LogInfo("[MarketRuntimeData] Migrated dynamic table rows -> fixed 5 slots") }
     }
 }

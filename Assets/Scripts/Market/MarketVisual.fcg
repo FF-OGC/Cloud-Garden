@@ -8,6 +8,7 @@ import "../Config/MarketConfig.fcg" as marketCfg
 import "../Config/ItemConfig.fcg" as itemCfg
 import "../Config/MutationConfig.fcg" as mutCfg
 import "./MarketRuntimeData.fcg" as marketData
+import "../Services/MarketService.fcg" as marketService
 import "../Config/DebugConfig.fcg" as debugCfg
 
 [platform_server]
@@ -47,119 +48,127 @@ static graph MarketVisual {
         return Vector3{rx, offset.Y, rz}
     }
 
-    func _HasActivePair(market entity<Entity>, itemId string, mutStr string) bool {
-        var n = list.Length(market<marketData>._ActiveProduceItemIDs)
-        for i = 0, n, 1 {
-            if market<marketData>._ActiveProduceItemIDs[i] as string != itemId { continue }
-            var m = ""
-            if i < list.Length(market<marketData>._ActiveProduceMutStrs) {
-                m = market<marketData>._ActiveProduceMutStrs[i] as string
-            }
-            if m == mutStr { return true }
-        }
-        return false
+    func AddWorld3(a Vector3, b Vector3) Vector3 {
+        return Vector3{a.X + b.X, a.Y + b.Y, a.Z + b.Z}
     }
 
+    // Show only SlotVisualAnchor markers allowed for current stall level; hide the rest.
+    func SyncTableAnchorMarkersVisibility(market entity<Entity>) {
+        if market == nil || market<marketData> == nil { return }
+        market<marketData>.EnsureInit()
+        var stallLv = marketService.GetStallLevel(market) as int
+        var anchors = market<marketData>._TableVisualAnchors
+        if anchors == nil { return }
+        var n = list.Length(anchors) as int
+        for ai = 0, n, 1 {
+            var ent = anchors[ai] as entity<Entity>
+            if ent == nil { continue }
+            var show = marketCfg.IsSlotVisualAnchorUnlockedForStallLevel(stallLv, ai) as bool
+            ent<Entity>.ActiveSelf = show
+        }
+    }
+
+    // One prefab per fixed table slot (0..4). Empty slots stay empty; no sliding between slots.
     func UpdateTableDisplay(market entity<Entity>) {
         if market == nil { return }
         if market<marketData> == nil { return }
         market<marketData>.EnsureInit()
-        if market<marketData>._ActiveProduceMutStrs == nil {
-            market<marketData>._ActiveProduceMutStrs = List<string>{}
+        SyncTableAnchorMarkersVisibility(market)
+
+        if market<marketData>._TableSlotProduceModels == nil || list.Length(market<marketData>._TableSlotProduceModels) < 5 {
+            return
         }
-        var nActIds = list.Length(market<marketData>._ActiveProduceItemIDs)
-        var nMutPad = list.Length(market<marketData>._ActiveProduceMutStrs)
-        while nMutPad < nActIds {
-            list.Append(market<marketData>._ActiveProduceMutStrs, "")
-            nMutPad = nMutPad + 1
+        if market<marketData>._TableSlotProducePoolKeys == nil || list.Length(market<marketData>._TableSlotProducePoolKeys) < 5 {
+            return
         }
 
         var marketPos = market<Transform>.Position
         var rotY = market<Transform>.Rotation.Y
+        var stallLv = marketService.GetStallLevel(market) as int
+        var cap = marketCfg.GetTableStackCapacityForStallLevel(stallLv) as int
 
-        var desiredItemIds = List<string>{}
-        var desiredMutStrs = List<string>{}
-        var tCount = list.Length(market<marketData>._TableItemIDs)
-        for t = 0, tCount, 1 {
-            var amt = market<marketData>._TableItemAmounts[t] as int
-            if amt <= 0 { continue }
-            var itemId = market<marketData>._TableItemIDs[t] as string
-            if !marketCfg.IsSellable(itemId) { continue }
+        for slot = 0, 5, 1 {
+            var itemId = market<marketData>._TableItemIDs[slot] as string
+            var amt = market<marketData>._TableItemAmounts[slot] as int
             var mutStr = ""
-            if t < list.Length(market<marketData>._TableMutations) {
-                mutStr = market<marketData>._TableMutations[t] as string
+            if slot < list.Length(market<marketData>._TableMutations) {
+                mutStr = market<marketData>._TableMutations[slot] as string
             }
-            list.Append(desiredItemIds, itemId)
-            list.Append(desiredMutStrs, mutStr)
-        }
 
-        var ac = list.Length(market<marketData>._ActiveProduceItemIDs)
-        var ai = ac - 1
-        while ai >= 0 {
-            var aid = market<marketData>._ActiveProduceItemIDs[ai] as string
-            var amut = ""
-            if ai < list.Length(market<marketData>._ActiveProduceMutStrs) {
-                amut = market<marketData>._ActiveProduceMutStrs[ai] as string
+            var mdl = market<marketData>._TableSlotProduceModels[slot] as entity<Entity>
+            var poolKey = market<marketData>._TableSlotProducePoolKeys[slot] as string
+
+            if slot >= cap {
+                if mdl != nil {
+                    var rk = poolKey
+                    if rk == "" { rk = itemId }
+                    if rk != "" {
+                        ReturnModelToPool(rk, mdl)
+                    }
+                    market<marketData>._TableSlotProduceModels[slot] = nil
+                    market<marketData>._TableSlotProducePoolKeys[slot] = "" as string
+                    if debugCfg.Market() { LogInfo("[MarketVisual] CLEAR slot=" + convert.ToString(slot) + " (above stall cap)") }
+                }
+                continue
             }
-            var stillWant = false
-            var diLen = list.Length(desiredItemIds)
-            for k = 0, diLen, 1 {
-                if desiredItemIds[k] as string == aid && desiredMutStrs[k] as string == amut {
-                    stillWant = true
-                    break
+
+            if amt <= 0 || itemId == "" || !marketCfg.IsSellable(itemId) {
+                if mdl != nil {
+                    var rk = poolKey
+                    if rk == "" { rk = itemId }
+                    if rk != "" {
+                        ReturnModelToPool(rk, mdl)
+                    }
+                    market<marketData>._TableSlotProduceModels[slot] = nil
+                    market<marketData>._TableSlotProducePoolKeys[slot] = "" as string
+                    if debugCfg.Market() { LogInfo("[MarketVisual] CLEAR slot=" + convert.ToString(slot)) }
+                }
+                continue
+            }
+
+            if mdl == nil {
+                mdl = GetModelFromPool(itemId)
+                if mdl == nil { continue }
+                market<marketData>._TableSlotProduceModels[slot] = mdl
+                market<marketData>._TableSlotProducePoolKeys[slot] = itemId as string
+                if debugCfg.Market() { LogInfo("[MarketVisual] SHOW slot=" + convert.ToString(slot) + " " + itemId + " mut=" + mutStr) }
+            } else {
+                if poolKey != itemId {
+                    var oldKey = poolKey
+                    if oldKey == "" { oldKey = itemId }
+                    ReturnModelToPool(oldKey, mdl)
+                    mdl = GetModelFromPool(itemId)
+                    if mdl == nil { continue }
+                    market<marketData>._TableSlotProduceModels[slot] = mdl
+                    market<marketData>._TableSlotProducePoolKeys[slot] = itemId as string
                 }
             }
-            if !stillWant {
-                var mdl = market<marketData>._ActiveProduceModels[ai] as entity<Entity>
-                ReturnModelToPool(aid, mdl)
-                list.RemoveAt(market<marketData>._ActiveProduceModels, ai)
-                list.RemoveAt(market<marketData>._ActiveProduceItemIDs, ai)
-                list.RemoveAt(market<marketData>._ActiveProduceMutStrs, ai)
-                if debugCfg.Market() { LogInfo("[MarketVisual] HIDE " + aid + " mut=" + amut) }
-            }
-            ai = ai - 1
-        }
 
-        var wantLen = list.Length(desiredItemIds)
-        for d = 0, wantLen, 1 {
-            var wItem = desiredItemIds[d] as string
-            var wMut = desiredMutStrs[d] as string
-            if _HasActivePair(market, wItem, wMut) { continue }
+            mdl = market<marketData>._TableSlotProduceModels[slot] as entity<Entity>
+            if mdl == nil { continue }
 
-            var model = GetModelFromPool(wItem)
-            if model == nil { continue }
+            var anchorIdx = marketCfg.GetTableVisualAnchorIndexForLogicalSlot(stallLv, slot) as int
+            if anchorIdx < 0 { anchorIdx = slot }
 
-            var sellIdx = -1
-            var sellItems = marketCfg.GetSellableItems()
-            for si = 0, list.Length(sellItems), 1 {
-                if sellItems[si] as string == wItem {
-                    sellIdx = si
-                    break
+            var anchors = market<marketData>._TableVisualAnchors
+            var placed = false
+            if anchors != nil && anchorIdx >= 0 && anchorIdx < list.Length(anchors) {
+                var anEnt = anchors[anchorIdx] as entity<Entity>
+                if anEnt != nil {
+                    var ap = anEnt<Transform>.Position
+                    var nudge = marketCfg.GetTableProduceNudgeForAnchor(anchorIdx)
+                    var nudgeW = RotateOffset(nudge, rotY)
+                    mdl<Transform>.Position = AddWorld3(ap, nudgeW)
+                    placed = true
                 }
             }
-            if sellIdx < 0 { continue }
-
-            var gSize = 0
-            for g = 0, wantLen, 1 {
-                if desiredItemIds[g] as string == wItem { gSize = gSize + 1 }
-            }
-            var slotInGroup = 0
-            for g = 0, d, 1 {
-                if desiredItemIds[g] as string == wItem { slotInGroup = slotInGroup + 1 }
+            if !placed {
+                var baseOff = marketCfg.GetTableSlotOffset(anchorIdx)
+                var offset = RotateOffset(baseOff, rotY)
+                mdl<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
             }
 
-            var baseOff = marketCfg.GetTableItemOffset(sellIdx)
-            var spread = marketCfg.GetMutationSpreadOffset(slotInGroup, gSize)
-            var combined = Vector3{baseOff.X + spread.X, baseOff.Y + spread.Y, baseOff.Z + spread.Z}
-            var offset = RotateOffset(combined, rotY)
-            model<Transform>.Position = Vector3{marketPos.X + offset.X, marketPos.Y + offset.Y, marketPos.Z + offset.Z}
-
-            list.Append(market<marketData>._ActiveProduceItemIDs, wItem)
-            list.Append(market<marketData>._ActiveProduceMutStrs, wMut)
-            list.Append(market<marketData>._ActiveProduceModels, model)
-
-            _ApplyMutationMaterialToModel(model, wMut)
-            if debugCfg.Market() { LogInfo("[MarketVisual] SHOW " + wItem + " mut=" + wMut) }
+            _ApplyMutationMaterialToModel(mdl, mutStr)
         }
     }
 

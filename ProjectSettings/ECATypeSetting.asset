@@ -212,7 +212,28 @@
           "disabledType": true
         }
       ]
+    },
+    "CustomComponent67961236": {
+      "label": "MarketSlot",
+      "name": "CustomComponent67961236",
+      "bases": [
+        "Component"
+      ],
+      "ecaScripts": [],
+      "typeID": 100049,
+      "PropDefines": [
+        {
+          "propID": 100051,
+          "name": "PROP_42125456",
+          "label": "VisualAnchor",
+          "type": "ListT_Entity",
+          "value": null,
+          "observable": false,
+          "autoStorage": false,
+          "disabledType": true
+        }
+      ]
     }
   }
 }
-//"{FE:{"v":"1.17.4326539","c":{"FF":5001},"s":100}
+//"{FE:{"v":"1.17.4335043","c":{"FF":5001},"s":100}

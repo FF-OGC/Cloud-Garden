@@ -121,41 +121,50 @@ static graph BackpackService {
         if owner<backpackData> == nil || amountToConsume <= 0 { return false }
 
         var activeSlot = owner<backpackData>._ActiveQuickbarSlot
-        var handle = owner<backpackData>._QuickSlotRefs[activeSlot] // Get Handle from Quick Slot Reference
+        var handle = owner<backpackData>._QuickSlotRefs[activeSlot]
 
         if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem | activeSlot=" + convert.ToString(activeSlot) + " handle=" + convert.ToString(handle) + " amountToConsume=" + convert.ToString(amountToConsume)) }
 
-        if handle != -1 && map.ContainKey(owner<backpackData>._ItemIDs, handle) {
-            var currentAmt = owner<backpackData>._ItemAmounts[handle] as int
-            
-            if currentAmt >= amountToConsume {
-                owner<backpackData>._ItemAmounts[handle] = currentAmt - amountToConsume
-                
-                if owner<backpackData>._ItemAmounts[handle] as int <= 0 {
-                    if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem | item depleted, handle=" + convert.ToString(handle) + " removed from refs") }
-                    map.Remove(owner<backpackData>._ItemIDs, handle)
-                    map.Remove(owner<backpackData>._ItemAmounts, handle)
-                    if map.ContainKey(owner<backpackData>._ItemMutations, handle) {
-                        map.Remove(owner<backpackData>._ItemMutations, handle)
-                    }
-                    
-                    // Clear from backpack references
-                    var bIndex = list.IndexOf(owner<backpackData>._BackpackRefs, handle)
-                    if bIndex != -1 { owner<backpackData>._BackpackRefs[bIndex] = -1 }
-                    
-                    // Clear from quick slot references
-                    var qIndex = list.IndexOf(owner<backpackData>._QuickSlotRefs, handle)
-                    if qIndex != -1 { owner<backpackData>._QuickSlotRefs[qIndex] = -1 }
-                }
-                
-                DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
-                return true
-            }
-            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | not enough amount: currentAmt=" + convert.ToString(currentAmt) + " < needed=" + convert.ToString(amountToConsume)) }
-        } else {
-            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | no item in active quick slot (handle=" + convert.ToString(handle) + ")") }
+        if handle == -1 {
+            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeActiveItem FAILED | no item in active quick slot (handle=-1)") }
+            return false
         }
-        return false
+        return ConsumeItemByHandle(owner, handle, amountToConsume)
+    }
+
+    // Removes amount from a specific inventory handle (backpack or quickbar ref). Same semantics as ConsumeActiveItem.
+    func ConsumeItemByHandle(owner entity<Entity>, handle int, amountToConsume int) bool {
+        if owner<backpackData> == nil || amountToConsume <= 0 { return false }
+        if handle == -1 || !map.ContainKey(owner<backpackData>._ItemIDs, handle) {
+            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeItemByHandle FAILED | invalid handle=" + convert.ToString(handle)) }
+            return false
+        }
+
+        var currentAmt = owner<backpackData>._ItemAmounts[handle] as int
+        if currentAmt < amountToConsume {
+            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeItemByHandle FAILED | not enough: have=" + convert.ToString(currentAmt) + " need=" + convert.ToString(amountToConsume)) }
+            return false
+        }
+
+        owner<backpackData>._ItemAmounts[handle] = currentAmt - amountToConsume
+
+        if owner<backpackData>._ItemAmounts[handle] as int <= 0 {
+            if debugCfg.Backpack() { LogInfo("[BackpackService] ConsumeItemByHandle | item depleted, handle=" + convert.ToString(handle)) }
+            map.Remove(owner<backpackData>._ItemIDs, handle)
+            map.Remove(owner<backpackData>._ItemAmounts, handle)
+            if map.ContainKey(owner<backpackData>._ItemMutations, handle) {
+                map.Remove(owner<backpackData>._ItemMutations, handle)
+            }
+
+            var bIndex = list.IndexOf(owner<backpackData>._BackpackRefs, handle)
+            if bIndex != -1 { owner<backpackData>._BackpackRefs[bIndex] = -1 }
+
+            var qIndex = list.IndexOf(owner<backpackData>._QuickSlotRefs, handle)
+            if qIndex != -1 { owner<backpackData>._QuickSlotRefs[qIndex] = -1 }
+        }
+
+        DispatchEventToEntity(OnBackpackDataChanged, owner, PlatformType.Server, List<object>{owner})
+        return true
     }
 
     // --- AUTO FILL QUICK SLOTS ---

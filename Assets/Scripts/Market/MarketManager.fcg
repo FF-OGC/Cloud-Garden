@@ -45,6 +45,7 @@ static graph MarketManager {
         }
 
         marketEntity<marketData>.EnsureInit()
+        marketVisual.SyncTableAnchorMarkersVisibility(marketEntity)
         list.Append(_Markets, marketEntity)
 
         if farmZone != nil {
@@ -114,6 +115,47 @@ static graph MarketManager {
             return fz<FarmZoneData>.Owner as entity<Player>
         }
         return nil
+    }
+
+    // Clamp 1..3. Call from upgrade flow / debug when player levels the stall.
+    func SetStallLevel(market entity<Entity>, level int) {
+        if market == nil || market<marketData> == nil { return }
+        market<marketData>.EnsureInit()
+        var lv = level
+        if lv < 1 { lv = 1 }
+        if lv > 3 { lv = 3 }
+        market<marketData>._StallLevel = lv
+        if debugCfg.Market() { LogInfo("[MarketManager] SetStallLevel | level=" + convert.ToString(lv)) }
+        marketVisual.UpdateTableDisplay(market)
+    }
+
+    // Verbose quicksell trace when DebugConfig.MarketQuicksell() is on (set _DebugMarketQuicksell or _DebugAll in DebugConfig.fcg).
+    func _QuicksellDebugLogTable(market entity<Entity>, tag string) {
+        if !debugCfg.MarketQuicksell() { return }
+        if market == nil || market<marketData> == nil {
+            LogInfo("[MarketManager] QUICKSELLDBG " + tag + " | market nil")
+            return
+        }
+        market<marketData>.EnsureInit()
+        var ser = market<marketData>._StallLevel as int
+        var lv = marketService.GetStallLevel(market) as int
+        var cap = marketCfg.GetTableStackCapacityForStallLevel(lv) as int
+        var usedInCap = 0
+        for s = 0, cap, 1 {
+            var iid = market<marketData>._TableItemIDs[s] as string
+            var amt = market<marketData>._TableItemAmounts[s] as int
+            if iid != "" && amt > 0 { usedInCap = usedInCap + 1 }
+        }
+        LogInfo("[MarketManager] QUICKSELLDBG " + tag + " | graph._StallLevel=" + convert.ToString(ser) + " GetStallLevel=" + convert.ToString(lv) + " cap=" + convert.ToString(cap) + " usedInCap=" + convert.ToString(usedInCap))
+        for s = 0, 5, 1 {
+            var iid2 = market<marketData>._TableItemIDs[s] as string
+            var amt2 = market<marketData>._TableItemAmounts[s] as int
+            var mut2 = ""
+            if s < list.Length(market<marketData>._TableMutations) {
+                mut2 = market<marketData>._TableMutations[s] as string
+            }
+            LogInfo("[MarketManager] QUICKSELLDBG   slot " + convert.ToString(s) + " | " + iid2 + " x" + convert.ToString(amt2) + " | mut=[" + mut2 + "]")
+        }
     }
 
     async func SpawnInfoBoard(market entity<Entity>) {
@@ -235,15 +277,190 @@ static graph MarketManager {
             mutStr = player<backpackData>._ItemMutations[handle] as string
         }
 
+        if !marketService.CanAddToTableWithMutation(market, itemId, mutStr) {
+            if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | table stack slots full") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_MARKET_TABLE_FULL"})
+            return
+        }
+
         if !backpackService.ConsumeActiveItem(player, amount) {
             if debugCfg.Market() { LogInfo("[MarketManager] Restock FAILED | ConsumeActiveItem failed") }
             return
         }
 
-        marketService.AddToTableWithMutation(market, itemId, amount, mutStr)
+        if !marketService.AddToTableWithMutation(market, itemId, amount, mutStr) {
+            if debugCfg.Market() { LogError("[MarketManager] Restock FAILED | AddToTable after consume — inconsistent") }
+            return
+        }
         marketVisual.UpdateTableDisplay(market)
 
         if debugCfg.Market() { LogInfo("[MarketManager] Restock OK | " + convert.ToString(amount) + "x " + itemId + " mut=" + mutStr) }
+        SyncQueueWithTable(market)
+        CheckAndStartTransaction(market)
+    }
+
+    event OnRequestQuicksell(player entity<Player>, market entity<Entity>) {
+        if debugCfg.MarketQuicksell() { LogInfo("[MarketManager] OnRequestQuicksell | marketName=" + market<Entity>.Name) }
+        if player == nil || market == nil {
+            if debugCfg.MarketQuicksell() { LogWarning("[MarketManager] OnRequestQuicksell ABORT: player or market nil") }
+            return
+        }
+        if market<marketData> == nil {
+            if debugCfg.MarketQuicksell() { LogError("[MarketManager] OnRequestQuicksell ABORT: no MarketRuntimeData") }
+            return
+        }
+        if market<marketData>._Owner == nil || market<marketData>._Owner != player {
+            if debugCfg.MarketQuicksell() { LogWarning("[MarketManager] OnRequestQuicksell ABORT: not stall owner") }
+            return
+        }
+        if player<backpackData> == nil {
+            if debugCfg.MarketQuicksell() { LogWarning("[MarketManager] OnRequestQuicksell ABORT: backpackData nil") }
+            return
+        }
+
+        var handles = list.New(0, 48) as List<int>
+        var itemIds = list.New(0, 48) as List<string>
+        var amounts = list.New(0, 48) as List<int>
+        var muts = list.New(0, 48) as List<string>
+
+        for bi = 0, player<backpackData>._MaxCapacity, 1 {
+            var h = player<backpackData>._BackpackRefs[bi]
+            if h == -1 { continue }
+            if !map.ContainKey(player<backpackData>._ItemIDs, h) { continue }
+            var itemId = player<backpackData>._ItemIDs[h] as string
+            var amt = player<backpackData>._ItemAmounts[h] as int
+            if !marketCfg.IsSellable(itemId) || amt <= 0 { continue }
+            var mutStr = ""
+            if map.ContainKey(player<backpackData>._ItemMutations, h) {
+                mutStr = player<backpackData>._ItemMutations[h] as string
+            }
+            list.Append(handles, h)
+            list.Append(itemIds, itemId)
+            list.Append(amounts, amt)
+            list.Append(muts, mutStr)
+        }
+
+        var n = list.Length(handles) as int
+        if n <= 0 {
+            if debugCfg.MarketQuicksell() { LogInfo("[MarketManager] Quicksell | no sellable stacks") }
+            DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_MARKET_QUICKSELL_NONE"})
+            return
+        }
+
+        if debugCfg.MarketQuicksell() {
+            LogInfo("[MarketManager] QUICKSELLDBG begin | sellableStacks=" + convert.ToString(n))
+            var bi2 = 0
+            while bi2 < n {
+                var ii = itemIds[bi2] as string
+                var aa = amounts[bi2] as int
+                var mm = muts[bi2] as string
+                var hh = handles[bi2] as int
+                LogInfo("[MarketManager] QUICKSELLDBG   bpIdx=" + convert.ToString(bi2) + " handle=" + convert.ToString(hh) + " | " + ii + " x" + convert.ToString(aa) + " mut=[" + mm + "]")
+                bi2 = bi2 + 1
+            }
+            _QuicksellDebugLogTable(market, "table_BEFORE_loop")
+        }
+
+        var remaining = list.New(0, n) as List<int>
+        var ri = 0
+        while ri < n {
+            list.Append(remaining, ri)
+            ri = ri + 1
+        }
+
+        var qsIter = 0
+        while list.Length(remaining) > 0 {
+            qsIter = qsIter + 1
+            var rlen = list.Length(remaining) as int
+            // Pick cheapest among stacks that *can* go on the table this turn. The old logic picked global cheapest
+            // first; if that stack cannot be added (e.g. 5th distinct crop while cap is 4) we broke and never tried others.
+            var found = false
+            var bestPos = 0
+            var bestCand = 0
+            var bestPrice = 0
+            var bestH = 0
+            var canAddPassCnt = 0
+            var rp = 0
+            while rp < rlen {
+                var cand = remaining[rp] as int
+                var iidTry = itemIds[cand] as string
+                var msTry = muts[cand] as string
+                var canAdd = marketService.CanAddToTableWithMutation(market, iidTry, msTry) as bool
+                if debugCfg.MarketQuicksell() {
+                    LogInfo("[MarketManager] QUICKSELLDBG iter=" + convert.ToString(qsIter) + " rem=" + convert.ToString(rlen) + " candIdx=" + convert.ToString(cand) + " | " + iidTry + " mut=[" + msTry + "] | CanAdd=" + convert.ToString(canAdd))
+                }
+                if !canAdd {
+                    rp = rp + 1
+                    continue
+                }
+                canAddPassCnt = canAddPassCnt + 1
+                var p = itemCfg.GetMarketUnitSellPrice(iidTry, msTry)
+                var hc = handles[cand] as int
+                if !found {
+                    found = true
+                    bestPos = rp
+                    bestCand = cand
+                    bestPrice = p
+                    bestH = hc
+                } else {
+                    var replace = false
+                    if p < bestPrice {
+                        replace = true
+                    }
+                    if p == bestPrice && hc < bestH {
+                        replace = true
+                    }
+                    if replace {
+                        bestPos = rp
+                        bestCand = cand
+                        bestPrice = p
+                        bestH = hc
+                    }
+                }
+                rp = rp + 1
+            }
+
+            if debugCfg.MarketQuicksell() {
+                LogInfo("[MarketManager] QUICKSELLDBG iter=" + convert.ToString(qsIter) + " | canAddPassCnt=" + convert.ToString(canAddPassCnt) + " found=" + convert.ToString(found))
+            }
+
+            if !found {
+                if debugCfg.MarketQuicksell() { LogInfo("[MarketManager] Quicksell | no remaining stack fits table (all blocked)") }
+                _QuicksellDebugLogTable(market, "table_BLOCKED_no_candidate")
+                DispatchEventToEntity(OnShowPrompt, player, PlatformType.Server, List<object>{"PROMPT_MARKET_TABLE_FULL"})
+                break
+            }
+
+            if debugCfg.MarketQuicksell() {
+                LogInfo("[MarketManager] QUICKSELLDBG PICK | bestCand=" + convert.ToString(bestCand) + " bestPosInRem=" + convert.ToString(bestPos) + " price=" + convert.ToString(bestPrice) + " | " + itemIds[bestCand] as string + " mut=[" + muts[bestCand] as string + "]")
+            }
+
+            var hk = handles[bestCand] as int
+            var iid = itemIds[bestCand] as string
+            var am = amounts[bestCand] as int
+            var ms = muts[bestCand] as string
+
+            if !backpackService.ConsumeItemByHandle(player, hk, am) {
+                if debugCfg.MarketQuicksell() { LogWarning("[MarketManager] Quicksell | ConsumeItemByHandle failed handle=" + convert.ToString(hk)) }
+                list.RemoveAt(remaining, bestPos)
+                continue
+            }
+            if !marketService.AddToTableWithMutation(market, iid, am, ms) {
+                if debugCfg.MarketQuicksell() { LogError("[MarketManager] Quicksell | AddToTable failed after consume") }
+                _QuicksellDebugLogTable(market, "table_AFTER_add_FAIL")
+                break
+            }
+            list.RemoveAt(remaining, bestPos)
+            if debugCfg.MarketQuicksell() {
+                _QuicksellDebugLogTable(market, "table_AFTER_add_OK")
+            }
+        }
+
+        marketVisual.UpdateTableDisplay(market)
+        if debugCfg.MarketQuicksell() {
+            _QuicksellDebugLogTable(market, "table_END")
+            LogInfo("[MarketManager] Quicksell OK | backpackSellableStacks=" + convert.ToString(n) + " qsIters=" + convert.ToString(qsIter))
+        }
         SyncQueueWithTable(market)
         CheckAndStartTransaction(market)
     }
@@ -274,19 +491,28 @@ static graph MarketManager {
         var customerId = market<marketData>._NextCustomerID as int
         market<marketData>._NextCustomerID = (customerId + 1) as int
 
-        var minAmt = marketCfg.GetCustomerMinAmount() as int
-        var maxAmt = marketCfg.GetCustomerMaxAmount() as int
+        var stallLv = marketService.GetStallLevel(market) as int
+        var minAmt = marketCfg.GetCustomerMinAmountForStallLevel(stallLv) as int
+        var maxAmt = marketCfg.GetCustomerMaxAmountForStallLevel(stallLv) as int
 
-        var tableItems = marketService.GetItemsWithStock(market)
-        var tableItemCount = list.Length(tableItems) as int
+        var nRows = marketService.GetSellableTableRowCount(market) as int
 
         var itemId = ""
+        var mutStr = ""
         var amount = 0
 
-        if tableItemCount > 0 {
-            var itemIndex = (customerId % tableItemCount) as int
-            itemId = tableItems[itemIndex] as string
-            var available = marketService.GetTableAmount(market, itemId) as int
+        if nRows > 0 {
+            var rowPick = (customerId % nRows) as int
+            var rowIdx = marketService.GetNthSellableTableRowIndex(market, rowPick) as int
+            if rowIdx < 0 {
+                if debugCfg.Market() { LogInfo("[MarketManager] FillSlot SKIP | bad row index") }
+                return
+            }
+            itemId = market<marketData>._TableItemIDs[rowIdx] as string
+            if rowIdx < list.Length(market<marketData>._TableMutations) {
+                mutStr = market<marketData>._TableMutations[rowIdx] as string
+            }
+            var available = market<marketData>._TableItemAmounts[rowIdx] as int
 
             var effectiveMax = maxAmt as int
             if available < effectiveMax { effectiveMax = available as int }
@@ -295,6 +521,7 @@ static graph MarketManager {
             var range = (effectiveMax - minAmt + 1) as int
             if range <= 0 { range = 1 as int }
             amount = (minAmt + (customerId % range)) as int
+            if amount > available { amount = available as int }
         } else {
             var allItems = marketCfg.GetSellableItems()
             var allCount = list.Length(allItems) as int
@@ -305,10 +532,11 @@ static graph MarketManager {
             var itemIndex = (customerId % allCount) as int
             itemId = allItems[itemIndex] as string
             amount = minAmt as int
+            mutStr = ""
         }
 
-        if debugCfg.Market() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId) }
-        marketService.SetCustomer(market, slot, customerId, itemId, amount)
+        if debugCfg.Market() { LogInfo("[MarketManager] FillSlot | slot=" + convert.ToString(slot) + " customerId=" + convert.ToString(customerId) + " wants " + convert.ToString(amount) + "x " + itemId + " mut=" + mutStr) }
+        marketService.SetCustomer(market, slot, customerId, itemId, amount, mutStr)
         customerVisual.SpawnCustomer(market, slot)
     }
 
@@ -319,40 +547,54 @@ static graph MarketManager {
         if market<marketData> == nil { return }
 
         var queueSize = marketCfg.GetQueueSize() as int
-        var tableItems = marketService.GetItemsWithStock(market)
-        var tableItemCount = list.Length(tableItems) as int
+        var nRows = marketService.GetSellableTableRowCount(market) as int
 
-        if tableItemCount <= 0 {
+        if nRows <= 0 {
             if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue SKIP | table empty") }
             return
         }
 
-        var minAmt = marketCfg.GetCustomerMinAmount() as int
-        var maxAmt = marketCfg.GetCustomerMaxAmount() as int
+        var stallLv = marketService.GetStallLevel(market) as int
+        var minAmt = marketCfg.GetCustomerMinAmountForStallLevel(stallLv) as int
+        var maxAmt = marketCfg.GetCustomerMaxAmountForStallLevel(stallLv) as int
 
         for i = 0, queueSize, 1 {
             if !marketService.IsSlotEmpty(market, i) {
                 var wantedItem = market<marketData>._QueueItemIDs[i] as string
                 var wantedAmount = market<marketData>._QueueItemAmounts[i] as int
-                var tableStock = marketService.GetTableAmount(market, wantedItem) as int
+                var wantedMut = ""
+                if market<marketData>._QueueItemMutations != nil && i < list.Length(market<marketData>._QueueItemMutations) {
+                    wantedMut = market<marketData>._QueueItemMutations[i] as string
+                }
+                var tableStock = marketService.GetTableAmountForMutation(market, wantedItem, wantedMut) as int
 
                 if tableStock >= wantedAmount {
-                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " OK, " + convert.ToString(wantedAmount) + "x " + wantedItem + " fulfilled") }
+                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " OK, " + convert.ToString(wantedAmount) + "x " + wantedItem + " mut=" + wantedMut) }
                 } else if tableStock > 0 {
                     market<marketData>._QueueItemAmounts[i] = tableStock as int
                     if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " reduced " + convert.ToString(wantedAmount) + " -> " + convert.ToString(tableStock) + " for " + wantedItem) }
                 } else {
                     var customerId = market<marketData>._QueueCustomerIDs[i] as int
-                    var newIndex = (customerId % tableItemCount) as int
-                    var newItem = tableItems[newIndex] as string
-                    var newStock = marketService.GetTableAmount(market, newItem) as int
+                    var newIndex = (customerId % nRows) as int
+                    var newRowIdx = marketService.GetNthSellableTableRowIndex(market, newIndex) as int
+                    if newRowIdx < 0 { continue }
+                    var newItem = market<marketData>._TableItemIDs[newRowIdx] as string
+                    var newMut = ""
+                    if newRowIdx < list.Length(market<marketData>._TableMutations) {
+                        newMut = market<marketData>._TableMutations[newRowIdx] as string
+                    }
+                    var newStock = market<marketData>._TableItemAmounts[newRowIdx] as int
                     var newAmount = newStock as int
                     if newAmount > maxAmt { newAmount = maxAmt as int }
                     if newAmount < minAmt { newAmount = minAmt as int }
+                    if newAmount > newStock { newAmount = newStock as int }
 
                     market<marketData>._QueueItemIDs[i] = newItem as string
+                    if market<marketData>._QueueItemMutations != nil && i < list.Length(market<marketData>._QueueItemMutations) {
+                        market<marketData>._QueueItemMutations[i] = newMut as string
+                    }
                     market<marketData>._QueueItemAmounts[i] = newAmount as int
-                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " switched " + wantedItem + " -> " + convert.ToString(newAmount) + "x " + newItem) }
+                    if debugCfg.Market() { LogInfo("[MarketManager] SyncQueue | slot " + convert.ToString(i) + " switched -> " + convert.ToString(newAmount) + "x " + newItem + " mut=" + newMut) }
                 }
             }
         }
@@ -378,7 +620,7 @@ static graph MarketManager {
                     }
                 }
             }
-            WaitForMillisecond(3000)
+            WaitForMillisecond(500)
         }
     }
 
@@ -399,16 +641,20 @@ static graph MarketManager {
 
         var wantedItem = market<marketData>._QueueItemIDs[0] as string
         var wantedAmount = market<marketData>._QueueItemAmounts[0] as int
+        var wantedMut = ""
+        if market<marketData>._QueueItemMutations != nil && 0 < list.Length(market<marketData>._QueueItemMutations) {
+            wantedMut = market<marketData>._QueueItemMutations[0] as string
+        }
         var customerId = market<marketData>._QueueCustomerIDs[0] as int
 
-        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction | customer=" + convert.ToString(customerId) + " wants " + convert.ToString(wantedAmount) + "x " + wantedItem) }
+        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction | customer=" + convert.ToString(customerId) + " wants " + convert.ToString(wantedAmount) + "x " + wantedItem + " mut=" + wantedMut) }
 
         if wantedAmount <= 0 {
             if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction SKIP | wantedAmount <= 0") }
             return
         }
 
-        var tableAmount = marketService.GetTableAmount(market, wantedItem) as int
+        var tableAmount = marketService.GetTableAmountForMutation(market, wantedItem, wantedMut) as int
         if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction | tableStock=" + convert.ToString(tableAmount) + " needed=" + convert.ToString(wantedAmount)) }
 
         if tableAmount < wantedAmount {
@@ -416,39 +662,40 @@ static graph MarketManager {
             return
         }
 
-        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction START | selling " + convert.ToString(wantedAmount) + "x " + wantedItem + " to customer " + convert.ToString(customerId)) }
+        if debugCfg.Market() { LogInfo("[MarketManager] CheckTransaction START | selling " + convert.ToString(wantedAmount) + "x " + wantedItem + " mut=" + wantedMut + " to customer " + convert.ToString(customerId)) }
         market<marketData>._IsTransacting = true
-        start ExecuteTransaction(market, wantedItem, wantedAmount)
+        start ExecuteTransaction(market, wantedItem, wantedAmount, wantedMut)
     }
 
-    async func ExecuteTransaction(market entity<Entity>, itemId string, amount int) {
-        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction BEGIN | " + convert.ToString(amount) + "x " + itemId) }
+    async func ExecuteTransaction(market entity<Entity>, itemId string, amount int, mutStr string) {
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction BEGIN | " + convert.ToString(amount) + "x " + itemId + " mut=" + mutStr) }
 
-        var timePerUnit = marketCfg.GetTransactionTimeMs(itemId) as int
-        var totalTimeMs = (timePerUnit * amount) as int
+        var totalTimeMs = marketCfg.GetTransactionDurationMs() as int
 
-        // Payout must use table state BEFORE removal; per-stack mutation matches RemoveFromTableAny order.
         var saleGold = 0
         if market<marketData>._Owner != nil {
-            saleGold = marketService.ComputeGoldForRemoval(market, itemId, amount)
+            saleGold = marketService.ComputeGoldForRemovalForMutation(market, itemId, mutStr, amount)
         }
 
-        marketService.RemoveFromTable(market, itemId, amount)
+        // Refresh produce models before the counter wait: stock stays on the table during GetTransactionDurationMs().
+        // Previously we removed + cleared visuals here; with a x1 stack it looked like the customer "grabbed" before
+        // anything spawned, and the 3s beat felt disconnected from the moment the fruit disappeared.
+        marketVisual.UpdateTableDisplay(market)
 
-        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms") }
+        if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | waiting " + convert.ToString(totalTimeMs) + "ms (customer at counter)") }
 
         WaitForMillisecond(totalTimeMs)
 
+        marketService.RemoveFromTableWithMutation(market, itemId, mutStr, amount)
         marketVisual.UpdateTableDisplay(market)
+        if market<marketData>._Owner != nil {
+            currencyVisualManager.CreditMarketPendingGold(market, saleGold)
+        }
 
         if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | wait done, customer leaving") }
 
         customerVisual.AnimateLeaving(market, 0)
         marketService.ClearCustomer(market, 0)
-
-        if market<marketData>._Owner != nil {
-            currencyVisualManager.CreditMarketPendingGold(market, saleGold)
-        }
 
         var conveyorDelay = marketCfg.GetConveyorDelayMs() as int
         if debugCfg.Market() { LogInfo("[MarketManager] ExecuteTransaction | conveyor delay " + convert.ToString(conveyorDelay) + "ms") }
